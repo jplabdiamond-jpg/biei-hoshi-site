@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>よくあるご質問｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .faq-item { border-bottom: 1px solid var(--color-border); }
+    .faq-q { width: 100%; text-align: left; background: none; border: none; padding: 22px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; cursor: pointer; font-family: var(--font-jp); font-size: clamp(14px,1.6vw,16px); letter-spacing: 0.06em; color: var(--color-text-dark); }
+    .faq-q::after { content: '+'; font-family: var(--font-en); font-size: 20px; color: var(--color-accent); flex-shrink: 0; transition: transform 0.3s; }
+    .faq-q.open::after { transform: rotate(45deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.6s cubic-bezier(0.25,0.46,0.45,0.94); }
+    .faq-a-inner { padding: 0 0 22px 0; font-size: 14px; color: var(--color-text-mid); line-height: 2.2; }
+  </style>
+</head>
+<body>
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo"><img src="images/logo_mark.png" alt="星の光の宿 BIEI ロゴ" class="logo-mark"><span class="logo-text"><span class="logo-en">Hoshi no Hikari no Yado</span><span class="logo-jp">星の光の宿 BIEI</span></span></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="food.html" class="nav-link">Food</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="food.html" class="mobile-nav-link">お食事</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<div class="mobile-overlay"></div>
+
+<section class="page-hero" style="margin-top:var(--header-h);height:clamp(200px,35vh,360px);">
+  <div class="img-placeholder" style="position:absolute;inset:0;background:linear-gradient(160deg,#2a3028 0%,#3a3e32 100%);width:100%;height:100%;"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-text"><p class="en">FAQ</p><h1>よくあるご質問</h1></div>
+</section>
+<div class="breadcrumb"><div class="breadcrumb-inner container"><a href="index.html">HOME</a><span class="sep">/</span><span>FAQ</span></div></div>
+
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container" style="max-width:760px;">
+    <div class="sec-heading fade-in" style="margin-bottom:clamp(32px,5vw,56px);">
+      <span class="en-label">FAQ</span>
+      <h2>よくあるご質問</h2>
+      <div class="sec-divider"></div>
+    </div>
+
+    <div class="fade-in">
+      <div class="faq-item"><button class="faq-q">チェックイン・チェックアウトの時間を教えてください。</button><div class="faq-a"><div class="faq-a-inner">チェックインは15:00〜18:00、チェックアウトは〜11:00となっております。ご都合により時間の変更をご希望の場合は、事前にご相談ください。</div></div></div>
+      <div class="faq-item"><button class="faq-q">何名から宿泊できますか？</button><div class="faq-a"><div class="faq-a-inner">最小2名様からご利用いただけます。最大6名様（添い寝のお子様を除く）まで対応しております。1名様でのご利用はご相談ください。</div></div></div>
+      <div class="faq-item"><button class="faq-q">子供連れでも宿泊できますか？</button><div class="faq-a"><div class="faq-a-inner">お子様連れのご滞在も歓迎しております。ただし、施設内の露天風呂や暖炉など、安全面でご注意いただく箇所がございますため、事前にご一報ください。お子様向けの食事についてもご相談承ります。</div></div></div>
+      <div class="faq-item"><button class="faq-q">ペットの同伴は可能ですか？</button><div class="faq-a"><div class="faq-a-inner">誠に恐れ入りますが、現在はペットの同伴はご遠慮いただいております。</div></div></div>
+      <div class="faq-item"><button class="faq-q">食事のアレルギー対応はしていただけますか？</button><div class="faq-a"><div class="faq-a-inner">はい、対応しております。ご予約時またはご来泊前にアレルギーや食事制限についてお知らせください。できる限り対応いたします。</div></div></div>
+      <div class="faq-item"><button class="faq-q">駐車場はありますか？</button><div class="faq-a"><div class="faq-a-inner">はい、敷地内に無料駐車場（4台分）をご用意しております。</div></div></div>
+      <div class="faq-item"><button class="faq-q">Wi-Fiは使えますか？</button><div class="faq-a"><div class="faq-a-inner">はい、高速Wi-Fiを完備しております。接続情報はチェックイン時にお伝えします。</div></div></div>
+      <div class="faq-item"><button class="faq-q">キャンセルポリシーを教えてください。</button><div class="faq-a"><div class="faq-a-inner">ご宿泊日より14日前：30%、7日前：50%、3日前〜：100%のキャンセル料を申し受けます。詳しくは<a href="policy.html" style="color:var(--color-accent);">宿泊規約</a>をご確認ください。</div></div></div>
+      <div class="faq-item"><button class="faq-q">支払い方法は何が使えますか？</button><div class="faq-a"><div class="faq-a-inner">現金、各種クレジットカード（VISA、Mastercard、JCB、AMEX）、電子マネー（PayPay、LINE Pay等）に対応しております。</div></div></div>
+      <div class="faq-item"><button class="faq-q">送迎サービスはありますか？</button><div class="faq-a"><div class="faq-a-inner">旭川空港・JR美瑛駅からの送迎サービスをご提供しています（有料、要事前予約）。ご予約時にお申し付けください。</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="reserve-cta"><div class="reserve-cta-inner container fade-in"><p class="en">STILL HAVE QUESTIONS?</p><h2>お問い合わせはこちら</h2><a href="reserve.html" class="btn-cta">CONTACT US</a></div></section>
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/logo_mark.png" alt="星の光の宿 BIEI" style="width:52px;height:52px;object-fit:contain;margin-bottom:10px;opacity:0.85;"><p class="logo-jp">星の光の宿 BIEI</p><p class="logo-en">Hoshi no Hikari no Yado</p><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="food.html">お食事</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<script src="js/main.js"></script>
+<script>
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const ans = btn.nextElementSibling;
+    const isOpen = btn.classList.toggle('open');
+    ans.style.maxHeight = isOpen ? ans.scrollHeight + 'px' : '0';
+  });
+});
+</script>
+</body>
+</html>

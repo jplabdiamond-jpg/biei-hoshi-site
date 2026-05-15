@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>セットアップガイド｜星の光の宿 BIEI</title>
+  <style>
+    :root { --accent: #8b7355; --dark: #1a1a1a; --mid: #4a4a4a; --light: #8a8a8a; --border: #e0ddd8; --bg: #fafaf8; }
+    body { font-family: 'Noto Sans JP', -apple-system, sans-serif; background: var(--bg); color: var(--dark); max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; line-height: 1.9; }
+    h1 { font-size: 24px; font-weight: 400; letter-spacing: 0.1em; margin-bottom: 8px; }
+    h2 { font-size: 18px; font-weight: 400; letter-spacing: 0.08em; margin: 40px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); color: var(--accent); }
+    h3 { font-size: 15px; font-weight: 600; margin: 24px 0 10px; }
+    p, li { font-size: 14px; color: var(--mid); }
+    li { margin-bottom: 6px; }
+    ul { padding-left: 18px; }
+    ol { padding-left: 18px; }
+    code { background: #f0ede8; padding: 2px 8px; font-size: 13px; font-family: monospace; }
+    .badge { display: inline-block; background: var(--accent); color: white; font-size: 11px; padding: 2px 10px; letter-spacing: 0.12em; margin-left: 8px; vertical-align: middle; }
+    .box { background: white; border: 1px solid var(--border); padding: 20px 24px; margin: 16px 0; }
+    .box.warn { border-left: 4px solid #e74c3c; }
+    .box.info { border-left: 4px solid var(--accent); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; border: 1px solid var(--border); text-align: left; }
+    th { background: var(--bg); color: var(--light); font-weight: 400; }
+  </style>
+</head>
+<body>
+
+<h1>星の光の宿 BIEI — セットアップ・運用ガイド</h1>
+<p style="color:var(--light);font-size:13px;">最終更新: 2026年5月</p>
+
+<h2>1. ファイル構成</h2>
+<pre style="background:#f0ede8;padding:16px;font-size:12px;line-height:1.8;overflow-x:auto;">
+星の光の宿BIEIサイト制作/
+├── index.html          ← トップページ
+├── about.html          ← 宿について
+├── rooms.html          ← お部屋
+├── food.html           ← お食事
+├── experience.html     ← 体験・過ごし方
+├── plan.html           ← プラン
+├── access.html         ← アクセス
+├── reserve.html        ← ご予約・お問い合わせ
+├── news.html           ← お知らせ
+├── faq.html            ← よくあるご質問
+├── policy.html         ← 宿泊規約
+├── privacy.html        ← プライバシーポリシー
+├── css/
+│   └── style.css       ← 全ページ共通スタイル
+├── js/
+│   ├── main.js         ← アニメーション・ナビゲーション
+│   └── cms.js          ← CMS共通ロジック
+├── images/             ← 画像ファイルをここに配置
+└── admin/
+    ├── login.html      ← 管理者ログイン
+    ├── dashboard.html  ← 管理ダッシュボード
+    └── SETUP_GUIDE.html ← このファイル
+</pre>
+
+<h2>2. 本番サーバーへのアップロード</h2>
+<ol>
+  <li>FTPソフト（FileZilla等）またはcPanelのファイルマネージャーを使用</li>
+  <li><strong>全ファイル・フォルダ</strong>をサーバーのドメインルート（<code>public_html/</code>等）にアップロード</li>
+  <li>ブラウザで <code>https://yourdomain.com/</code> を開いて表示を確認</li>
+</ol>
+<div class="box warn">
+  <strong>⚠ 注意：</strong> <code>admin/</code> フォルダはパスワード保護をかけることを推奨します。<br>
+  サーバーの .htaccess で Basic認証を設定するか、サーバー管理画面のディレクトリ保護機能をご利用ください。
+</div>
+
+<h2>3. 管理者ログインと編集の使い方</h2>
+
+<h3>ログイン方法</h3>
+<ol>
+  <li>サイトのフッター右下の <strong>Admin</strong> リンクをクリック</li>
+  <li>管理者IDとパスワードを入力してログイン</li>
+  <li>ダッシュボードで各ページへのリンクを確認</li>
+</ol>
+
+<h3>デフォルト認証情報</h3>
+<div class="box info">
+  <strong>ID:</strong> admin　　<strong>Password:</strong> biei2026!<br>
+  <small>※ 初回ログイン後、ダッシュボードの「パスワード変更」から必ず変更してください。</small>
+</div>
+
+<h3>テキスト編集方法</h3>
+<ol>
+  <li>編集したいページを開く（ログイン済みの場合、画面下部に管理バーが表示）</li>
+  <li><strong>EDIT PAGE</strong> ボタンをクリック → 編集可能な要素がハイライト表示</li>
+  <li>テキストをクリックして直接編集</li>
+  <li><strong>SAVE CHANGES</strong> をクリックして保存</li>
+</ol>
+
+<h3>画像の差し替え方法</h3>
+<ol>
+  <li>編集モードをONにする</li>
+  <li>差し替えたい画像エリアをクリック → ファイル選択ダイアログが開く</li>
+  <li>新しい画像ファイルを選択 → 自動的に保存される</li>
+</ol>
+<div class="box info">
+  <strong>💡 推奨画像サイズ:</strong><br>
+  ヒーロー画像: 1920×1080px 以上（横長）<br>
+  各セクション画像: 1200×800px 程度（4:3 または 16:9）<br>
+  形式: JPG（写真）、PNG（ロゴ・透過）、WebP（高圧縮）
+</div>
+
+<h2>4. 画像・動画の追加方法（本番環境）</h2>
+<ol>
+  <li>画像ファイルを <code>images/</code> フォルダにFTPでアップロード</li>
+  <li>HTMLファイルの <code>&lt;img src="images/your-photo.jpg"&gt;</code> に変更</li>
+  <li>動画の場合は <code>&lt;video src="videos/hero.mp4" autoplay muted loop playsinline&gt;&lt;/video&gt;</code> で埋め込み</li>
+</ol>
+
+<h2>5. お問い合わせフォームの本番設定</h2>
+<p>現在の <code>reserve.html</code> のフォームは、JavaScriptでのバリデーションのみです。<br>
+実際にメールを送信するには、以下のいずれかで対応してください：</p>
+<ul>
+  <li><strong>推奨: Formspree</strong> — <code>https://formspree.io</code> に登録し、<code>action="https://formspree.io/f/XXXX"</code> を設定</li>
+  <li>レンタルサーバーのPHPメール送信（<code>mail()</code>関数）</li>
+  <li>サードパーティフォームサービス（Googleフォーム埋め込み等）</li>
+</ul>
+
+<h2>6. データの保存について</h2>
+<p>現在のCMSはブラウザの <strong>localStorage</strong> を使用しています。</p>
+<ul>
+  <li>✅ 同じブラウザでアクセスした場合：保存したデータが反映される</li>
+  <li>✅ 別のブラウザやデバイスでも見える：HTMLファイル自体を書き換えた内容</li>
+  <li>⚠ 注意：CMSでの編集はそのブラウザのlocal storageに保存されます</li>
+</ul>
+<div class="box info">
+  <strong>本格運用時の推奨：</strong><br>
+  WordPressやHeadless CMS（microCMS、Contentful等）への移行、またはPHP+MySQLバックエンドの追加をお勧めします。
+  ご相談ください。
+</div>
+
+<h2>7. カスタマイズ（CSS変数）</h2>
+<p><code>css/style.css</code> の先頭にあるCSS変数でサイト全体のデザインを一括変更できます：</p>
+<table>
+  <tr><th>変数名</th><th>デフォルト値</th><th>用途</th></tr>
+  <tr><td><code>--color-accent</code></td><td>#8b7355</td><td>メインアクセント色（茶色系）</td></tr>
+  <tr><td><code>--color-accent-light</code></td><td>#c4a882</td><td>ライトアクセント色</td></tr>
+  <tr><td><code>--font-jp</code></td><td>Noto Serif JP</td><td>日本語フォント</td></tr>
+  <tr><td><code>--font-en</code></td><td>Cormorant Garamond</td><td>英語フォント</td></tr>
+</table>
+
+<p style="margin-top:48px;font-size:12px;color:var(--light);">© 2026 星の光の宿 BIEI / Built with Claude Cowork</p>
+</body>
+</html>

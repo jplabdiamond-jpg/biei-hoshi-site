@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理者ログイン｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #8b7355;
+      --accent-light: #c4a882;
+      --dark: #1a1a1a;
+      --mid: #4a4a4a;
+      --light: #8a8a8a;
+      --border: #e0ddd8;
+      --bg: #fafaf8;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Serif JP', serif;
+      background: var(--dark);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .login-bg {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, #0d1117 0%, #1a2535 50%, #101820 100%);
+    }
+    .login-box {
+      position: relative;
+      z-index: 10;
+      background: rgba(250,250,248,0.97);
+      width: min(440px, 90vw);
+      padding: 56px 48px 48px;
+      animation: boxIn 1s cubic-bezier(.25,.46,.45,.94) both;
+    }
+    @keyframes boxIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .login-logo .en {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      font-style: italic;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 8px;
+    }
+    .login-logo .jp {
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      color: var(--dark);
+    }
+    .login-divider {
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+      margin: 16px auto 40px;
+    }
+    .login-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      color: var(--light);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--mid);
+      margin-bottom: 8px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1px solid var(--border);
+      background: white;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 14px;
+      color: var(--dark);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .btn-login {
+      width: 100%;
+      padding: 16px;
+      background: var(--dark);
+      color: white;
+      border: none;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 14px;
+      letter-spacing: 0.22em;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.3s, opacity 0.3s;
+    }
+    .btn-login:hover { background: var(--accent); }
+    .error-msg {
+      color: #c0392b;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      margin-top: 12px;
+      text-align: center;
+      min-height: 18px;
+    }
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 28px;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--light);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .back-link:hover { color: var(--accent); }
+    .default-creds {
+      margin-top: 20px;
+      padding: 14px;
+      background: #fff8f0;
+      border: 1px solid #f0e0c8;
+      font-size: 11px;
+      color: var(--mid);
+      line-height: 1.8;
+      letter-spacing: 0.04em;
+    }
+    .default-creds strong { color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="login-bg"></div>
+
+<div class="login-box">
+  <div class="login-logo">
+    <img src="../images/logo_mark.png" alt="星の光の宿 BIEI" style="width:72px;height:72px;object-fit:contain;margin-bottom:12px;">
+    <span class="en">Hoshi no Hikari no Yado</span>
+    <span class="jp">星の光の宿 BIEI</span>
+    <div class="login-divider"></div>
+  </div>
+  <p class="login-title">ADMIN LOGIN</p>
+
+  <form id="loginForm">
+    <div class="form-group">
+      <label class="form-label" for="username">ID / USERNAME</label>
+      <input class="form-input" type="text" id="username" autocomplete="username" placeholder="admin" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="password">PASSWORD</label>
+      <input class="form-input" type="password" id="password" autocomplete="current-password" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn-login">SIGN IN</button>
+    <p class="error-msg" id="errorMsg"></p>
+  </form>
+
+  <div class="default-creds">
+    ⚠ デフォルト認証情報（初回設定後変更してください）<br>
+    <strong>ID:</strong> admin　<strong>Pass:</strong> biei2026!<br>
+    ※ admin/settings.html よりパスワード変更が可能です。
+  </div>
+
+  <a href="../index.html" class="back-link">← サイトに戻る</a>
+</div>
+
+<script>
+  /* ---- Simple credential check (localStorage-based) ---- */
+  const CREDS_KEY = 'biei_admin_creds';
+  const SESSION_KEY = 'biei_admin_session';
+  const REDIRECT_KEY = 'biei_admin_redirect';
+
+  function getCredentials() {
+    try {
+      const saved = localStorage.getItem(CREDS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return { username: 'admin', password: 'biei2026!' };
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const un = document.getElementById('username').value.trim();
+    const pw = document.getElementById('password').value;
+    const creds = getCredentials();
+    const errEl = document.getElementById('errorMsg');
+
+    if (un === creds.username && pw === creds.password) {
+      sessionStorage.setItem(SESSION_KEY, 'true');
+      const redirect = sessionStorage.getItem(REDIRECT_KEY) || 'dashboard.html';
+      sessionStorage.removeItem(REDIRECT_KEY);
+      window.location.href = redirect;
+    } else {
+      errEl.textContent = 'IDまたはパスワードが正しくありません。';
+      setTimeout(() => { errEl.textContent = ''; }, 4000);
+    }
+  });
+</script>
+</body>
+</html>

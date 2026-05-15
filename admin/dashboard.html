@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理ダッシュボード｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #8b7355;
+      --accent-light: #c4a882;
+      --dark: #1a1a1a;
+      --mid: #4a4a4a;
+      --light: #8a8a8a;
+      --border: #e0ddd8;
+      --bg: #fafaf8;
+      --bg-warm: #f5f3ef;
+      --white: #ffffff;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--dark); display: flex; min-height: 100dvh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--dark);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100dvh;
+      z-index: 100;
+      padding: 0 0 24px;
+    }
+    .sidebar-brand {
+      padding: 28px 24px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .sidebar-brand .jp { font-family: 'Noto Serif JP', serif; font-size: 14px; letter-spacing: 0.12em; }
+    .sidebar-brand .en { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--accent-light); font-style: italic; margin-top: 4px; }
+    .sidebar-brand .badge { display: inline-block; background: var(--accent); color: white; font-size: 9px; letter-spacing: 0.12em; padding: 2px 8px; margin-top: 10px; }
+    .sidebar-nav { padding: 16px 0; flex: 1; }
+    .nav-section { padding: 20px 16px 8px; font-size: 9px; letter-spacing: 0.25em; color: rgba(255,255,255,0.35); }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 24px;
+      font-size: 13px; letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      border: none; background: none; width: 100%; text-align: left; text-decoration: none;
+    }
+    .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.08); color: white; }
+    .nav-item.active { border-left: 2px solid var(--accent-light); }
+    .nav-item-icon { font-size: 15px; min-width: 20px; text-align: center; }
+    .sidebar-footer { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .btn-logout { width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,0.2); background: none; color: rgba(255,255,255,0.6); font-family: 'Cormorant Garamond', serif; font-size: 12px; letter-spacing: 0.15em; cursor: pointer; transition: all 0.2s; }
+    .btn-logout:hover { border-color: var(--accent-light); color: var(--accent-light); }
+
+    /* Main */
+    .main { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100dvh; }
+    .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.15em; font-style: italic; color: var(--mid); }
+    .topbar-actions { display: flex; gap: 12px; align-items: center; }
+    .topbar-btn { padding: 8px 20px; border: 1px solid var(--border); font-size: 12px; letter-spacing: 0.1em; cursor: pointer; background: white; color: var(--mid); transition: all 0.2s; }
+    .topbar-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .topbar-btn.primary:hover { opacity: 0.85; color: white; }
+
+    .content { padding: 32px; flex: 1; }
+
+    /* Dashboard cards */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .stat-card { background: var(--white); border: 1px solid var(--border); padding: 24px; }
+    .stat-label { font-size: 11px; letter-spacing: 0.15em; color: var(--light); margin-bottom: 10px; }
+    .stat-value { font-family: 'Cormorant Garamond', serif; font-size: 32px; color: var(--dark); }
+    .stat-sub { font-size: 11px; color: var(--light); margin-top: 6px; }
+
+    /* Page list */
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; letter-spacing: 0.18em; font-style: italic; color: var(--mid); margin-bottom: 20px; }
+    .page-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .page-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 20px 24px;
+      display: flex; align-items: center; gap: 16px;
+      cursor: pointer;
+      transition: box-shadow 0.3s, border-color 0.3s;
+      text-decoration: none; color: inherit;
+    }
+    .page-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); border-color: var(--accent-light); }
+    .page-card-icon { font-size: 22px; min-width: 32px; text-align: center; }
+    .page-card-info {}
+    .page-card-name { font-size: 14px; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .page-card-file { font-size: 11px; color: var(--light); letter-spacing: 0.06em; }
+    .page-card-badge { margin-left: auto; font-size: 10px; padding: 3px 10px; border: 1px solid var(--border); color: var(--light); }
+
+    /* Media manager preview */
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+    .media-item { position: relative; aspect-ratio: 1; background: var(--bg-warm); overflow: hidden; cursor: pointer; }
+    .media-item img { width: 100%; height: 100%; object-fit: cover; }
+    .media-item-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.55); color: white; font-size: 10px; letter-spacing: 0.08em; padding: 4px 8px; }
+    .media-upload-btn { border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; cursor: pointer; transition: border-color 0.2s; }
+    .media-upload-btn:hover { border-color: var(--accent); }
+    .media-upload-btn span { font-size: 11px; color: var(--light); letter-spacing: 0.1em; }
+
+    /* Settings */
+    .settings-form { max-width: 560px; }
+    .form-group { margin-bottom: 24px; }
+    .form-label { display: block; font-size: 12px; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 8px; }
+    .form-input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: white; font-size: 14px; color: var(--dark); outline: none; transition: border-color 0.2s; }
+    .form-input:focus { border-color: var(--accent); }
+    .btn-save { padding: 13px 36px; background: var(--accent); color: white; border: none; font-size: 13px; letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.2s; }
+    .btn-save:hover { opacity: 0.82; }
+
+    /* Panels */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--dark); color: white; padding: 12px 28px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.4s; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 767px) {
+      .sidebar { width: 200px; }
+      .main { margin-left: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="jp">星の光の宿 BIEI</div>
+    <div class="en">Admin Dashboard</div>
+    <div class="badge">ADMIN</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">MAIN</div>
+    <button class="nav-item active" data-panel="dashboard">
+      <span class="nav-item-icon">🏠</span>ダッシュボード
+    </button>
+
+    <div class="nav-section">PAGES</div>
+    <button class="nav-item" data-panel="pages">
+      <span class="nav-item-icon">📄</span>ページ編集
+    </button>
+
+    <div class="nav-section">ASSETS</div>
+    <button class="nav-item" data-panel="media">
+      <span class="nav-item-icon">🖼</span>メディア管理
+    </button>
+
+    <div class="nav-section">SETTINGS</div>
+    <button class="nav-item" data-panel="settings">
+      <span class="nav-item-icon">⚙️</span>サイト設定
+    </button>
+    <button class="nav-item" data-panel="password">
+      <span class="nav-item-icon">🔑</span>パスワード変更
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button class="btn-logout" id="logoutBtn">SIGN OUT</button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+  <div class="topbar">
+    <h1 id="panelTitle">Dashboard</h1>
+    <div class="topbar-actions">
+      <a href="../index.html" target="_blank" class="topbar-btn">サイトを開く</a>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD PANEL -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">TOTAL PAGES</div>
+          <div class="stat-value">8</div>
+          <div class="stat-sub">公開ページ数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">MEDIA FILES</div>
+          <div class="stat-value" id="mediaCount">0</div>
+          <div class="stat-sub">アップロード済み画像</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">LAST UPDATED</div>
+          <div class="stat-value" id="lastUpdated" style="font-size:16px;padding-top:8px;">—</div>
+          <div class="stat-sub">最終更新日時</div>
+        </div>
+      </div>
+
+      <p class="section-title">Quick Access — ページ編集</p>
+      <div class="page-list">
+        <a href="../index.html" target="_blank" class="page-card" data-page="../index.html">
+          <span class="page-card-icon">🏠</span>
+          <div class="page-card-info">
+            <div class="page-card-name">トップページ</div>
+            <div class="page-card-file">index.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../about.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📖</span>
+          <div class="page-card-info">
+            <div class="page-card-name">宿について</div>
+            <div class="page-card-file">about.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../rooms.html" target="_blank" class="page-card">
+          <span class="page-card-icon">🛏</span>
+          <div class="page-card-info">
+            <div class="page-card-name">お部屋</div>
+            <div class="page-card-file">rooms.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../food.html" target="_blank" class="page-card">
+          <span class="page-card-icon">🍽</span>
+          <div class="page-card-info">
+            <div class="page-card-name">お食事</div>
+            <div class="page-card-file">food.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../experience.html" target="_blank" class="page-card">
+          <span class="page-card-icon">⭐</span>
+          <div class="page-card-info">
+            <div class="page-card-name">体験・過ごし方</div>
+            <div class="page-card-file">experience.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../plan.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📋</span>
+          <div class="page-card-info">
+            <div class="page-card-name">プラン</div>
+            <div class="page-card-file">plan.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../access.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📍</span>
+          <div class="page-card-info">
+            <div class="page-card-name">アクセス</div>
+            <div class="page-card-file">access.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+        <a href="../reserve.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📅</span>
+          <div class="page-card-info">
+            <div class="page-card-name">ご予約</div>
+            <div class="page-card-file">reserve.html</div>
+          </div>
+          <span class="page-card-badge">LIVE</span>
+        </a>
+      </div>
+
+      <p style="font-size:13px;color:var(--light);line-height:2;max-width:560px;">
+        💡 ページを直接編集するには、各ページを開いてフッターの <strong>Admin</strong> リンクからログイン後、
+        画面下部の <strong>EDIT PAGE</strong> ボタンをクリックしてください。<br>
+        テキストをクリックして直接編集し、<strong>SAVE CHANGES</strong> で保存されます。
+        画像エリアをクリックすると画像ファイルを選択・置換できます。
+      </p>
+    </div>
+
+    <!-- PAGES PANEL -->
+    <div class="panel" id="panel-pages">
+      <p class="section-title">ページ一覧</p>
+      <div class="page-list">
+        <a href="../index.html" target="_blank" class="page-card">
+          <span class="page-card-icon">🏠</span>
+          <div class="page-card-info"><div class="page-card-name">トップページ</div><div class="page-card-file">index.html</div></div>
+        </a>
+        <a href="../about.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📖</span>
+          <div class="page-card-info"><div class="page-card-name">宿について</div><div class="page-card-file">about.html</div></div>
+        </a>
+        <a href="../rooms.html" target="_blank" class="page-card">
+          <span class="page-card-icon">🛏</span>
+          <div class="page-card-info"><div class="page-card-name">お部屋</div><div class="page-card-file">rooms.html</div></div>
+        </a>
+        <a href="../food.html" target="_blank" class="page-card">
+          <span class="page-card-icon">🍽</span>
+          <div class="page-card-info"><div class="page-card-name">お食事</div><div class="page-card-file">food.html</div></div>
+        </a>
+        <a href="../experience.html" target="_blank" class="page-card">
+          <span class="page-card-icon">⭐</span>
+          <div class="page-card-info"><div class="page-card-name">体験・過ごし方</div><div class="page-card-file">experience.html</div></div>
+        </a>
+        <a href="../plan.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📋</span>
+          <div class="page-card-info"><div class="page-card-name">プラン</div><div class="page-card-file">plan.html</div></div>
+        </a>
+        <a href="../access.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📍</span>
+          <div class="page-card-info"><div class="page-card-name">アクセス</div><div class="page-card-file">access.html</div></div>
+        </a>
+        <a href="../reserve.html" target="_blank" class="page-card">
+          <span class="page-card-icon">📅</span>
+          <div class="page-card-info"><div class="page-card-name">ご予約</div><div class="page-card-file">reserve.html</div></div>
+        </a>
+      </div>
+      <p style="font-size:13px;color:var(--light);line-height:2;">各ページを開き、フッターの Admin リンクよりログインして編集してください。</p>
+    </div>
+
+    <!-- MEDIA PANEL -->
+    <div class="panel" id="panel-media">
+      <p class="section-title">メディア管理</p>
+      <p style="font-size:13px;color:var(--light);margin-bottom:24px;line-height:2;">
+        画像・動画ファイルを管理します。各ページの編集モードで画像エリアをクリックするとファイルを直接置換できます。<br>
+        ここでは画像データの一覧確認・削除が行えます。
+      </p>
+
+      <div style="margin-bottom:24px;">
+        <label style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;border:1px dashed var(--accent-light);cursor:pointer;font-size:13px;color:var(--accent);">
+          <span>＋ 画像をアップロード</span>
+          <input type="file" accept="image/*,video/*" multiple id="mediaUpload" style="display:none;">
+        </label>
+      </div>
+
+      <div class="media-grid" id="mediaGrid">
+        <p style="font-size:13px;color:var(--light);">アップロードされた画像がここに表示されます。</p>
+      </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="panel" id="panel-settings">
+      <p class="section-title">サイト設定</p>
+      <div class="settings-form">
+        <div class="form-group">
+          <label class="form-label">宿の名称</label>
+          <input class="form-input" type="text" id="set-name" value="星の光の宿 BIEI">
+        </div>
+        <div class="form-group">
+          <label class="form-label">キャッチコピー</label>
+          <input class="form-input" type="text" id="set-tagline" value="星と大地が交わる場所で、ただ、深く息をする。">
+        </div>
+        <div class="form-group">
+          <label class="form-label">住所</label>
+          <input class="form-input" type="text" id="set-address" value="〒071-0200 北海道上川郡美瑛町〇〇番地">
+        </div>
+        <div class="form-group">
+          <label class="form-label">電話番号</label>
+          <input class="form-input" type="text" id="set-tel" value="0166-XX-XXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">メールアドレス</label>
+          <input class="form-input" type="email" id="set-email" value="info@biei-hoshi.jp">
+        </div>
+        <div class="form-group">
+          <label class="form-label">予約リンク URL</label>
+          <input class="form-input" type="url" id="set-reserve" placeholder="https://...">
+        </div>
+        <button class="btn-save" id="saveSettings">設定を保存</button>
+      </div>
+    </div>
+
+    <!-- PASSWORD PANEL -->
+    <div class="panel" id="panel-password">
+      <p class="section-title">パスワード変更</p>
+      <div class="settings-form">
+        <div class="form-group">
+          <label class="form-label">現在のパスワード</label>
+          <input class="form-input" type="password" id="cur-pass">
+        </div>
+        <div class="form-group">
+          <label class="form-label">新しいパスワード</label>
+          <input class="form-input" type="password" id="new-pass">
+        </div>
+        <div class="form-group">
+          <label class="form-label">新しいパスワード（確認）</label>
+          <input class="form-input" type="password" id="new-pass2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">管理者ID（変更する場合）</label>
+          <input class="form-input" type="text" id="new-user" placeholder="変更しない場合は空欄">
+        </div>
+        <button class="btn-save" id="changePass">パスワードを変更</button>
+        <p id="pass-msg" style="margin-top:14px;font-size:13px;"></p>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const SESSION_KEY = 'biei_admin_session';
+  const CREDS_KEY = 'biei_admin_creds';
+  const SETTINGS_KEY = 'biei_settings';
+  const CMS_KEY = 'biei_cms_content';
+
+  /* Auth guard */
+  if (sessionStorage.getItem(SESSION_KEY) !== 'true') {
+    window.location.href = 'login.html';
+  }
+
+  /* Logout */
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    sessionStorage.removeItem(SESSION_KEY);
+    window.location.href = 'login.html';
+  });
+
+  /* Panel switching */
+  const panels = document.querySelectorAll('.panel');
+  const navItems = document.querySelectorAll('[data-panel]');
+  const panelTitle = document.getElementById('panelTitle');
+  const titles = { dashboard:'Dashboard', pages:'Pages', media:'Media', settings:'Settings', password:'Password' };
+
+  navItems.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navItems.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const id = btn.dataset.panel;
+      panels.forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + id)?.classList.add('active');
+      panelTitle.textContent = titles[id] || id;
+    });
+  });
+
+  /* Stats */
+  function updateStats() {
+    const cms = JSON.parse(localStorage.getItem(CMS_KEY) || '{}');
+    const imgCount = Object.values(cms).filter(v => v && v.startsWith('data:')).length;
+    document.getElementById('mediaCount').textContent = imgCount;
+    const ts = localStorage.getItem('biei_last_save');
+    if (ts) document.getElementById('lastUpdated').textContent = new Date(ts).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+  updateStats();
+
+  /* Settings */
+  const SETTINGS_FIELDS = ['name','tagline','address','tel','email','reserve'];
+  function loadSettings() {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+    SETTINGS_FIELDS.forEach(f => {
+      const el = document.getElementById('set-' + f);
+      if (el && s[f]) el.value = s[f];
+    });
+  }
+  loadSettings();
+  document.getElementById('saveSettings').addEventListener('click', () => {
+    const s = {};
+    SETTINGS_FIELDS.forEach(f => { const el = document.getElementById('set-' + f); if (el) s[f] = el.value; });
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('設定を保存しました');
+    updateStats();
+  });
+
+  /* Password change */
+  document.getElementById('changePass').addEventListener('click', () => {
+    const cur = document.getElementById('cur-pass').value;
+    const n1  = document.getElementById('new-pass').value;
+    const n2  = document.getElementById('new-pass2').value;
+    const nu  = document.getElementById('new-user').value.trim();
+    const msg = document.getElementById('pass-msg');
+    const creds = JSON.parse(localStorage.getItem(CREDS_KEY) || '{"username":"admin","password":"biei2026!"}');
+
+    if (cur !== creds.password) { msg.textContent = '現在のパスワードが正しくありません。'; msg.style.color = '#c0392b'; return; }
+    if (n1.length < 6) { msg.textContent = 'パスワードは6文字以上にしてください。'; msg.style.color = '#c0392b'; return; }
+    if (n1 !== n2) { msg.textContent = '新しいパスワードが一致しません。'; msg.style.color = '#c0392b'; return; }
+
+    const newCreds = { username: nu || creds.username, password: n1 };
+    localStorage.setItem(CREDS_KEY, JSON.stringify(newCreds));
+    msg.textContent = 'パスワードを変更しました。次回ログインから新しいパスワードをご使用ください。';
+    msg.style.color = 'var(--accent)';
+    document.getElementById('cur-pass').value = '';
+    document.getElementById('new-pass').value = '';
+    document.getElementById('new-pass2').value = '';
+  });
+
+  /* Toast */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
