@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宿泊規約・キャンセルポリシー｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .policy-section { margin-bottom: 40px; }
+    .policy-section h3 { font-family: var(--font-jp); font-size: 17px; font-weight: 400; letter-spacing: 0.1em; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+    .policy-section p, .policy-section li { font-size: 14px; color: var(--color-text-mid); line-height: 2.3; }
+    .policy-section ul { padding-left: 16px; list-style: disc; }
+    .policy-section ul li { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="kitchen.html" class="nav-link">Kitchen</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<div class="mobile-overlay"></div>
+
+<div style="height:var(--header-h);"></div>
+<div class="breadcrumb"><div class="breadcrumb-inner container"><a href="index.html">HOME</a><span class="sep">/</span><span>POLICY</span></div></div>
+
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container" style="max-width:760px;">
+    <div class="sec-heading fade-in" style="margin-bottom:clamp(32px,5vw,56px);">
+      <span class="en-label">POLICY</span>
+      <h2>宿泊規約・キャンセルポリシー</h2>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="fade-in">
+      <div class="policy-section">
+        <h3>1. チェックイン・チェックアウト</h3>
+        <ul><li>チェックイン：15:00〜18:00</li><li>チェックアウト：〜11:00</li><li>時間変更をご希望の場合は事前にご相談ください。</li></ul>
+      </div>
+      <div class="policy-section">
+        <h3>2. お支払い</h3>
+        <ul><li>現金、クレジットカード（VISA/MC/JCB/AMEX）、電子マネーに対応しています。</li><li>宿泊料金はチェックアウト時にお支払いください。</li></ul>
+      </div>
+      <div class="policy-section">
+        <h3>3. キャンセルポリシー</h3>
+        <ul><li>ご宿泊14日前：宿泊料金の30%</li><li>ご宿泊7日前：宿泊料金の50%</li><li>ご宿泊3日前〜当日：宿泊料金の100%</li><li>無断キャンセルの場合：宿泊料金の100%</li></ul>
+      </div>
+      <div class="policy-section">
+        <h3>4. 禁止事項</h3>
+        <ul><li>施設内での喫煙（屋外の指定場所のみ可）</li><li>ペットの同伴</li><li>他のゲストへの迷惑行為</li><li>施設・備品の破損・汚損（損害が生じた場合はご負担いただきます）</li></ul>
+      </div>
+      <div class="policy-section">
+        <h3>5. その他</h3>
+        <ul><li>天災・自然災害等の不可抗力によりご宿泊いただけない場合は、キャンセル料はいただきません。</li><li>宿泊者の都合による早期退館の場合、宿泊料金の返金はいたしかねます。</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<script src="js/main.js"></script>
+</body>
+</html>

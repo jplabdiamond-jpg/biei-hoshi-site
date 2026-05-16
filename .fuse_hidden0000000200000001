@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="星の光の宿BIEIについて｜美瑛の大地に佇む5室の星と光のホテル。イルミネーションとキッチン付き客室で長期滞在も快適に。">
+  <title>宿について｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo">
+      <img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full">
+    </a>
+    <nav class="global-nav">
+      <a href="about.html" class="nav-link">About</a>
+      <a href="rooms.html" class="nav-link">Rooms</a>
+      <a href="kitchen.html" class="nav-link">Kitchen</a>
+      <a href="experience.html" class="nav-link">Experience</a>
+      <a href="plan.html" class="nav-link">Plan</a>
+      <a href="access.html" class="nav-link">Access</a>
+    </nav>
+    <div class="header-right">
+      <a href="reserve.html" class="btn-reserve">RESERVE</a>
+      <button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<nav class="mobile-nav">
+  <a href="about.html" class="mobile-nav-link">宿について</a>
+  <a href="rooms.html" class="mobile-nav-link">お部屋</a>
+  <a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a>
+  <a href="experience.html" class="mobile-nav-link">体験・過ごし方</a>
+  <a href="plan.html" class="mobile-nav-link">プラン</a>
+  <a href="access.html" class="mobile-nav-link">アクセス</a>
+  <a href="reserve.html" class="mobile-nav-link">ご予約</a>
+</nav>
+<div class="mobile-overlay"></div>
+
+<!-- PAGE HERO -->
+<section class="page-hero" style="margin-top:var(--header-h);">
+  <div class="img-placeholder" style="position:absolute;inset:0;background:linear-gradient(160deg,#1a2535 0%,#2a3848 60%,#1e2d40 100%);width:100%;height:100%;"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-text">
+    <p class="en">ABOUT</p>
+    <h1>宿について</h1>
+  </div>
+</section>
+
+<div class="breadcrumb">
+  <div class="breadcrumb-inner container">
+    <a href="index.html">HOME</a>
+    <span class="sep">/</span>
+    <span>ABOUT</span>
+  </div>
+</div>
+
+<!-- CONCEPT -->
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container">
+    <div style="max-width:760px;margin:0 auto;text-align:center;" class="fade-in">
+      <div class="sec-heading center">
+        <span class="en-label">OUR CONCEPT</span>
+        <h2 data-editable data-field="about_concept_title">美瑛の風土に、深く触れる。</h2>
+        <div class="sec-divider"></div>
+        <p data-editable data-field="about_concept_body">
+          十勝岳連峰を望む美瑛の大地に、全5室の「星と光のホテル」をつくりました。<br>
+          ここは、美瑛の日常に息づく星と自然の暮らしを旅する特別な場所。<br><br>
+          キッチン完備の広々とした客室で、数日間「暮らすように泊まる」体験を。<br>
+          館内に散りばめられたイルミネーションと星のモチーフが、非日常の光の世界へ誘います。<br><br>
+          旅人と地域の人々が集うこの場所が、あなたのこころ安らぐ<br>
+          サードプレイスとなり、未来へとつながっていくことを願って。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY -->
+<section class="section-pad" style="background:var(--color-bg-warm);padding-top:0;">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr;gap:clamp(40px,6vw,80px);align-items:center;" class="fade-in">
+      <div class="intro-image" style="max-width:640px;margin:0 auto;">
+        <div class="img-placeholder" style="aspect-ratio:16/9;background:linear-gradient(135deg,#2a3548 0%,#3a4562 100%);width:100%;height:100%;">
+          <span>宿の外観写真</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STORY 2col -->
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr;gap:clamp(40px,6vw,80px);" class="fade-in">
+
+      <div style="display:grid;gap:clamp(32px,5vw,56px);">
+        <div>
+          <span class="en-label" style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;color:var(--color-accent);display:block;margin-bottom:14px;">HISTORY</span>
+          <h3 style="font-family:var(--font-jp);font-size:clamp(18px,2.5vw,26px);font-weight:300;letter-spacing:.12em;margin-bottom:20px;" data-editable data-field="about_hist_title">美瑛との出会いから、宿が生まれた。</h3>
+          <p style="font-size:14px;color:var(--color-text-mid);line-height:2.3;" data-editable data-field="about_hist_body">
+            美瑛の丘に初めて立ったあの日、大地と空の境界が溶け合うような感覚を覚えました。
+            季節ごとに表情を変えるパッチワークの丘、満天の星空、農家の方々の温かさ——
+            この地の持つ力を、もっと多くの人に伝えたい。そんな想いから「星の光の宿 BIEI」は生まれました。
+          </p>
+        </div>
+        <div>
+          <span class="en-label" style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;color:var(--color-accent);display:block;margin-bottom:14px;">PHILOSOPHY</span>
+          <h3 style="font-family:var(--font-jp);font-size:clamp(18px,2.5vw,26px);font-weight:300;letter-spacing:.12em;margin-bottom:20px;" data-editable data-field="about_phil_title">「泊まる」から「暮らす」へ。</h3>
+          <p style="font-size:14px;color:var(--color-text-mid);line-height:2.3;" data-editable data-field="about_phil_body">
+            ホテルとは、単なる「泊まる場所」ではないと私たちは考えています。
+            キッチンで自炊しながら数日間ゆっくり過ごす長期滞在、館内のイルミネーションやフォトスポットで過ごす特別な夜——
+            美瑛の自然と共に「暮らすように旅する」体験を、すべての滞在で大切につくっています。
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- OWNER MESSAGE -->
+<section class="section-pad" style="background:var(--color-text-dark);">
+  <div class="container" style="max-width:760px;">
+    <div class="fade-in" style="text-align:center;color:var(--color-white);">
+      <span style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;opacity:.6;display:block;margin-bottom:16px;">OWNER'S MESSAGE</span>
+      <p style="font-family:var(--font-jp);font-size:clamp(14px,1.6vw,16px);line-height:2.4;letter-spacing:.06em;opacity:.88;" data-editable data-field="about_owner_msg">
+        「星の光の宿 BIEI」へようこそ。<br><br>
+        美瑛の大地は、来るたびに新しい顔を見せてくれます。
+        春の柔らかな緑、夏の青々とした畑、秋の黄金色、そして冬の白銀の世界。
+        そして、どの季節にも変わらず輝く満天の星空。<br><br>
+        ここに来るたびに「また来たい」と思っていただける宿をつくることが、私たちの使命です。
+        皆さまのご来泊を、心よりお待ちしております。
+      </p>
+      <p style="margin-top:32px;font-family:var(--font-en);font-size:13px;letter-spacing:.15em;font-style:italic;opacity:.6;">Proprietor, 星の光の宿 BIEI</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="reserve-cta">
+  <div class="reserve-cta-inner container fade-in">
+    <p class="en">RESERVATION</p>
+    <h2>ご予約・お問い合わせ</h2>
+    <a href="reserve.html" class="btn-cta">RESERVE YOUR STAY</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand fade-in">
+        <img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full">
+        <address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address>
+      </div>
+      <nav class="footer-nav fade-in delay-1">
+        <h4>NAVIGATION</h4>
+        <ul>
+          <li><a href="about.html">宿について</a></li>
+          <li><a href="rooms.html">お部屋</a></li>
+          <li><a href="kitchen.html">キッチン＆アメニティ</a></li>
+          <li><a href="experience.html">体験・過ごし方</a></li>
+          <li><a href="plan.html">プラン</a></li>
+          <li><a href="access.html">アクセス</a></li>
+          <li><a href="reserve.html">ご予約</a></li>
+        </ul>
+      </nav>
+      <div class="footer-nav fade-in delay-2">
+        <h4>INFORMATION</h4>
+        <ul>
+          <li><a href="news.html">お知らせ</a></li>
+          <li><a href="faq.html">よくあるご質問</a></li>
+          <li><a href="policy.html">宿泊規約</a></li>
+          <li><a href="privacy.html">プライバシーポリシー</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p>
+      <a href="admin/login.html" class="footer-admin-link">Admin</a>
+    </div>
+  </div>
+</footer>
+
+<div class="admin-edit-bar" role="toolbar">
+  <span>ADMIN MODE</span>
+  <button class="admin-btn primary" data-action="edit">EDIT PAGE</button>
+  <button class="admin-btn" data-action="save">SAVE CHANGES</button>
+  <button class="admin-btn" data-action="media">DASHBOARD</button>
+  <button class="admin-btn" data-action="exit">LOG OUT</button>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/cms.js"></script>
+</body>
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="部屋詳細・備品一覧｜星の光の宿BIEI｜2LDK・1LDKヴィラの詳細情報と全備品リスト。">
+  <title>部屋詳細・備品一覧｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ─── Room Detail Page ─── */
+    .tab-nav {
+      display: flex;
+      border-bottom: 2px solid var(--color-border);
+      margin-bottom: clamp(40px, 6vw, 64px);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tab-btn {
+      font-family: var(--font-en);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--color-text-light);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 14px 28px;
+      cursor: pointer;
+      white-space: nowrap;
+      margin-bottom: -2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .tab-btn:hover { color: var(--color-accent); }
+    .tab-btn.active {
+      color: var(--color-accent);
+      border-bottom-color: var(--color-accent);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* Photo Gallery */
+    .detail-gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: clamp(40px, 5vw, 60px);
+    }
+    @media (max-width: 640px) {
+      .detail-gallery { grid-template-columns: 1fr; }
+    }
+    .detail-gallery-hero {
+      grid-column: 1 / -1;
+      aspect-ratio: 16/8;
+      overflow: hidden;
+    }
+    .detail-gallery-hero img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .detail-gallery-sub {
+      aspect-ratio: 4/3;
+      overflow: hidden;
+    }
+    .detail-gallery-sub img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.7s ease;
+    }
+    .detail-gallery-sub:hover img { transform: scale(1.04); }
+
+    /* Room Info Layout */
+    .detail-info-grid {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: clamp(32px, 5vw, 64px);
+      margin-bottom: clamp(48px, 6vw, 72px);
+    }
+    @media (max-width: 768px) {
+      .detail-info-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Spec Table */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .spec-table tr { border-bottom: 1px solid var(--color-border); }
+    .spec-table tr:first-child { border-top: 1px solid var(--color-border); }
+    .spec-table td {
+      padding: 14px 0;
+      font-size: 14px;
+      vertical-align: top;
+      line-height: 1.8;
+    }
+    .spec-table td:first-child {
+      font-family: var(--font-en);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      color: var(--color-text-light);
+      width: 130px;
+      padding-right: 16px;
+      white-space: nowrap;
+    }
+    .spec-table td:last-child { color: var(--color-text-mid); }
+
+    /* Floor Plan */
+    .floor-plan-box {
+      background: var(--color-bg-warm);
+      padding: clamp(24px, 4vw, 40px);
+      margin-bottom: clamp(40px, 5vw, 60px);
+    }
+    .floor-plan-label {
+      font-family: var(--font-en);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--color-accent);
+      margin-bottom: 16px;
+    }
+    .floor-plan-rooms {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .floor-plan-room {
+      border: 1px solid var(--color-border);
+      background: var(--color-white);
+      padding: 16px 20px;
+      min-width: 120px;
+      text-align: center;
+    }
+    .floor-plan-room-name {
+      font-family: var(--font-jp);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: var(--color-text-dark);
+      margin-bottom: 4px;
+    }
+    .floor-plan-room-size {
+      font-family: var(--font-en);
+      font-size: 11px;
+      color: var(--color-text-light);
+      letter-spacing: 0.1em;
+    }
+
+    /* Full Amenities Table */
+    .amenities-full {
+      margin-top: clamp(40px, 5vw, 60px);
+    }
+    .amenities-category {
+      margin-bottom: 40px;
+    }
+    .amenities-category-title {
+      font-family: var(--font-en);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      color: var(--color-white);
+      background: var(--color-accent);
+      padding: 8px 16px;
+      margin-bottom: 0;
+    }
+    .amenities-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      border: 1px solid var(--color-border);
+      border-top: none;
+    }
+    .amenity-cell {
+      padding: 16px 20px;
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .amenity-cell-check {
+      color: var(--color-accent);
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .amenity-cell-text {
+      font-size: 13px;
+      color: var(--color-text-mid);
+      line-height: 1.7;
+    }
+    .amenity-cell-note {
+      font-size: 11px;
+      color: var(--color-text-light);
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Notes section */
+    .notes-list {
+      list-style: none;
+      padding: 0;
+    }
+    .notes-list li {
+      font-size: 13px;
+      color: var(--color-text-mid);
+      line-height: 2;
+      padding-left: 18px;
+      position: relative;
+      border-bottom: 1px solid var(--color-border);
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .notes-list li::before {
+      content: '※';
+      position: absolute;
+      left: 0;
+      color: var(--color-accent-light);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo">
+      <img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full">
+    </a>
+    <nav class="global-nav">
+      <a href="about.html" class="nav-link">About</a>
+      <a href="rooms.html" class="nav-link">Rooms</a>
+      <a href="kitchen.html" class="nav-link">Kitchen</a>
+      <a href="experience.html" class="nav-link">Experience</a>
+      <a href="plan.html" class="nav-link">Plan</a>
+      <a href="access.html" class="nav-link">Access</a>
+    </nav>
+    <div class="header-right">
+      <a href="reserve.html" class="btn-reserve">RESERVE</a>
+      <button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<nav class="mobile-nav">
+  <a href="about.html" class="mobile-nav-link">宿について</a>
+  <a href="rooms.html" class="mobile-nav-link">お部屋</a>
+  <a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a>
+  <a href="experience.html" class="mobile-nav-link">体験・過ごし方</a>
+  <a href="plan.html" class="mobile-nav-link">プラン</a>
+  <a href="access.html" class="mobile-nav-link">アクセス</a>
+  <a href="reserve.html" class="mobile-nav-link">ご予約</a>
+</nav>
+<div class="mobile-overlay"></div>
+
+<div style="height:var(--header-h);"></div>
+<div class="breadcrumb">
+  <div class="breadcrumb-inner container">
+    <a href="index.html">HOME</a><span class="sep">/</span>
+    <a href="rooms.html">ROOMS</a><span class="sep">/</span>
+    <span>ROOM DETAIL</span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container">
+    <div class="sec-heading fade-in" style="margin-bottom:clamp(32px,4vw,48px);">
+      <span class="en-label">ROOM DETAIL &amp; AMENITIES</span>
+      <h1 style="font-family:var(--font-jp);font-size:clamp(22px,3vw,32px);font-weight:300;letter-spacing:0.12em;margin-top:12px;">部屋詳細・備品一覧</h1>
+      <div class="sec-divider"></div>
+      <p style="font-size:14px;color:var(--color-text-mid);max-width:640px;">各タイプのお部屋の詳細と、全室に備えた備品・アメニティの完全なリストです。ご不明な点は<a href="reserve.html" style="color:var(--color-accent);">お問い合わせ</a>ください。</p>
+    </div>
+
+    <!-- TAB NAV -->
+    <nav class="tab-nav fade-in" role="tablist">
+      <button class="tab-btn active" role="tab" data-tab="2ldk" aria-selected="true">2LDK ヴィラ（4室）</button>
+      <button class="tab-btn" role="tab" data-tab="1ldk" aria-selected="false">1LDK ヴィラ（1室）</button>
+      <button class="tab-btn" role="tab" data-tab="amenities" aria-selected="false">備品・アメニティ完全一覧</button>
+      <button class="tab-btn" role="tab" data-tab="notes" aria-selected="false">ご利用案内</button>
+    </nav>
+
+    <!-- ========= 2LDK TAB ========= -->
+    <div class="tab-panel active fade-in" id="tab-2ldk" role="tabpanel">
+
+      <div class="detail-gallery">
+        <div class="detail-gallery-hero">
+          <img src="images/sample_room1.jpg" alt="2LDK ヴィラ キッチン・ダイニング" loading="lazy">
+        </div>
+        <div class="detail-gallery-sub">
+          <img src="images/sample_bedroom.jpg" alt="2LDK ヴィラ ベッドルーム" loading="lazy">
+        </div>
+        <div class="detail-gallery-sub">
+          <img src="images/sample_bathroom.jpg" alt="2LDK ヴィラ バスルーム" loading="lazy">
+        </div>
+        <div class="detail-gallery-sub">
+          <img src="images/sample_livingroom.jpg" alt="2LDK ヴィラ リビング" loading="lazy">
+        </div>
+        <div class="detail-gallery-sub">
+          <img src="images/sample_bedroom2.jpg" alt="2LDK ヴィラ 第2寝室" loading="lazy">
+        </div>
+      </div>
+
+      <div class="detail-info-grid">
+        <div>
+          <h2 style="font-family:var(--font-jp);font-size:clamp(20px,2.5vw,28px);font-weight:300;letter-spacing:0.12em;margin-bottom:20px;">スタンダード ヴィラ<br><span style="font-size:0.7em;color:var(--color-text-light);">2LDK TYPE — 4 ROOMS</span></h2>
+          <p style="font-size:14px;color:var(--color-text-mid);line-height:2.4;margin-bottom:28px;">広々としたリビング・ダイニングキッチンと、独立した2つの寝室で構成された、ゆとりある一棟貸しヴィラ。家族連れやグループ旅行に最適です。大きな窓から美瑛の丘が広がり、北海道ならではの豊かな自然を室内からお楽しみいただけます。テラスからの眺めは格別で、晴れた夜には満天の星空が広がります。</p>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <a href="reserve.html" class="btn-more" style="display:inline-flex;">この部屋を予約する</a>
+            <a href="rooms.html" class="btn-more" style="display:inline-flex;background:transparent;color:var(--color-accent);border:1px solid var(--color-accent);">← 部屋一覧に戻る</a>
+          </div>
+        </div>
+        <div>
+          <table class="spec-table">
+            <tr><td>TYPE</td><td>2LDK</td></tr>
+            <tr><td>ROOMS</td><td>4室（101・102・201・202号室）</td></tr>
+            <tr><td>SIZE</td><td>約80〜90㎡（テラス含む）</td></tr>
+            <tr><td>CAPACITY</td><td>2〜4名（最大4名）</td></tr>
+            <tr><td>BED</td><td>ダブルベッド × 2（各寝室）</td></tr>
+            <tr><td>BATH</td><td>バスタブ + シャワー + 独立洗面台</td></tr>
+            <tr><td>KITCHEN</td><td>フルキッチン（2口IH・食洗機付）</td></tr>
+            <tr><td>TERRACE</td><td>プライベートテラス（約15㎡）</td></tr>
+            <tr><td>PARKING</td><td>専用駐車場2台分</td></tr>
+            <tr><td>PRICE</td><td>¥30,000〜 / 棟（税込・食事別）</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Floor Plan -->
+      <div class="floor-plan-box fade-in">
+        <p class="floor-plan-label">FLOOR PLAN / 間取り</p>
+        <div class="floor-plan-rooms">
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">リビング・ダイニング</p>
+            <p class="floor-plan-room-size">約25㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">キッチン</p>
+            <p class="floor-plan-room-size">約10㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">洋室1（主寝室）</p>
+            <p class="floor-plan-room-size">約18㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">洋室2（第2寝室）</p>
+            <p class="floor-plan-room-size">約14㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">バスルーム</p>
+            <p class="floor-plan-room-size">約8㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">テラス</p>
+            <p class="floor-plan-room-size">約15㎡</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4室個別案内 -->
+      <div class="fade-in">
+        <h3 style="font-family:var(--font-jp);font-size:18px;font-weight:400;letter-spacing:0.1em;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--color-border);">各室の特徴</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;">
+          <div style="padding:24px;border:1px solid var(--color-border);">
+            <p style="font-family:var(--font-en);font-size:10px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:8px;">ROOM 101</p>
+            <p style="font-family:var(--font-jp);font-size:17px;font-weight:400;letter-spacing:0.1em;margin-bottom:12px;">星の間</p>
+            <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">北向きのテラスから星空を一望。天体望遠鏡を常設し、夜の美瑛の空をお楽しみいただけます。最も人気の高い客室です。</p>
+          </div>
+          <div style="padding:24px;border:1px solid var(--color-border);">
+            <p style="font-family:var(--font-en);font-size:10px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:8px;">ROOM 102</p>
+            <p style="font-family:var(--font-jp);font-size:17px;font-weight:400;letter-spacing:0.1em;margin-bottom:12px;">丘の間</p>
+            <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">南向きで日当たり良好。美瑛の丘の絶景を窓から一望でき、明るく開放的な空間。お子様連れのご家族に人気です。</p>
+          </div>
+          <div style="padding:24px;border:1px solid var(--color-border);">
+            <p style="font-family:var(--font-en);font-size:10px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:8px;">ROOM 201</p>
+            <p style="font-family:var(--font-jp);font-size:17px;font-weight:400;letter-spacing:0.1em;margin-bottom:12px;">森の間</p>
+            <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">東向きで朝日が美しい。緑豊かな眺めが広がる静かな客室。朝の澄んだ空気の中でゆったりと目覚めいただけます。</p>
+          </div>
+          <div style="padding:24px;border:1px solid var(--color-border);">
+            <p style="font-family:var(--font-en);font-size:10px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:8px;">ROOM 202</p>
+            <p style="font-family:var(--font-jp);font-size:17px;font-weight:400;letter-spacing:0.1em;margin-bottom:12px;">風の間</p>
+            <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">西向きで夕景が格別。4室の中で最も広く、テラスからの夕日と山並みのコントラストが絶景。カップルにも人気。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= 1LDK TAB ========= -->
+    <div class="tab-panel fade-in" id="tab-1ldk" role="tabpanel">
+
+      <div class="detail-gallery">
+        <div class="detail-gallery-hero">
+          <img src="images/sample_bedroom2.jpg" alt="1LDK ヴィラ ベッドルーム" loading="lazy">
+        </div>
+        <div class="detail-gallery-sub">
+          <img src="images/sample_livingroom.jpg" alt="1LDK ヴィラ リビング" loading="lazy">
+        </div>
+        <div class="detail-gallery-sub">
+          <img src="images/sample_bathroom.jpg" alt="1LDK ヴィラ バスルーム" loading="lazy">
+        </div>
+      </div>
+
+      <div class="detail-info-grid">
+        <div>
+          <h2 style="font-family:var(--font-jp);font-size:clamp(20px,2.5vw,28px);font-weight:300;letter-spacing:0.12em;margin-bottom:20px;">コンパクト ヴィラ<br><span style="font-size:0.7em;color:var(--color-text-light);">1LDK TYPE — 1 ROOM</span></h2>
+          <p style="font-size:14px;color:var(--color-text-mid);line-height:2.4;margin-bottom:28px;">おふたりで静かに過ごしていただくための、こじんまりとしたプライベートヴィラ。コンパクトながらも機能的なキッチンと、独立した寝室が心地よいプライベートを演出します。ハネムーンや記念日旅行にも最適な、特別な空間です。</p>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <a href="reserve.html" class="btn-more" style="display:inline-flex;">この部屋を予約する</a>
+            <a href="rooms.html" class="btn-more" style="display:inline-flex;background:transparent;color:var(--color-accent);border:1px solid var(--color-accent);">← 部屋一覧に戻る</a>
+          </div>
+        </div>
+        <div>
+          <table class="spec-table">
+            <tr><td>TYPE</td><td>1LDK</td></tr>
+            <tr><td>ROOMS</td><td>1室（301号室「月の間」）</td></tr>
+            <tr><td>SIZE</td><td>約55㎡（テラス含む）</td></tr>
+            <tr><td>CAPACITY</td><td>1〜2名</td></tr>
+            <tr><td>BED</td><td>クイーンベッド × 1</td></tr>
+            <tr><td>BATH</td><td>バスタブ + シャワー + 独立洗面台</td></tr>
+            <tr><td>KITCHEN</td><td>コンパクトキッチン（IH・食器類付）</td></tr>
+            <tr><td>TERRACE</td><td>プライベートテラス（約10㎡）</td></tr>
+            <tr><td>PARKING</td><td>専用駐車場1台分</td></tr>
+            <tr><td>PRICE</td><td>¥22,000〜 / 棟（税込・食事別）</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="floor-plan-box fade-in">
+        <p class="floor-plan-label">FLOOR PLAN / 間取り</p>
+        <div class="floor-plan-rooms">
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">リビング・ダイニング</p>
+            <p class="floor-plan-room-size">約18㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">キッチン</p>
+            <p class="floor-plan-room-size">約7㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">洋室（寝室）</p>
+            <p class="floor-plan-room-size">約16㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">バスルーム</p>
+            <p class="floor-plan-room-size">約7㎡</p>
+          </div>
+          <div class="floor-plan-room">
+            <p class="floor-plan-room-name">テラス</p>
+            <p class="floor-plan-room-size">約10㎡</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="fade-in">
+        <div style="padding:32px;border:1px solid var(--color-border);max-width:480px;">
+          <p style="font-family:var(--font-en);font-size:10px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:8px;">ROOM 301</p>
+          <p style="font-family:var(--font-jp);font-size:22px;font-weight:400;letter-spacing:0.12em;margin-bottom:16px;">月の間</p>
+          <p style="font-size:13px;color:var(--color-text-mid);line-height:2.2;">月明かりの差し込む静かな空間。美しい月と星を望めるテラスと、ゆったりとしたバスタブが旅の疲れを癒します。カップルやご夫婦でのご利用に最適な、宿で唯一の1LDKタイプです。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========= AMENITIES TAB ========= -->
+    <div class="tab-panel fade-in" id="tab-amenities" role="tabpanel">
+      <p style="font-size:14px;color:var(--color-text-mid);line-height:2.2;margin-bottom:clamp(32px,4vw,48px);">以下は全5室に共通して備えている備品・アメニティの完全なリストです。特定の備品のご要望はご予約時またはチェックイン前にご相談ください。</p>
+
+      <div class="amenities-full">
+
+        <div class="amenities-category fade-in">
+          <h3 class="amenities-category-title">BATH &amp; TOILET　バス・トイレ</h3>
+          <div class="amenities-items-grid">
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">バスタブ（深浴槽）<span class="amenity-cell-note">全室共通</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">シャワーブース<span class="amenity-cell-note">独立型</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">洗面化粧台<span class="amenity-cell-note">三面鏡付き</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">温水洗浄便座</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ドライヤー<span class="amenity-cell-note">1200W以上</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">バスタオル<span class="amenity-cell-note">人数分</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">フェイスタオル<span class="amenity-cell-note">人数分</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ハンドタオル</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ボディーソープ</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">シャンプー・コンディショナー</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">洗顔フォーム</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">歯ブラシセット<span class="amenity-cell-note">人数分</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">カミソリ<span class="amenity-cell-note">人数分</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">綿棒・コットン</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">バスマット</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">体重計</div></div>
+          </div>
+        </div>
+
+        <div class="amenities-category fade-in delay-1">
+          <h3 class="amenities-category-title">KITCHEN　キッチン</h3>
+          <div class="amenities-items-grid">
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">IHクッキングヒーター<span class="amenity-cell-note">2口（2LDK）/ 1口（1LDK）</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">電子レンジ・オーブントースター</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">冷蔵庫<span class="amenity-cell-note">大型（2LDK）/ コンパクト（1LDK）</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">食器洗い乾燥機<span class="amenity-cell-note">2LDKのみ</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">コーヒーメーカー<span class="amenity-cell-note">カプセル式</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">電気ケトル</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">トースター</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">皿・茶碗・どんぶり<span class="amenity-cell-note">4人分（2LDK）/ 2人分（1LDK）</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">グラス・コップ類</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">フライパン・鍋類一式</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">包丁・まな板</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">カトラリー一式</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">調味料セット<span class="amenity-cell-note">塩・コショウ・醤油・みりん等</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ラップ・アルミホイル・ゴミ袋</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ウォーターサーバー<span class="amenity-cell-note">美瑛の水</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">米・炊飯器<span class="amenity-cell-note">事前予約で提供可</span></div></div>
+          </div>
+        </div>
+
+        <div class="amenities-category fade-in delay-1">
+          <h3 class="amenities-category-title">LIVING &amp; BEDROOM　リビング・寝室</h3>
+          <div class="amenities-items-grid">
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">4K大型テレビ<span class="amenity-cell-note">55インチ</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">Bluetoothスピーカー</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">高速WiFi<span class="amenity-cell-note">有線LAN対応</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">エアコン（冷暖房）</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">床暖房</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ソファ</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ダイニングテーブル・チェア</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">高級マットレス<span class="amenity-cell-note">シモンズ / サータ等</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">羽毛布団<span class="amenity-cell-note">冬：厚掛け　夏：薄掛け</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">枕（高さ選択可）<span class="amenity-cell-note">低め・高め</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">パジャマ<span class="amenity-cell-note">人数分・サイズ各種</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">スリッパ<span class="amenity-cell-note">人数分</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">電気毛布<span class="amenity-cell-note">冬季のみ</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">加湿器・空気清浄機</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">書籍・雑誌ライブラリ</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ウォークインクローゼット</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">全身鏡</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">アイロン・アイロン台</div></div>
+          </div>
+        </div>
+
+        <div class="amenities-category fade-in delay-2">
+          <h3 class="amenities-category-title">OUTDOOR　屋外設備</h3>
+          <div class="amenities-items-grid">
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">プライベートテラス<span class="amenity-cell-note">2LDK：約15㎡ / 1LDK：約10㎡</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">テラスチェア・テーブル</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">BBQグリル<span class="amenity-cell-note">炭・着火材付き</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">BBQ器具一式<span class="amenity-cell-note">トング・網・皿等</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">天体望遠鏡<span class="amenity-cell-note">101号室は専用大型望遠鏡</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ランタン（LED・充電式）</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ハンモック<span class="amenity-cell-note">夏季のみ</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">除雪道具一式<span class="amenity-cell-note">冬季のみ</span></div></div>
+          </div>
+        </div>
+
+        <div class="amenities-category fade-in delay-2">
+          <h3 class="amenities-category-title">SERVICE　サービス・設備</h3>
+          <div class="amenities-items-grid">
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">無料駐車場<span class="amenity-cell-note">2LDK：2台 / 1LDK：1台</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">コインランドリー<span class="amenity-cell-note">共用・無料</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">荷物預かり</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">宅配便受取・発送</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">ゴミ分別・回収サービス</div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">アーリーチェックイン<span class="amenity-cell-note">要相談・空室状況による</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">レイトチェックアウト<span class="amenity-cell-note">要相談・空室状況による</span></div></div>
+            <div class="amenity-cell"><span class="amenity-cell-check">✓</span><div class="amenity-cell-text">食材調達サービス<span class="amenity-cell-note">要事前予約・別途料金</span></div></div>
+          </div>
+        </div>
+
+      </div><!-- /.amenities-full -->
+    </div>
+
+    <!-- ========= NOTES TAB ========= -->
+    <div class="tab-panel fade-in" id="tab-notes" role="tabpanel">
+      <div style="max-width:760px;">
+        <div style="margin-bottom:48px;">
+          <h3 style="font-family:var(--font-en);font-size:12px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--color-accent);">CHECK IN / CHECK OUT</h3>
+          <ul class="notes-list">
+            <li>チェックイン：15:00〜18:00。時間外のご希望は事前にご相談ください。</li>
+            <li>チェックアウト：11:00まで。レイトチェックアウトは前日20:00までにお申し出ください（空室状況による）。</li>
+            <li>チェックイン時にスタッフがご説明をいたします（約15〜20分）。</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom:48px;">
+          <h3 style="font-family:var(--font-en);font-size:12px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--color-accent);">RULES &amp; RESTRICTIONS</h3>
+          <ul class="notes-list">
+            <li>全館・全室禁煙です。喫煙は屋外指定場所のみでお願いします。</li>
+            <li>ペットのご入室はお断りしております。</li>
+            <li>静粛時間は22:00〜翌7:00です。他のゲストへのご配慮をお願いします。</li>
+            <li>備品の破損・紛失の場合、実費をご負担いただく場合があります。</li>
+            <li>お子様のご利用は、保護者の同伴のもと安全にお楽しみください。</li>
+          </ul>
+        </div>
+
+        <div style="margin-bottom:48px;">
+          <h3 style="font-family:var(--font-en);font-size:12px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--color-accent);">PAYMENT</h3>
+          <ul class="notes-list">
+            <li>お支払いはチェックアウト時にお願いします。</li>
+            <li>現金・クレジットカード（VISA / MC / JCB / AMEX）・QRコード決済に対応しています。</li>
+            <li>食材・BBQ炭の追加購入は現金のみとなります。</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 style="font-family:var(--font-en);font-size:12px;letter-spacing:0.2em;color:var(--color-accent);margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--color-accent);">CANCELLATION POLICY</h3>
+          <ul class="notes-list">
+            <li>14日前まで：宿泊料金の30%</li>
+            <li>7日前まで：宿泊料金の50%</li>
+            <li>3日前〜当日：宿泊料金の100%</li>
+            <li>天災・自然災害等の不可抗力による場合はキャンセル料をいただきません。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- RESERVE CTA -->
+<section class="reserve-cta">
+  <div class="reserve-cta-inner container fade-in">
+    <p class="en">RESERVATION</p>
+    <h2>ご予約・お問い合わせ</h2>
+    <a href="reserve.html" class="btn-cta">RESERVE YOUR STAY</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand fade-in">
+        <img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full">
+        <address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address>
+      </div>
+      <nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav>
+      <div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div>
+  </div>
+</footer>
+
+<div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
+<script src="js/main.js"></script>
+<script src="js/cms.js"></script>
+<script>
+  /* ─── Tab Navigation ─── */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabPanels = document.querySelectorAll('.tab-panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabBtns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+      tabPanels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected','true');
+      document.getElementById('tab-' + target).classList.add('active');
+    });
+  });
+
+  /* ─── Hash navigation (e.g., room-detail.html#1ldk) ─── */
+  if (location.hash === '#1ldk') {
+    document.querySelector('[data-tab="1ldk"]').click();
+  } else if (location.hash === '#amenities') {
+    document.querySelector('[data-tab="amenities"]').click();
+  }
+</script>
+</body>
+</html>

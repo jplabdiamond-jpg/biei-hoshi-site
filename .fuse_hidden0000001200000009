@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プライバシーポリシー｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .policy-section { margin-bottom: 40px; }
+    .policy-section h3 { font-family: var(--font-jp); font-size: 17px; font-weight: 400; letter-spacing: 0.1em; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+    .policy-section p, .policy-section li { font-size: 14px; color: var(--color-text-mid); line-height: 2.3; }
+    .policy-section ul { padding-left: 16px; list-style: disc; }
+    .policy-section ul li { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="kitchen.html" class="nav-link">Kitchen</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<div class="mobile-overlay"></div>
+
+<div style="height:var(--header-h);"></div>
+<div class="breadcrumb"><div class="breadcrumb-inner container"><a href="index.html">HOME</a><span class="sep">/</span><span>PRIVACY</span></div></div>
+
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container" style="max-width:760px;">
+    <div class="sec-heading fade-in" style="margin-bottom:clamp(32px,5vw,56px);">
+      <span class="en-label">PRIVACY POLICY</span>
+      <h2>プライバシーポリシー</h2>
+      <div class="sec-divider"></div>
+    </div>
+    <div class="fade-in">
+      <div class="policy-section">
+        <h3>1. 個人情報の取得について</h3>
+        <p>当宿は、ご予約・お問い合わせの際に、お名前・メールアドレス・電話番号等の個人情報をお預かりします。取得した個人情報は、適切な方法で管理し、以下の目的以外には使用しません。</p>
+      </div>
+      <div class="policy-section">
+        <h3>2. 個人情報の利用目的</h3>
+        <ul><li>ご予約の受付・管理・確認のご連絡</li><li>お問い合わせへの回答</li><li>サービス向上のための統計分析（個人を特定しない形式）</li></ul>
+      </div>
+      <div class="policy-section">
+        <h3>3. 個人情報の第三者提供</h3>
+        <p>法令に基づく場合を除き、ご本人の同意なく第三者に個人情報を提供することはありません。</p>
+      </div>
+      <div class="policy-section">
+        <h3>4. 個人情報の管理・保護</h3>
+        <p>個人情報の漏洩・紛失・改ざん等を防止するため、適切なセキュリティ対策を講じます。</p>
+      </div>
+      <div class="policy-section">
+        <h3>5. 個人情報の開示・訂正・削除</h3>
+        <p>ご本人から個人情報の開示・訂正・削除を求められた場合は、合理的な範囲で対応いたします。</p>
+      </div>
+      <div class="policy-section">
+        <h3>6. お問い合わせ</h3>
+        <p>プライバシーポリシーに関するお問い合わせは <a href="reserve.html" style="color:var(--color-accent);">お問い合わせフォーム</a> よりご連絡ください。</p>
+        <p style="margin-top:20px;">制定日：2025年10月1日</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<script src="js/main.js"></script>
+</body>
+</html>

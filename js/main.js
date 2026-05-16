@@ -242,4 +242,14 @@ function showToast(msg) {
 document.addEventListener('DOMContentLoaded', () => {
   cmsApply();
   initAdminBar();
+
+  /* ダッシュボードから編集モードで開いた場合、自動でEDIT MODEを起動 */
+  const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
+  if (isAdminLoggedIn() && sessionStorage.getItem(EDIT_TRIGGER_KEY) === 'true') {
+    sessionStorage.removeItem(EDIT_TRIGGER_KEY);
+    setTimeout(() => {
+      const editBtn = document.querySelector('[data-action="edit"]');
+      if (editBtn) editBtn.click();
+    }, 600);
+  }
 });

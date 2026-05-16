@@ -12,16 +12,16 @@
 <body>
 <header id="site-header" class="scrolled">
   <div class="header-inner">
-    <a href="index.html" class="site-logo"><img src="images/logo_mark.png" alt="星の光の宿 BIEI ロゴ" class="logo-mark"><span class="logo-text"><span class="logo-en">Hoshi no Hikari no Yado</span><span class="logo-jp">星の光の宿 BIEI</span></span></a>
-    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="food.html" class="nav-link">Food</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <a href="index.html" class="site-logo"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="kitchen.html" class="nav-link">Kitchen</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
     <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
   </div>
 </header>
-<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="food.html" class="mobile-nav-link">お食事</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
 <div class="mobile-overlay"></div>
 
 <section class="page-hero" style="margin-top:var(--header-h);">
-  <div class="img-placeholder" style="position:absolute;inset:0;background:linear-gradient(160deg,#253020 0%,#354030 60%,#283020 100%);width:100%;height:100%;"></div>
+  <img src="images/sample_plan_hero.jpg" alt="プラン｜星の光の宿BIEI" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;">
   <div class="page-hero-overlay"></div>
   <div class="page-hero-text"><p class="en">PLAN</p><h1>プラン</h1></div>
 </section>
@@ -37,47 +37,36 @@
     </div>
 
     <div class="plan-list">
-      <!-- Plan 1 -->
+      <!-- Plan 1: セルフクッキング -->
       <div class="plan-card fade-in">
-        <div class="plan-card-img"><div class="img-placeholder" style="background:linear-gradient(135deg,#1a2535 0%,#0d1520 100%);width:100%;height:100%;"><span>星空プラン</span></div></div>
-        <div class="plan-card-body">
-          <p class="plan-label">STANDARD PLAN</p>
-          <h3 data-editable data-field="plan1_title">星空観察プラン</h3>
-          <p data-editable data-field="plan1_body">美瑛の満天の星空を独り占めする特別プラン。専属ガイドによる星空観察ツアー付き。朝食・夕食付きで、美瑛の旬の恵みをフルコースでお楽しみいただけます。天体望遠鏡を使った本格的な星空観察も体験できます。</p>
-          <div class="plan-price">1泊2日（朝食・夕食付） <em>¥48,000</em>〜 / 1棟</div>
-        </div>
-      </div>
-
-      <!-- Plan 2 -->
-      <div class="plan-card fade-in delay-1">
-        <div class="plan-card-img"><div class="img-placeholder" style="background:linear-gradient(135deg,#352818 0%,#453828 100%);width:100%;height:100%;"><span>美食プラン</span></div></div>
-        <div class="plan-card-body">
-          <p class="plan-label">GOURMET PLAN</p>
-          <h3 data-editable data-field="plan2_title">大地の美食プラン</h3>
-          <p data-editable data-field="plan2_body">美瑛・北海道の厳選食材を使った特別コース料理を中心としたプラン。農家訪問・野菜収穫体験も含まれており、食の産地と直接つながる体験をご提供します。ソムリエが選ぶ北海道ワインのペアリングも。</p>
-          <div class="plan-price">1泊2日（朝食・特選コース夕食付） <em>¥68,000</em>〜 / 1棟</div>
-        </div>
-      </div>
-
-      <!-- Plan 3 -->
-      <div class="plan-card fade-in delay-2">
-        <div class="plan-card-img"><div class="img-placeholder" style="background:linear-gradient(135deg,#2a3548 0%,#1a2535 100%);width:100%;height:100%;"><span>スタンダードプラン</span></div></div>
+        <div class="plan-card-img"><img src="images/sample_kitchen.jpg" alt="セルフクッキングプラン" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="plan-card-body">
           <p class="plan-label">SELF PLAN</p>
           <h3 data-editable data-field="plan3_title">セルフクッキングプラン</h3>
           <p data-editable data-field="plan3_body">美瑛の食材セット付きの自炊プラン。宿のフルキッチンを使って、農家直送の野菜や北海道産食材を自由に料理する体験をお楽しみください。食材の選び方や調理法のアドバイスも行います。</p>
-          <div class="plan-price">1泊2日（食材セット付） <em>¥38,000</em>〜 / 1棟</div>
+          <div class="plan-price">1泊2日（食材セット付） <em>¥38,000</em>〜 / 1室</div>
         </div>
       </div>
 
-      <!-- Plan 4 -->
-      <div class="plan-card fade-in delay-3">
-        <div class="plan-card-img"><div class="img-placeholder" style="background:linear-gradient(135deg,#203018 0%,#304028 100%);width:100%;height:100%;"><span>連泊プラン</span></div></div>
+      <!-- Plan 2: 美瑛暮らし -->
+      <div class="plan-card fade-in delay-1">
+        <div class="plan-card-img"><img src="images/sample_family.jpg" alt="美瑛暮らしプラン" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
         <div class="plan-card-body">
           <p class="plan-label">LONG STAY PLAN</p>
           <h3 data-editable data-field="plan4_title">美瑛暮らしプラン（連泊）</h3>
           <p data-editable data-field="plan4_body">3泊以上の連泊で、美瑛の生活を体験するロングステイプラン。農家訪問・星空観察・サイクリングなど複数の体験プログラムをパッケージ。美瑛に「暮らす」ような特別な滞在をお楽しみください。</p>
-          <div class="plan-price">3泊4日（全食事付・体験プログラム込） <em>¥158,000</em>〜 / 1棟</div>
+          <div class="plan-price">3泊4日（体験プログラム込） <em>¥158,000</em>〜 / 1室</div>
+        </div>
+      </div>
+
+      <!-- Plan 3: 星空観察 -->
+      <div class="plan-card fade-in delay-2">
+        <div class="plan-card-img"><img src="images/sample_stars2.jpg" alt="星空観察プラン" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
+        <div class="plan-card-body">
+          <p class="plan-label">STANDARD PLAN</p>
+          <h3 data-editable data-field="plan1_title">星空観察プラン</h3>
+          <p data-editable data-field="plan1_body">美瑛の満天の星空を独り占めする特別プラン。専属ガイドによる星空観察ツアー付き。天体望遠鏡を使った本格的な星空観察も体験できます。イルミネーション×星空の光の競演もお楽しみください。</p>
+          <div class="plan-price">1泊2日 <em>¥48,000</em>〜 / 1室</div>
         </div>
       </div>
     </div>
@@ -90,7 +79,7 @@
 </section>
 
 <section class="reserve-cta"><div class="reserve-cta-inner container fade-in"><p class="en">RESERVATION</p><h2>ご予約・お問い合わせ</h2><a href="reserve.html" class="btn-cta">RESERVE YOUR STAY</a></div></section>
-<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/logo_mark.png" alt="星の光の宿 BIEI" style="width:52px;height:52px;object-fit:contain;margin-bottom:10px;opacity:0.85;"><p class="logo-jp">星の光の宿 BIEI</p><p class="logo-en">Hoshi no Hikari no Yado</p><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="food.html">お食事</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
 <div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js"></script><script src="js/cms.js"></script>
 </body>

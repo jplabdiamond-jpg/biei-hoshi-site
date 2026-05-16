@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ご予約・お問い合わせ｜星の光の宿BIEI">
+  <title>ご予約・お問い合わせ｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="kitchen.html" class="nav-link">Kitchen</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<div class="mobile-overlay"></div>
+
+<section class="page-hero" style="margin-top:var(--header-h);">
+  <div class="img-placeholder" style="position:absolute;inset:0;background:linear-gradient(160deg,#302520 0%,#402e25 60%,#352820 100%);width:100%;height:100%;"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-text"><p class="en">RESERVATION</p><h1>ご予約・お問い合わせ</h1></div>
+</section>
+<div class="breadcrumb"><div class="breadcrumb-inner container"><a href="index.html">HOME</a><span class="sep">/</span><span>RESERVE</span></div></div>
+
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr;gap:clamp(40px,6vw,80px);" class="fade-in">
+      <!-- 予約注意事項 -->
+      <div style="background:var(--color-bg-warm);padding:clamp(24px,4vw,40px);margin-bottom:clamp(32px,5vw,56px);">
+        <p style="font-family:var(--font-en);font-size:11px;letter-spacing:.25em;color:var(--color-accent);margin-bottom:14px;">IMPORTANT</p>
+        <h3 style="font-family:var(--font-jp);font-size:16px;font-weight:400;letter-spacing:.1em;margin-bottom:16px;">ご予約前にご確認ください</h3>
+        <ul style="font-size:13px;color:var(--color-text-mid);line-height:2.4;list-style:disc;padding-left:16px;">
+          <li>最小宿泊人数：2名様〜（1棟貸し）</li>
+          <li>チェックイン：15:00〜18:00 / チェックアウト：〜11:00</li>
+          <li>お子様連れのご滞在は事前にご相談ください</li>
+          <li>ペットの同伴はご遠慮いただいております</li>
+          <li>キャンセルポリシー：3日前100%、7日前50%、14日前30%</li>
+          <li>ご予約は1ヶ月前より承っております</li>
+        </ul>
+      </div>
+
+      <!-- フォーム -->
+      <div class="contact-form" style="max-width:700px;margin:0 auto;">
+        <div class="sec-heading">
+          <span class="en-label">INQUIRY FORM</span>
+          <h2 style="font-size:clamp(20px,2.5vw,28px);">お問い合わせフォーム</h2>
+          <div class="sec-divider"></div>
+          <p>下記フォームよりご連絡ください。2営業日以内にご返信いたします。</p>
+        </div>
+
+        <form id="reserveForm" novalidate>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="form-group">
+              <label class="form-label" for="name">お名前 <span class="req">*必須</span></label>
+              <input class="form-input" type="text" id="name" name="name" required placeholder="山田 太郎">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="kana">フリガナ <span class="req">*必須</span></label>
+              <input class="form-input" type="text" id="kana" name="kana" required placeholder="ヤマダ タロウ">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="email">メールアドレス <span class="req">*必須</span></label>
+            <input class="form-input" type="email" id="email" name="email" required placeholder="example@mail.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tel">電話番号 <span class="req">*必須</span></label>
+            <input class="form-input" type="tel" id="tel" name="tel" required placeholder="090-0000-0000">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="form-group">
+              <label class="form-label" for="checkin">チェックイン希望日</label>
+              <input class="form-input" type="date" id="checkin" name="checkin">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="checkout">チェックアウト希望日</label>
+              <input class="form-input" type="date" id="checkout" name="checkout">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="guests">宿泊人数</label>
+            <select class="form-select" id="guests" name="guests">
+              <option value="">選択してください</option>
+              <option value="2">2名</option>
+              <option value="3">3名</option>
+              <option value="4">4名</option>
+              <option value="5">5名</option>
+              <option value="6">6名</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="plan">ご希望のプラン</label>
+            <select class="form-select" id="plan" name="plan">
+              <option value="">選択してください</option>
+              <option value="star">星空観察プラン</option>
+              <option value="gourmet">大地の美食プラン</option>
+              <option value="self">セルフクッキングプラン</option>
+              <option value="long">美瑛暮らしプラン（連泊）</option>
+              <option value="other">その他・ご相談</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="message">ご要望・ご質問</label>
+            <textarea class="form-textarea" id="message" name="message" placeholder="アレルギー、特別なリクエスト等があればご記入ください。"></textarea>
+          </div>
+          <div class="form-group" style="display:flex;gap:12px;align-items:flex-start;">
+            <input type="checkbox" id="privacy" style="margin-top:3px;accent-color:var(--color-accent);" required>
+            <label for="privacy" style="font-size:13px;color:var(--color-text-mid);line-height:1.8;">
+              <a href="privacy.html" style="color:var(--color-accent);border-bottom:1px solid var(--color-accent-light);">プライバシーポリシー</a>に同意する
+            </label>
+          </div>
+          <button type="submit" class="btn-submit">送　信</button>
+          <p id="formMsg" style="margin-top:16px;font-size:13px;text-align:center;"></p>
+        </form>
+
+        <!-- Tel / Direct -->
+        <div style="margin-top:48px;padding-top:40px;border-top:1px solid var(--color-border);text-align:center;">
+          <p style="font-size:13px;color:var(--color-text-light);margin-bottom:16px;">お電話でのお問い合わせ</p>
+          <p style="font-family:var(--font-en);font-size:28px;letter-spacing:.08em;color:var(--color-text-dark);">0166-XX-XXXX</p>
+          <p style="font-size:12px;color:var(--color-text-light);margin-top:8px;">受付時間：9:00〜20:00（年中無休）</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+
+<script src="js/main.js"></script>
+<script>
+document.getElementById('reserveForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const msg = document.getElementById('formMsg');
+  // Simple validation
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const privacy = document.getElementById('privacy').checked;
+  if (!name || !email || !privacy) {
+    msg.textContent = '※ 必須項目を入力し、プライバシーポリシーに同意してください。';
+    msg.style.color = '#c0392b';
+    return;
+  }
+  // In production: replace with actual form submission (mailto / PHP / API)
+  msg.textContent = 'お問い合わせありがとうございます。2営業日以内にご返信いたします。';
+  msg.style.color = 'var(--color-accent)';
+  this.reset();
+});
+</script>
+</body>
+</html>

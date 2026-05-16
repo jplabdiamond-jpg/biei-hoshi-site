@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="体験・過ごし方｜星の光の宿BIEI｜美瑛の自然と暮らしに溶け込む、特別な体験。">
+  <title>体験・過ごし方｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="kitchen.html" class="nav-link">Kitchen</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<div class="mobile-overlay"></div>
+
+<section class="page-hero" style="margin-top:var(--header-h);">
+  <img src="images/sample_stars.jpg" alt="美瑛の満天の星空" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;">
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-text"><p class="en">EXPERIENCE</p><h1>体験・過ごし方</h1></div>
+</section>
+<div class="breadcrumb"><div class="breadcrumb-inner container"><a href="index.html">HOME</a><span class="sep">/</span><span>EXPERIENCE</span></div></div>
+
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container">
+    <div class="sec-heading text-center fade-in" style="max-width:700px;margin:0 auto clamp(48px,7vw,80px);">
+      <span class="en-label">EXPERIENCE</span>
+      <h2>宿での過ごし方</h2>
+      <div class="sec-divider" style="margin:20px auto;"></div>
+      <p>美瑛の自然と暮らしに溶け込む、特別なひとときをご用意しています。</p>
+    </div>
+
+    <!-- Experience 1 -->
+    <div class="features-alt-grid fade-in" style="display:grid;gap:clamp(40px,6vw,80px);align-items:center;margin-bottom:clamp(60px,10vw,120px);">
+      <div class="features-alt-img">
+        <div style="aspect-ratio:4/3;overflow:hidden;"><img src="images/sample_stars.jpg" alt="満天の星空" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
+      </div>
+      <div>
+        <span class="en-label" style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;color:var(--color-accent);display:block;margin-bottom:14px;">STARGAZING</span>
+        <h3 style="font-family:var(--font-jp);font-size:clamp(20px,2.8vw,30px);font-weight:300;letter-spacing:.12em;margin-bottom:20px;line-height:1.6;" data-editable data-field="exp_star_title">満天の星に、<br>手が届く夜。</h3>
+        <p style="font-size:14px;color:var(--color-text-mid);line-height:2.3;" data-editable data-field="exp_star_body">光害の少ない美瑛の夜空は、まるでプラネタリウム。宿専属のガイドとともに、星座の物語に耳を傾けながら特別な夜をお過ごしください。専用の天体望遠鏡で木星の縞模様や土星の輪を観察できることも。</p>
+      </div>
+    </div>
+
+    <!-- Experience 2 -->
+    <div class="features-alt-grid reverse fade-in" style="display:grid;gap:clamp(40px,6vw,80px);align-items:center;margin-bottom:clamp(60px,10vw,120px);">
+      <div class="features-alt-img">
+        <div style="aspect-ratio:4/3;overflow:hidden;"><img src="images/sample_seen.jpg" alt="自然に還すひととき" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
+      </div>
+      <div>
+        <span class="en-label" style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;color:var(--color-accent);display:block;margin-bottom:14px;">FARM EXPERIENCE</span>
+        <h3 style="font-family:var(--font-jp);font-size:clamp(20px,2.8vw,30px);font-weight:300;letter-spacing:.12em;margin-bottom:20px;line-height:1.6;" data-editable data-field="exp_farm_title">農家を訪ね、<br>大地の声を聞く。</h3>
+        <p style="font-size:14px;color:var(--color-text-mid);line-height:2.3;" data-editable data-field="exp_farm_body">地元農家との交流プログラム。野菜の収穫体験や農作業見学を通じて、美瑛の食文化の奥深さを体験します。農家の方から直接聞く「土と向き合う生き方」は、日常に戻ってからも心に残り続けます。</p>
+      </div>
+    </div>
+
+    <!-- Experience 3 -->
+    <div class="features-alt-grid fade-in" style="display:grid;gap:clamp(40px,6vw,80px);align-items:center;margin-bottom:clamp(60px,10vw,120px);">
+      <div class="features-alt-img">
+        <div style="aspect-ratio:4/3;overflow:hidden;"><img src="images/sample_bbq.jpg" alt="星空の下で炭火BBQ" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
+      </div>
+      <div>
+        <span class="en-label" style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;color:var(--color-accent);display:block;margin-bottom:14px;">OUTDOOR DINING</span>
+        <h3 style="font-family:var(--font-jp);font-size:clamp(20px,2.8vw,30px);font-weight:300;letter-spacing:.12em;margin-bottom:20px;line-height:1.6;" data-editable data-field="exp_bbq_title">星空の下で、<br>炭火を囲む。</h3>
+        <p style="font-size:14px;color:var(--color-text-mid);line-height:2.3;" data-editable data-field="exp_bbq_body">北海道産の食材を使ったプライベートBBQ。北海道産和牛・ラム・旬の野菜を炭火で豪快に。大切な人と囲む火の温もりは、旅の最高の思い出になるはずです。</p>
+      </div>
+    </div>
+
+    <!-- Experience 4 -->
+    <div class="features-alt-grid reverse fade-in" style="display:grid;gap:clamp(40px,6vw,80px);align-items:center;">
+      <div class="features-alt-img">
+        <div style="aspect-ratio:4/3;overflow:hidden;"><img src="images/IMG_1461_Original.jpeg" alt="美瑛の丘をサイクリング" loading="lazy" style="width:100%;height:100%;object-fit:cover;"></div>
+      </div>
+      <div>
+        <span class="en-label" style="font-family:var(--font-en);font-size:11px;letter-spacing:.3em;color:var(--color-accent);display:block;margin-bottom:14px;">CYCLING</span>
+        <h3 style="font-family:var(--font-jp);font-size:clamp(20px,2.8vw,30px);font-weight:300;letter-spacing:.12em;margin-bottom:20px;line-height:1.6;" data-editable data-field="exp_cycle_title">丘を駆け抜ける、<br>美瑛サイクリング。</h3>
+        <p style="font-size:14px;color:var(--color-text-mid);line-height:2.3;" data-editable data-field="exp_cycle_body">パッチワークの丘を自転車で巡るサイクリング体験。季節ごとに色を変える農地の絶景を、風を切りながら楽しんでください。電動アシスト自転車もご用意しています。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="section-pad" style="background:var(--color-bg-warm);">
+  <div class="container">
+    <div class="sec-heading fade-in">
+      <span class="en-label">AREA MAP</span>
+      <h2>美瑛のさんぽMAP</h2>
+      <div class="sec-divider"></div>
+      <p>宿周辺のおすすめスポットをご紹介します。</p>
+    </div>
+    <div style="margin-top:40px;display:flex;flex-wrap:wrap;gap:24px;" class="fade-in">
+      <div style="background:var(--color-white);padding:24px 28px;flex:1;min-width:200px;">
+        <p style="font-family:var(--font-en);font-size:11px;letter-spacing:.2em;color:var(--color-accent);margin-bottom:10px;">SPOTS</p>
+        <ul style="font-size:13px;color:var(--color-text-mid);line-height:2.5;list-style:disc;padding-left:16px;">
+          <li>青い池（車で約15分）</li>
+          <li>四季彩の丘（車で約10分）</li>
+          <li>美瑛選果（車で約5分）</li>
+          <li>白金温泉（車で約20分）</li>
+          <li>富良野ラベンダー畑（車で約30分）</li>
+        </ul>
+      </div>
+      <div style="background:var(--color-white);padding:24px 28px;flex:1;min-width:200px;">
+        <p style="font-family:var(--font-en);font-size:11px;letter-spacing:.2em;color:var(--color-accent);margin-bottom:10px;">ACCESS</p>
+        <ul style="font-size:13px;color:var(--color-text-mid);line-height:2.5;list-style:disc;padding-left:16px;">
+          <li>旭川空港から車で約40分</li>
+          <li>JR美瑛駅から車で約10分</li>
+          <li>送迎あり（要事前予約）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reserve-cta"><div class="reserve-cta-inner container fade-in"><p class="en">RESERVATION</p><h2>ご予約・お問い合わせ</h2><a href="reserve.html" class="btn-cta">RESERVE YOUR STAY</a></div></section>
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
+<script src="js/main.js"></script><script src="js/cms.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お知らせ｜星の光の宿 BIEI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header id="site-header" class="scrolled">
+  <div class="header-inner">
+    <a href="index.html" class="site-logo"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"></a>
+    <nav class="global-nav"><a href="about.html" class="nav-link">About</a><a href="rooms.html" class="nav-link">Rooms</a><a href="kitchen.html" class="nav-link">Kitchen</a><a href="experience.html" class="nav-link">Experience</a><a href="plan.html" class="nav-link">Plan</a><a href="access.html" class="nav-link">Access</a></nav>
+    <div class="header-right"><a href="reserve.html" class="btn-reserve">RESERVE</a><button class="hamburger" aria-label="メニュー"><span></span><span></span><span></span></button></div>
+  </div>
+</header>
+<nav class="mobile-nav"><a href="about.html" class="mobile-nav-link">宿について</a><a href="rooms.html" class="mobile-nav-link">お部屋</a><a href="kitchen.html" class="mobile-nav-link">キッチン＆アメニティ</a><a href="experience.html" class="mobile-nav-link">体験・過ごし方</a><a href="plan.html" class="mobile-nav-link">プラン</a><a href="access.html" class="mobile-nav-link">アクセス</a><a href="reserve.html" class="mobile-nav-link">ご予約</a></nav>
+<div class="mobile-overlay"></div>
+
+<section class="page-hero" style="margin-top:var(--header-h);height:clamp(200px,35vh,360px);">
+  <div class="img-placeholder" style="position:absolute;inset:0;background:linear-gradient(160deg,#2a3028 0%,#3a3e32 100%);width:100%;height:100%;"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="page-hero-text"><p class="en">INFORMATION</p><h1>お知らせ</h1></div>
+</section>
+<div class="breadcrumb"><div class="breadcrumb-inner container"><a href="index.html">HOME</a><span class="sep">/</span><span>NEWS</span></div></div>
+
+<section class="section-pad" style="background:var(--color-white);">
+  <div class="container" style="max-width:800px;">
+    <div class="news-list fade-in">
+      <div class="news-item"><span class="news-date">2026.05.01</span><span class="news-cat">お知らせ</span><span class="news-title">2026年夏季のご予約受付を開始いたしました。</span></div>
+      <div class="news-item"><span class="news-date">2026.04.15</span><span class="news-cat">イベント</span><span class="news-title">【春の特選コース】春の恵みを味わう特別ディナーのご案内。</span></div>
+      <div class="news-item"><span class="news-date">2026.03.20</span><span class="news-cat">メディア</span><span class="news-title">旅行誌「旅と暮らし」2026年4月号にて紹介いただきました。</span></div>
+      <div class="news-item"><span class="news-date">2026.02.10</span><span class="news-cat">お知らせ</span><span class="news-title">冬の星空観察プランに新しい特典が加わりました。</span></div>
+      <div class="news-item"><span class="news-date">2026.01.05</span><span class="news-cat">お知らせ</span><span class="news-title">2026年1月より、農家訪問プログラムを新たに開始いたします。</span></div>
+      <div class="news-item"><span class="news-date">2025.12.01</span><span class="news-cat">お知らせ</span><span class="news-title">年末年始の特別プランのご予約受付を開始しました。</span></div>
+      <div class="news-item"><span class="news-date">2025.11.15</span><span class="news-cat">メディア</span><span class="news-title">北海道観光誌「北の旅人」にて当宿が特集されました。</span></div>
+      <div class="news-item"><span class="news-date">2025.10.01</span><span class="news-cat">お知らせ</span><span class="news-title">「星の光の宿 BIEI」グランドオープンのお知らせ。</span></div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="experience.html">体験・過ごし方</a></li><li><a href="plan.html">プラン</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<script src="js/main.js"></script>
+</body>
+</html>
