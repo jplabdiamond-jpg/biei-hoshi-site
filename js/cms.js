@@ -18,6 +18,12 @@ function cmsSave(data) {
   } catch(e) { console.error('CMS save:', e); }
 }
 
+const SETTINGS_KEY = 'biei_settings';
+
+function settingsLoad() {
+  try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}'); } catch { return {}; }
+}
+
 /* ---------- 適用（ページ読み込み時）---------- */
 function cmsApply() {
   const data = cmsLoad();
@@ -37,6 +43,51 @@ function cmsApply() {
     if (!field || !data[field]) return;
     if (el.tagName === 'IMG') el.src = data[field];
   });
+
+  /* サイト設定（住所・TEL・メール等）の反映 */
+  applySettings();
+}
+
+function applySettings() {
+  const s = settingsLoad();
+  if (!Object.keys(s).length) return;
+
+  /* data-setting="address/tel/email" 要素 */
+  document.querySelectorAll('[data-setting]').forEach(el => {
+    const key = el.dataset.setting;
+    if (!s[key]) return;
+    if (key === 'address') {
+      /* 住所: 〒 + 改行を保持しつつ上書き */
+      el.innerHTML = s[key].replace(/\n/g, '<br>');
+    } else if (key === 'tel') {
+      /* 電話: 後半の受付時間テキストは保持 */
+      el.innerHTML = s[key] + '<br>（受付時間：9:00〜20:00）';
+    } else {
+      el.textContent = s[key];
+    }
+  });
+
+  /* フッターの <address data-setting-address> 要素 */
+  document.querySelectorAll('[data-setting-address]').forEach(el => {
+    const addr = s.address || '';
+    const tel  = s.tel   || '';
+    const mail = s.email || '';
+    const lines = [];
+    if (addr) lines.push(addr.replace(/\n/g, '<br>'));
+    if (tel || mail) lines.push('');
+    if (tel)  lines.push('TEL: ' + tel);
+    if (mail) lines.push('Mail: ' + mail);
+    if (lines.length) el.innerHTML = lines.join('<br>');
+  });
+
+  /* Googleマップ: 住所が設定されていれば iframe src を更新（APIキー不要） */
+  if (s.address) {
+    const mapFrame = document.getElementById('access-map-iframe');
+    if (mapFrame) {
+      const encoded = encodeURIComponent(s.address);
+      mapFrame.src = 'https://maps.google.com/maps?q=' + encoded + '&output=embed&hl=ja';
+    }
+  }
 }
 
 /* ---------- 管理者判定 ---------- */
