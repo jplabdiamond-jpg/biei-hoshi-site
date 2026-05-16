@@ -84,9 +84,15 @@ function initAdminBar() {
       if (el.tagName === 'IMG') {
         el.classList.toggle('edit-mode-bg', editMode);
         el.style.cursor = editMode ? 'pointer' : '';
+        /* imgをオーバーレイより前面に出してクリックを受け取れるようにする */
+        el.style.zIndex = editMode ? '5' : '';
         if (editMode) el.addEventListener('click', bgImgClickHandler);
         else          el.removeEventListener('click', bgImgClickHandler);
       }
+    });
+    /* editMode中はページ内の全オーバーレイをクリック透過にする */
+    document.querySelectorAll('.page-hero-overlay, .banner-full-overlay, .hero-overlay').forEach(ov => {
+      ov.style.pointerEvents = editMode ? 'none' : '';
     });
 
     editBtn.textContent = editMode ? 'EDITING...' : 'EDIT PAGE';
@@ -143,79 +149,21 @@ function imgClickHandler(e) {
 
 /* ---------- 背景・全幅画像クリックハンドラ ----------
    src のみ差し替え。style / class はそのまま保持。
+   オーバーレイ方式を廃止し、クリック直接ファイルピッカー方式に変更。
 -------------------------------------------------------- */
 function bgImgClickHandler(e) {
   e.stopPropagation();
+  e.preventDefault();
   const img = e.currentTarget;
-
-  /* クリック時にオーバーレイUIを表示 */
-  showBgEditOverlay(img);
-}
-
-function showBgEditOverlay(img) {
-  /* 既存オーバーレイを削除 */
-  document.querySelector('.cms-bg-overlay')?.remove();
-
-  const rect = img.getBoundingClientRect();
-  const overlay = document.createElement('div');
-  overlay.className = 'cms-bg-overlay';
-  overlay.style.cssText = [
-    'position:fixed',
-    `top:${rect.top + window.scrollY}px`,
-    `left:${rect.left}px`,
-    `width:${rect.width}px`,
-    `height:${rect.height}px`,
-    'background:rgba(0,0,0,0.55)',
-    'display:flex',
-    'align-items:center',
-    'justify-content:center',
-    'z-index:8000',
-    'cursor:pointer',
-    'transition:opacity .3s',
-  ].join(';');
-
-  const label = document.createElement('div');
-  label.style.cssText = 'color:#c4a882;font-family:"Cormorant Garamond",serif;font-size:14px;letter-spacing:.2em;text-align:center;pointer-events:none;';
-  label.innerHTML = '📷<br>クリックして画像を変更';
-  overlay.appendChild(label);
-
-  /* 親要素に position:relative が必要 */
-  const parent = img.parentElement;
-  const origPos = getComputedStyle(parent).position;
-  if (origPos === 'static') parent.style.position = 'relative';
-
-  /* スクロール位置基準に変える */
-  overlay.style.position = 'absolute';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100%';
-  overlay.style.height = '100%';
-  overlay.style.zIndex = '8000';
-  parent.appendChild(overlay);
-
-  overlay.addEventListener('click', () => {
-    openFilePicker(file => {
-      readAsDataURL(file, result => {
-        /* srcだけ更新。style継続 */
-        img.src = result;
-        const data = cmsLoad();
-        data[img.dataset.bgField] = result;
-        cmsSave(data);
-        overlay.remove();
-        showToast('背景画像を更新しました ✓');
-      });
+  openFilePicker(file => {
+    readAsDataURL(file, result => {
+      img.src = result;
+      const data = cmsLoad();
+      data[img.dataset.bgField] = result;
+      cmsSave(data);
+      showToast('背景画像を更新しました ✓');
     });
   });
-
-  /* オーバーレイ外クリックで閉じる */
-  setTimeout(() => {
-    document.addEventListener('click', function closeOverlay(ev) {
-      if (!overlay.contains(ev.target) && ev.target !== img) {
-        overlay.remove();
-        document.removeEventListener('click', closeOverlay);
-      }
-    });
-  }, 100);
 }
 
 /* ---------- ユーティリティ ---------- */

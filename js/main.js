@@ -187,7 +187,7 @@ function initAdminBar() {
   });
 
   mediaBtn?.addEventListener('click', () => {
-    window.location.href = 'admin/media.html';
+    window.location.href = 'admin/dashboard.html';
   });
 
   if (saveBtn) saveBtn.style.display = 'none';
