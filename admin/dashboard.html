@@ -457,15 +457,15 @@
     document.getElementById('new-pass2').value = '';
   });
 
-  /* Edit page links — open page in edit mode */
+  /* Edit page links — 同一タブで遷移 + 自動EDIT MODE起動 */
   const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
   document.querySelectorAll('.edit-page-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
       const href = link.dataset.href;
-      // フラグをセット → 遷移先ページのmain.jsがこれを検知して自動でEDIT MODEを起動
+      // 同一タブで遷移 → sessionStorageが引き継がれる
       sessionStorage.setItem(EDIT_TRIGGER_KEY, 'true');
-      window.open(href, '_blank');
+      window.location.href = href;
     });
   });
 

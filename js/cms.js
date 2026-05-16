@@ -206,4 +206,17 @@ function showToast(msg) {
   setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 3000);
 }
 
-document.addEventListener('DOMContentLoaded', () => { cmsApply(); initAdminBar(); });
+document.addEventListener('DOMContentLoaded', () => {
+  cmsApply();
+  initAdminBar();
+
+  /* ダッシュボードから編集ページに遷移した場合、自動でEDIT MODEを起動 */
+  const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
+  if (isAdmin() && sessionStorage.getItem(EDIT_TRIGGER_KEY) === 'true') {
+    sessionStorage.removeItem(EDIT_TRIGGER_KEY);
+    setTimeout(() => {
+      const editBtn = document.querySelector('[data-action="edit"]');
+      if (editBtn) editBtn.click();
+    }, 500);
+  }
+});
