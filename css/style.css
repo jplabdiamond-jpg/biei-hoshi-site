@@ -359,7 +359,7 @@ ul { list-style: none; }
     letter-spacing: 0.08em;
     padding: 7px 12px;
   }
-  /* ハンバーガー：正方形ボタン化 */
+  /* ハンバーガー：背景透過、正方形ボタン */
   .hamburger {
     gap: 4px;
     padding: 0;
@@ -368,9 +368,39 @@ ul { list-style: none; }
     flex-shrink: 0;
     justify-content: center;
     align-items: center;
+    background: transparent !important;
+    border: none;
   }
   .hamburger span {
     width: 20px;
+  }
+
+  /* モバイル スクロール前：完全透明・全要素白 */
+  #site-header:not(.scrolled) {
+    background: transparent;
+  }
+  #site-header:not(.scrolled) .btn-reserve {
+    border-color: rgba(255,255,255,0.8);
+    color: #ffffff;
+    background: transparent;
+  }
+  #site-header:not(.scrolled) .hamburger span {
+    background: #ffffff;
+  }
+
+  /* モバイル スクロール後：黒30%透過 */
+  #site-header.scrolled {
+    background: rgba(8, 8, 6, 0.3);
+    backdrop-filter: blur(6px);
+    box-shadow: none;
+  }
+  #site-header.scrolled .btn-reserve {
+    border-color: rgba(196,168,130,0.7);
+    color: var(--color-accent);
+    background: transparent;
+  }
+  #site-header.scrolled .hamburger span {
+    background: #ffffff;
   }
 }
 .hero-subtitle {
