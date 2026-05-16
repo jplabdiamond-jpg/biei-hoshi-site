@@ -6,9 +6,9 @@
 
 /* ---- CSS Variables ---- */
 :root {
-  --color-white: #f5f0e8;
+  --color-white: #1e1c18;
   --color-bg: #0a0a08;
-  --color-bg-warm: #111109;
+  --color-bg-warm: #141310;
   --color-text-dark: #f2ede4;
   --color-text-mid: #c8bfb0;
   --color-text-light: #8a8070;
@@ -221,7 +221,7 @@ ul { list-style: none; }
   right: -100%;
   width: min(340px, 85vw);
   height: 100dvh;
-  background: #0f0f0d;
+  background: var(--color-white);
   z-index: 999;
   padding: calc(var(--header-h) + 32px) 40px 40px;
   display: flex;
@@ -531,7 +531,7 @@ ul { list-style: none; }
   .experience-grid { grid-template-columns: repeat(3, 1fr); }
 }
 .exp-card {
-  background: #141412;
+  background: var(--color-white);
   overflow: hidden;
   cursor: pointer;
   border: 1px solid var(--color-border);
@@ -740,7 +740,7 @@ ul { list-style: none; }
   letter-spacing: 0.12em;
   color: var(--color-text-mid);
   transition: border-color var(--transition-fast), color var(--transition-fast);
-  background: #141412;
+  background: var(--color-white);
 }
 .map-link-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
@@ -851,7 +851,7 @@ ul { list-style: none; }
    RESERVE CTA
    ============================================================ */
 .reserve-cta {
-  background: #080806;
+  background: var(--color-bg-warm);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
   padding: clamp(60px, 10vw, 100px) 0;
@@ -896,7 +896,7 @@ ul { list-style: none; }
    FOOTER
    ============================================================ */
 footer {
-  background: #050503;
+  background: var(--color-bg);
   border-top: 1px solid var(--color-border);
   padding: clamp(48px, 7vw, 80px) 0 32px;
 }
@@ -986,7 +986,7 @@ footer {
    PLACEHOLDER IMAGES (gradient until real images uploaded)
    ============================================================ */
 .img-placeholder {
-  background: linear-gradient(135deg, #1a1815 0%, #141210 50%, #0e0c0a 100%);
+  background: linear-gradient(135deg, var(--color-white) 0%, var(--color-bg-warm) 50%, var(--color-bg) 100%);
   width: 100%;
   height: 100%;
   display: flex;
@@ -1137,7 +1137,7 @@ footer {
 }
 @media (min-width: 640px) { .food-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 960px) { .food-grid { grid-template-columns: repeat(3, 1fr); } }
-.food-card { background: #141412; padding: 0 0 28px; overflow: hidden; border: 1px solid var(--color-border); }
+.food-card { background: var(--color-white); padding: 0 0 28px; overflow: hidden; border: 1px solid var(--color-border); }
 .food-card-img { aspect-ratio: 1; overflow: hidden; }
 .food-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-slow); }
 .food-card:hover .food-card-img img { transform: scale(1.05); }
@@ -1155,7 +1155,7 @@ footer {
   gap: 0;
   border: 1px solid var(--color-border);
   overflow: hidden;
-  background: #0f0f0d;
+  background: var(--color-white);
   transition: box-shadow var(--transition-med);
 }
 .plan-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(196,168,130,0.15); }
@@ -1232,7 +1232,7 @@ footer {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid var(--color-border);
-  background: #141412;
+  background: var(--color-white);
   font-family: var(--font-jp);
   font-size: 14px;
   color: var(--color-text-dark);
@@ -1245,7 +1245,7 @@ footer {
 .form-select:focus,
 .form-textarea:focus { border-color: var(--color-accent); }
 .form-textarea { min-height: 140px; resize: vertical; }
-.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4a882' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; background-color: #141412; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4a882' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; background-color: var(--color-white); }
 .btn-submit {
   width: 100%;
   padding: 18px;
