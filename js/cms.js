@@ -1,7 +1,6 @@
 /* ============================================================
    星の光の宿 BIEI — CMS Shared Logic
-   通常画像 (data-editable + data-field) および
-   背景・全幅画像 (data-bg-field) の両方に対応
+   全画像に「編集」ボタンを表示する方式
    ============================================================ */
 'use strict';
 
@@ -19,14 +18,11 @@ function cmsSave(data) {
   } catch(e) { console.error('CMS save:', e); }
 }
 
-/* ---------- 適用（ページ読み込み時）----------
-   ① [data-editable][data-field]   → テキスト / 通常img の src
-   ② [data-bg-field]               → img の src のみ上書き（style継続）
----------------------------------------------------------------- */
+/* ---------- 適用（ページ読み込み時）---------- */
 function cmsApply() {
   const data = cmsLoad();
 
-  /* ① 通常テキスト・画像 */
+  /* 通常テキスト・画像 */
   document.querySelectorAll('[data-editable]').forEach(el => {
     const field = el.dataset.field;
     if (!field || !data[field]) return;
@@ -35,19 +31,78 @@ function cmsApply() {
     else el.textContent = data[field];
   });
 
-  /* ② 背景・全幅画像（banner-full / page-hero 等） */
+  /* 背景・全幅画像 */
   document.querySelectorAll('[data-bg-field]').forEach(el => {
     const field = el.dataset.bgField;
     if (!field || !data[field]) return;
-    if (el.tagName === 'IMG') {
-      /* srcだけ更新。style(object-fit/position等)は保持 */
-      el.src = data[field];
-    }
+    if (el.tagName === 'IMG') el.src = data[field];
   });
 }
 
 /* ---------- 管理者判定 ---------- */
 function isAdmin() { return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true'; }
+
+/* ---------- 画像編集ボタンの注入・削除 ---------- */
+function injectEditButtons() {
+  /* 既存ボタンをクリア */
+  document.querySelectorAll('.cms-img-edit-btn').forEach(b => b.remove());
+
+  /* 通常画像 (data-editable IMG) */
+  document.querySelectorAll('[data-editable]').forEach(el => {
+    if (el.tagName !== 'IMG') return;
+    attachEditButton(el, 'normal');
+  });
+
+  /* 背景・全幅画像 (data-bg-field IMG) */
+  document.querySelectorAll('[data-bg-field]').forEach(el => {
+    if (el.tagName !== 'IMG') return;
+    attachEditButton(el, 'bg');
+  });
+}
+
+function removeEditButtons() {
+  document.querySelectorAll('.cms-img-edit-btn').forEach(b => b.remove());
+}
+
+function attachEditButton(img, type) {
+  /* ボタン生成 */
+  const btn = document.createElement('button');
+  btn.className = 'cms-img-edit-btn';
+  btn.innerHTML = '✎ 編集';
+  btn.type = 'button';
+
+  /* ボタンをbody直下に追加し、fixed座標で配置 */
+  btn.style.position = 'fixed';
+  document.body.appendChild(btn);
+
+  /* viewport基準(fixed)で座標計算 */
+  function positionBtn() {
+    const rect = img.getBoundingClientRect();
+    btn.style.top  = (rect.top  + 8) + 'px';
+    btn.style.left = (rect.left + 8) + 'px';
+  }
+  positionBtn();
+  window.addEventListener('scroll', positionBtn);
+  window.addEventListener('resize', positionBtn);
+
+  /* クリックでファイルピッカー */
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    openFilePicker(file => {
+      readAsDataURL(file, result => {
+        img.src = result;
+        const data = cmsLoad();
+        if (type === 'bg') {
+          data[img.dataset.bgField] = result;
+        } else {
+          data[img.dataset.field] = result;
+        }
+        cmsSave(data);
+        showToast('画像を更新しました ✓');
+      });
+    });
+  });
+}
 
 /* ---------- 管理バー初期化 ---------- */
 function initAdminBar() {
@@ -66,34 +121,27 @@ function initAdminBar() {
   editBtn?.addEventListener('click', () => {
     editMode = !editMode;
 
-    /* 通常テキスト・画像 */
-    document.querySelectorAll('[data-editable]').forEach(el => {
-      if (el.tagName === 'IMG') {
-        el.classList.toggle('edit-mode', editMode);
-        el.style.cursor = editMode ? 'pointer' : '';
-        if (editMode) el.addEventListener('click', imgClickHandler);
-        else          el.removeEventListener('click', imgClickHandler);
-      } else {
-        el.classList.toggle('edit-mode', editMode);
-        el.contentEditable = editMode ? 'true' : 'false';
-      }
-    });
-
-    /* 背景・全幅画像 */
-    document.querySelectorAll('[data-bg-field]').forEach(el => {
-      if (el.tagName === 'IMG') {
-        el.classList.toggle('edit-mode-bg', editMode);
-        el.style.cursor = editMode ? 'pointer' : '';
-        /* imgをオーバーレイより前面に出してクリックを受け取れるようにする */
-        el.style.zIndex = editMode ? '5' : '';
-        if (editMode) el.addEventListener('click', bgImgClickHandler);
-        else          el.removeEventListener('click', bgImgClickHandler);
-      }
-    });
-    /* editMode中はページ内の全オーバーレイをクリック透過にする */
-    document.querySelectorAll('.page-hero-overlay, .banner-full-overlay, .hero-overlay').forEach(ov => {
-      ov.style.pointerEvents = editMode ? 'none' : '';
-    });
+    if (editMode) {
+      /* テキスト編集モード ON */
+      document.querySelectorAll('[data-editable]').forEach(el => {
+        if (el.tagName !== 'IMG') {
+          el.classList.add('edit-mode');
+          el.contentEditable = 'true';
+        }
+      });
+      /* 画像編集ボタン表示 */
+      injectEditButtons();
+    } else {
+      /* テキスト編集モード OFF */
+      document.querySelectorAll('[data-editable]').forEach(el => {
+        if (el.tagName !== 'IMG') {
+          el.classList.remove('edit-mode');
+          el.contentEditable = 'false';
+        }
+      });
+      /* 画像編集ボタン削除 */
+      removeEditButtons();
+    }
 
     editBtn.textContent = editMode ? 'EDITING...' : 'EDIT PAGE';
     if (saveBtn) saveBtn.style.display = editMode ? 'inline-block' : 'none';
@@ -103,7 +151,6 @@ function initAdminBar() {
   saveBtn?.addEventListener('click', () => {
     const data = cmsLoad();
 
-    /* 通常テキスト・画像 */
     document.querySelectorAll('[data-editable]').forEach(el => {
       const f = el.dataset.field;
       if (!f) return;
@@ -112,11 +159,10 @@ function initAdminBar() {
       else data[f] = el.textContent;
     });
 
-    /* 背景・全幅画像 */
     document.querySelectorAll('[data-bg-field]').forEach(el => {
       const f = el.dataset.bgField;
-      if (!f) return;
-      if (el.tagName === 'IMG') data[f] = el.src;
+      if (!f || el.tagName !== 'IMG') return;
+      data[f] = el.src;
     });
 
     cmsSave(data);
@@ -130,40 +176,6 @@ function initAdminBar() {
 
   mediaBtn?.addEventListener('click', () => { window.location.href = 'admin/dashboard.html'; });
   if (saveBtn) saveBtn.style.display = 'none';
-}
-
-/* ---------- 通常画像クリックハンドラ ---------- */
-function imgClickHandler(e) {
-  e.stopPropagation();
-  const img = e.currentTarget;
-  openFilePicker(file => {
-    readAsDataURL(file, result => {
-      img.src = result;
-      const data = cmsLoad();
-      data[img.dataset.field] = result;
-      cmsSave(data);
-      showToast('画像を更新しました ✓');
-    });
-  });
-}
-
-/* ---------- 背景・全幅画像クリックハンドラ ----------
-   src のみ差し替え。style / class はそのまま保持。
-   オーバーレイ方式を廃止し、クリック直接ファイルピッカー方式に変更。
--------------------------------------------------------- */
-function bgImgClickHandler(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  const img = e.currentTarget;
-  openFilePicker(file => {
-    readAsDataURL(file, result => {
-      img.src = result;
-      const data = cmsLoad();
-      data[img.dataset.bgField] = result;
-      cmsSave(data);
-      showToast('背景画像を更新しました ✓');
-    });
-  });
 }
 
 /* ---------- ユーティリティ ---------- */
