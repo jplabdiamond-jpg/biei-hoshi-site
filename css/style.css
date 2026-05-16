@@ -6,6 +6,7 @@
 
 /* ---- CSS Variables ---- */
 :root {
+  --color-pure-white: #ffffff;
   --color-white: #1e1c18;
   --color-bg: #0a0a08;
   --color-bg-warm: #141310;
@@ -320,7 +321,7 @@ ul { list-style: none; }
   position: relative;
   z-index: 2;
   text-align: center;
-  color: var(--color-white);
+  color: var(--color-pure-white);
   padding: 0 20px clamp(60px, 10vw, 100px);
   max-width: 700px;
 }
@@ -769,7 +770,7 @@ ul { list-style: none; }
 }
 .banner-full-text {
   text-align: center;
-  color: var(--color-white);
+  color: var(--color-pure-white);
 }
 .banner-full-text .en {
   font-family: var(--font-en);
@@ -1025,7 +1026,7 @@ footer {
 .page-hero-text {
   position: relative;
   z-index: 2;
-  color: #ffffff;
+  color: var(--color-pure-white);
   padding: 0 5% clamp(32px, 5vw, 56px);
 }
 .page-hero-text .en {
@@ -1034,14 +1035,14 @@ footer {
   letter-spacing: 0.3em;
   opacity: 0.7;
   margin-bottom: 10px;
-  color: #ffffff;
+  color: var(--color-pure-white);
 }
 .page-hero-text h1 {
   font-family: var(--font-jp);
   font-size: clamp(26px, 4vw, 44px);
   font-weight: 300;
   letter-spacing: 0.18em;
-  color: #ffffff;
+  color: var(--color-pure-white);
 }
 
 /* BREADCRUMB */
