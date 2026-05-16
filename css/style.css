@@ -1355,3 +1355,23 @@ footer {
   z-index: 100;
   pointer-events: none;
 }
+
+/* Background image edit mode indicator */
+[data-bg-field].edit-mode-bg {
+  outline: 3px dashed rgba(196,168,130,0.8);
+  outline-offset: -3px;
+}
+[data-bg-field].edit-mode-bg::after {
+  content: '📷 ' attr(data-bg-field);
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: var(--font-en);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  background: var(--color-accent);
+  color: white;
+  padding: 2px 8px;
+  z-index: 8100;
+  pointer-events: none;
+}
