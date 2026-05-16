@@ -1025,7 +1025,7 @@ footer {
 .page-hero-text {
   position: relative;
   z-index: 2;
-  color: var(--color-white);
+  color: #ffffff;
   padding: 0 5% clamp(32px, 5vw, 56px);
 }
 .page-hero-text .en {
@@ -1034,12 +1034,14 @@ footer {
   letter-spacing: 0.3em;
   opacity: 0.7;
   margin-bottom: 10px;
+  color: #ffffff;
 }
 .page-hero-text h1 {
   font-family: var(--font-jp);
   font-size: clamp(26px, 4vw, 44px);
   font-weight: 300;
   letter-spacing: 0.18em;
+  color: #ffffff;
 }
 
 /* BREADCRUMB */
