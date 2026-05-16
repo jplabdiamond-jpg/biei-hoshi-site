@@ -207,10 +207,11 @@ ul { list-style: none; }
   display: block;
   width: 24px;
   height: 1px;
-  background: var(--color-text-dark);
+  background: var(--color-pure-white);
   transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
-#site-header:not(.scrolled) .hamburger span { background: var(--color-white); }
+#site-header:not(.scrolled) .hamburger span { background: var(--color-pure-white); }
+#site-header.scrolled .hamburger span { background: var(--color-pure-white); }
 .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity: 0; }
 .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
@@ -350,8 +351,8 @@ ul { list-style: none; }
 /* ---- Mobile Header Compact ---- */
 @media (max-width: 899px) {
   .site-logo .logo-full {
-    height: 60px;
-    max-width: 200px;
+    height: 80px;
+    max-width: 240px;
   }
   .btn-reserve {
     font-size: 11px;
