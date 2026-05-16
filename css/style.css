@@ -1,21 +1,21 @@
 /* ============================================================
    星の光の宿 BIEI — Main Stylesheet
    Design ref: akagi-futokoro.com
-   Mobile-first, white base, luxury feel
+   Mobile-first, black base, luxury dark theme
    ============================================================ */
 
 /* ---- CSS Variables ---- */
 :root {
-  --color-white: #ffffff;
-  --color-bg: #fafaf8;
-  --color-bg-warm: #f5f3ef;
-  --color-text-dark: #1a1a1a;
-  --color-text-mid: #4a4a4a;
-  --color-text-light: #8a8a8a;
-  --color-accent: #8b7355;
-  --color-accent-light: #c4a882;
-  --color-border: #e0ddd8;
-  --color-overlay: rgba(10, 10, 10, 0.38);
+  --color-white: #f5f0e8;
+  --color-bg: #0a0a08;
+  --color-bg-warm: #111109;
+  --color-text-dark: #e8e2d8;
+  --color-text-mid: #b0a898;
+  --color-text-light: #6a6458;
+  --color-accent: #c4a882;
+  --color-accent-light: #d4bc9a;
+  --color-border: #2a2820;
+  --color-overlay: rgba(0, 0, 0, 0.55);
 
   --font-jp: 'Noto Serif JP', 'Yu Mincho', 'YuMincho', '游明朝', serif;
   --font-en: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
@@ -99,7 +99,7 @@ ul { list-style: none; }
   transition: background var(--transition-slow), box-shadow var(--transition-slow);
 }
 #site-header.scrolled {
-  background: rgba(250, 250, 248, 0.96);
+  background: rgba(8, 8, 6, 0.96);
   box-shadow: 0 1px 0 var(--color-border);
   backdrop-filter: blur(8px);
 }
@@ -114,54 +114,32 @@ ul { list-style: none; }
 .site-logo {
   display: flex;
   align-items: center;
-  gap: 10px;
   text-decoration: none;
 }
-.site-logo .logo-mark {
-  width: clamp(36px, 5vw, 48px);
-  height: clamp(36px, 5vw, 48px);
+.site-logo .logo-full {
+  height: clamp(56px, 8vw, 96px);
+  width: auto;
+  max-width: 320px;
   object-fit: contain;
   flex-shrink: 0;
   transition: filter 0.4s;
 }
-.site-logo .logo-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
+/* transparent header → gold logo (always show original on dark bg) */
+#site-header:not(.scrolled) .site-logo .logo-full {
+  filter: none;
 }
-.site-logo .logo-en {
-  font-family: var(--font-en);
-  font-size: clamp(11px, 1.4vw, 13px);
-  font-style: italic;
-  letter-spacing: 0.15em;
-  color: var(--color-accent);
-  transition: color 0.4s;
-}
-.site-logo .logo-jp {
-  font-family: var(--font-jp);
-  font-size: clamp(14px, 1.8vw, 17px);
-  font-weight: 400;
-  letter-spacing: 0.18em;
-  color: var(--color-text-dark);
-  transition: color 0.4s;
-}
-/* transparent header → white logo */
-#site-header:not(.scrolled) .site-logo .logo-jp,
-#site-header:not(.scrolled) .site-logo .logo-en {
-  color: var(--color-white);
-}
-#site-header:not(.scrolled) .site-logo .logo-mark {
-  filter: brightness(0) invert(1);
+#site-header.scrolled .site-logo .logo-full {
+  filter: none;
 }
 #site-header:not(.scrolled) .nav-link {
-  color: rgba(255,255,255,0.88);
+  color: rgba(245,240,232,0.88);
 }
 #site-header:not(.scrolled) .btn-reserve {
-  border-color: rgba(255,255,255,0.7);
-  color: var(--color-white);
+  border-color: rgba(196,168,130,0.7);
+  color: var(--color-accent);
 }
 #site-header:not(.scrolled) .btn-reserve:hover {
-  background: rgba(255,255,255,0.15);
+  background: rgba(196,168,130,0.15);
 }
 
 .global-nav { display: none; }
@@ -196,7 +174,7 @@ ul { list-style: none; }
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 .btn-reserve {
   font-family: var(--font-en);
@@ -243,7 +221,7 @@ ul { list-style: none; }
   right: -100%;
   width: min(340px, 85vw);
   height: 100dvh;
-  background: var(--color-white);
+  background: #0f0f0d;
   z-index: 999;
   padding: calc(var(--header-h) + 32px) 40px 40px;
   display: flex;
@@ -332,9 +310,9 @@ ul { list-style: none; }
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0,0,0,0.12) 0%,
-    rgba(0,0,0,0.05) 40%,
-    rgba(0,0,0,0.55) 100%
+    rgba(0,0,0,0.25) 0%,
+    rgba(0,0,0,0.1) 40%,
+    rgba(0,0,0,0.7) 100%
   );
 }
 
@@ -366,6 +344,32 @@ ul { list-style: none; }
 /* モバイルではnowrapを解除して折り返し許可 */
 @media (max-width: 600px) {
   .hero-title span { white-space: normal !important; }
+}
+
+/* ---- Mobile Header Compact ---- */
+@media (max-width: 899px) {
+  .site-logo .logo-full {
+    height: 60px;
+    max-width: 200px;
+  }
+  .btn-reserve {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 7px 12px;
+  }
+  /* ハンバーガー：正方形ボタン化 */
+  .hamburger {
+    gap: 4px;
+    padding: 0;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    justify-content: center;
+    align-items: center;
+  }
+  .hamburger span {
+    width: 20px;
+  }
 }
 .hero-subtitle {
   font-family: var(--font-jp);
@@ -408,7 +412,7 @@ ul { list-style: none; }
   left: 0;
   width: 100%;
   height: 100%;
-  background: var(--color-white);
+  background: var(--color-accent);
   animation: scrollLine 2s ease infinite;
 }
 @keyframes scrollLine {
@@ -467,7 +471,7 @@ ul { list-style: none; }
    INTRO — コンセプト
    ============================================================ */
 .intro {
-  background: var(--color-white);
+  background: var(--color-bg);
 }
 .intro-inner {
   display: grid;
@@ -527,9 +531,10 @@ ul { list-style: none; }
   .experience-grid { grid-template-columns: repeat(3, 1fr); }
 }
 .exp-card {
-  background: var(--color-white);
+  background: #141412;
   overflow: hidden;
   cursor: pointer;
+  border: 1px solid var(--color-border);
 }
 .exp-card-img {
   overflow: hidden;
@@ -569,7 +574,7 @@ ul { list-style: none; }
    FEATURES — 宿の特徴
    ============================================================ */
 .features {
-  background: var(--color-white);
+  background: var(--color-bg);
 }
 .features-list {
   display: grid;
@@ -658,7 +663,7 @@ ul { list-style: none; }
    LOCATION — 場所の魅力
    ============================================================ */
 .location {
-  background: var(--color-white);
+  background: var(--color-bg);
 }
 .location-items {
   display: grid;
@@ -708,14 +713,15 @@ ul { list-style: none; }
 .map-embed {
   width: 100%;
   aspect-ratio: 16/7;
-  background: var(--color-bg-warm);
+  background: #111109;
   overflow: hidden;
+  border: 1px solid var(--color-border);
 }
 .map-embed iframe {
   width: 100%;
   height: 100%;
   border: 0;
-  filter: grayscale(20%);
+  filter: grayscale(60%) invert(90%) hue-rotate(180deg) brightness(0.85);
 }
 .map-links {
   display: flex;
@@ -734,7 +740,7 @@ ul { list-style: none; }
   letter-spacing: 0.12em;
   color: var(--color-text-mid);
   transition: border-color var(--transition-fast), color var(--transition-fast);
-  background: var(--color-white);
+  background: #141412;
 }
 .map-link-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
 
@@ -785,6 +791,7 @@ ul { list-style: none; }
    ============================================================ */
 .news {
   background: var(--color-bg-warm);
+  border-top: 1px solid var(--color-border);
 }
 .news-list {
   display: flex;
@@ -844,18 +851,21 @@ ul { list-style: none; }
    RESERVE CTA
    ============================================================ */
 .reserve-cta {
-  background: var(--color-text-dark);
+  background: #080806;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   padding: clamp(60px, 10vw, 100px) 0;
 }
 .reserve-cta-inner {
   text-align: center;
-  color: var(--color-white);
+  color: var(--color-text-dark);
 }
 .reserve-cta .en {
   font-family: var(--font-en);
   font-size: clamp(11px, 1.3vw, 13px);
   letter-spacing: 0.3em;
-  opacity: 0.6;
+  color: var(--color-accent);
+  opacity: 0.85;
   margin-bottom: 16px;
 }
 .reserve-cta h2 {
@@ -864,27 +874,29 @@ ul { list-style: none; }
   font-weight: 300;
   letter-spacing: 0.18em;
   margin-bottom: 32px;
+  color: var(--color-text-dark);
 }
 .btn-cta {
   display: inline-block;
   padding: 16px 48px;
-  border: 1px solid rgba(255,255,255,0.5);
+  border: 1px solid rgba(196,168,130,0.6);
   font-family: var(--font-en);
   font-size: 13px;
   letter-spacing: 0.2em;
-  color: var(--color-white);
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  color: var(--color-accent);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
 }
 .btn-cta:hover {
-  background: rgba(255,255,255,0.1);
-  border-color: var(--color-white);
+  background: rgba(196,168,130,0.12);
+  border-color: var(--color-accent);
+  color: var(--color-accent-light);
 }
 
 /* ============================================================
    FOOTER
    ============================================================ */
 footer {
-  background: var(--color-white);
+  background: #050503;
   border-top: 1px solid var(--color-border);
   padding: clamp(48px, 7vw, 80px) 0 32px;
 }
@@ -895,6 +907,15 @@ footer {
 }
 @media (min-width: 768px) {
   .footer-inner { grid-template-columns: 1fr 1fr 1fr; }
+}
+.footer-brand .logo-full {
+  height: 150px;
+  width: auto;
+  max-width: 260px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  opacity: 1;
+  filter: none;
 }
 .footer-brand .logo-jp {
   font-family: var(--font-jp);
@@ -965,7 +986,7 @@ footer {
    PLACEHOLDER IMAGES (gradient until real images uploaded)
    ============================================================ */
 .img-placeholder {
-  background: linear-gradient(135deg, #d4cfc9 0%, #c4bdb5 50%, #b8b0a8 100%);
+  background: linear-gradient(135deg, #1a1815 0%, #141210 50%, #0e0c0a 100%);
   width: 100%;
   height: 100%;
   display: flex;
@@ -1025,7 +1046,7 @@ footer {
 .breadcrumb {
   padding: 14px 0;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-white);
+  background: var(--color-bg);
 }
 .breadcrumb-inner {
   display: flex;
@@ -1116,7 +1137,7 @@ footer {
 }
 @media (min-width: 640px) { .food-grid { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 960px) { .food-grid { grid-template-columns: repeat(3, 1fr); } }
-.food-card { background: var(--color-white); padding: 0 0 28px; overflow: hidden; }
+.food-card { background: #141412; padding: 0 0 28px; overflow: hidden; border: 1px solid var(--color-border); }
 .food-card-img { aspect-ratio: 1; overflow: hidden; }
 .food-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition-slow); }
 .food-card:hover .food-card-img img { transform: scale(1.05); }
@@ -1134,9 +1155,10 @@ footer {
   gap: 0;
   border: 1px solid var(--color-border);
   overflow: hidden;
+  background: #0f0f0d;
   transition: box-shadow var(--transition-med);
 }
-.plan-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.08); }
+.plan-card:hover { box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(196,168,130,0.15); }
 @media (min-width: 768px) { .plan-card { grid-template-columns: 2fr 3fr; } }
 .plan-card-img { overflow: hidden; aspect-ratio: 4/3; }
 @media (min-width: 768px) { .plan-card-img { aspect-ratio: auto; } }
@@ -1165,7 +1187,7 @@ footer {
 }
 @media (min-width: 768px) { .access-grid { grid-template-columns: 1fr 1fr; } }
 .access-map { aspect-ratio: 1; overflow: hidden; }
-.access-map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(15%); }
+.access-map iframe { width: 100%; height: 100%; border: 0; filter: grayscale(60%) invert(90%) hue-rotate(180deg) brightness(0.85); }
 .access-info h3 { font-family: var(--font-jp); font-size: 18px; letter-spacing: 0.12em; margin-bottom: 20px; }
 .access-table { width: 100%; border-collapse: collapse; }
 .access-table th,
@@ -1210,7 +1232,7 @@ footer {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid var(--color-border);
-  background: var(--color-white);
+  background: #141412;
   font-family: var(--font-jp);
   font-size: 14px;
   color: var(--color-text-dark);
@@ -1223,7 +1245,7 @@ footer {
 .form-select:focus,
 .form-textarea:focus { border-color: var(--color-accent); }
 .form-textarea { min-height: 140px; resize: vertical; }
-.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8a8a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4a882' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; background-color: #141412; }
 .btn-submit {
   width: 100%;
   padding: 18px;

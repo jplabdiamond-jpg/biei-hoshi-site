@@ -8,15 +8,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Noto+Serif+JP:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --accent: #8b7355;
-      --accent-light: #c4a882;
-      --dark: #1a1a1a;
-      --mid: #4a4a4a;
-      --light: #8a8a8a;
-      --border: #e0ddd8;
-      --bg: #fafaf8;
-      --bg-warm: #f5f3ef;
-      --white: #ffffff;
+      --accent: #c4a882;
+      --accent-light: #d4bc9a;
+      --dark: #e8e2d8;
+      --mid: #b0a898;
+      --light: #6a6458;
+      --border: #2a2820;
+      --bg: #0a0a08;
+      --bg-warm: #111109;
+      --white: #0f0f0d;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--dark); display: flex; min-height: 100dvh; }
@@ -65,10 +65,10 @@
     .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
     .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.15em; font-style: italic; color: var(--mid); }
     .topbar-actions { display: flex; gap: 12px; align-items: center; }
-    .topbar-btn { padding: 8px 20px; border: 1px solid var(--border); font-size: 12px; letter-spacing: 0.1em; cursor: pointer; background: white; color: var(--mid); transition: all 0.2s; }
-    .topbar-btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .topbar-btn { padding: 8px 20px; border: 1px solid var(--border); font-size: 12px; letter-spacing: 0.1em; cursor: pointer; background: #1a1815; color: var(--mid); transition: all 0.2s; }
+    .topbar-btn.primary { background: rgba(196,168,130,0.15); color: var(--accent); border-color: rgba(196,168,130,0.4); }
     .topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .topbar-btn.primary:hover { opacity: 0.85; color: white; }
+    .topbar-btn.primary:hover { opacity: 0.85; background: rgba(196,168,130,0.25); }
 
     .content { padding: 32px; flex: 1; }
 
@@ -91,7 +91,7 @@
       transition: box-shadow 0.3s, border-color 0.3s;
       text-decoration: none; color: inherit;
     }
-    .page-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); border-color: var(--accent-light); }
+    .page-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.4); border-color: var(--accent-light); }
     .page-card-icon { font-size: 22px; min-width: 32px; text-align: center; }
     .page-card-info {}
     .page-card-name { font-size: 14px; letter-spacing: 0.06em; margin-bottom: 4px; }
@@ -111,9 +111,9 @@
     .settings-form { max-width: 560px; }
     .form-group { margin-bottom: 24px; }
     .form-label { display: block; font-size: 12px; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 8px; }
-    .form-input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: white; font-size: 14px; color: var(--dark); outline: none; transition: border-color 0.2s; }
+    .form-input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: #1a1815; font-size: 14px; color: var(--dark); outline: none; transition: border-color 0.2s; }
     .form-input:focus { border-color: var(--accent); }
-    .btn-save { padding: 13px 36px; background: var(--accent); color: white; border: none; font-size: 13px; letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.2s; }
+    .btn-save { padding: 13px 36px; background: rgba(196,168,130,0.15); color: var(--accent); border: 1px solid rgba(196,168,130,0.4); font-size: 13px; letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.2s; }
     .btn-save:hover { opacity: 0.82; }
 
     /* Panels */
@@ -203,77 +203,74 @@
 
       <p class="section-title">Quick Access — ページ編集</p>
       <div class="page-list">
-        <a href="../index.html" target="_blank" class="page-card" data-page="../index.html">
+        <a href="#" class="page-card edit-page-link" data-href="../index.html">
           <span class="page-card-icon">🏠</span>
           <div class="page-card-info">
             <div class="page-card-name">トップページ</div>
             <div class="page-card-file">index.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../about.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../about.html">
           <span class="page-card-icon">📖</span>
           <div class="page-card-info">
             <div class="page-card-name">宿について</div>
             <div class="page-card-file">about.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../rooms.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../rooms.html">
           <span class="page-card-icon">🛏</span>
           <div class="page-card-info">
             <div class="page-card-name">お部屋</div>
             <div class="page-card-file">rooms.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../food.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../food.html">
           <span class="page-card-icon">🍽</span>
           <div class="page-card-info">
-            <div class="page-card-name">お食事</div>
+            <div class="page-card-name">キッチン＆アメニティ</div>
             <div class="page-card-file">food.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../experience.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../experience.html">
           <span class="page-card-icon">⭐</span>
           <div class="page-card-info">
             <div class="page-card-name">体験・過ごし方</div>
             <div class="page-card-file">experience.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../plan.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../plan.html">
           <span class="page-card-icon">📋</span>
           <div class="page-card-info">
             <div class="page-card-name">プラン</div>
             <div class="page-card-file">plan.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../access.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../access.html">
           <span class="page-card-icon">📍</span>
           <div class="page-card-info">
             <div class="page-card-name">アクセス</div>
             <div class="page-card-file">access.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="../reserve.html" target="_blank" class="page-card">
+        <a href="#" class="page-card edit-page-link" data-href="../reserve.html">
           <span class="page-card-icon">📅</span>
           <div class="page-card-info">
             <div class="page-card-name">ご予約</div>
             <div class="page-card-file">reserve.html</div>
           </div>
-          <span class="page-card-badge">LIVE</span>
+          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
       </div>
 
       <p style="font-size:13px;color:var(--light);line-height:2;max-width:560px;">
-        💡 ページを直接編集するには、各ページを開いてフッターの <strong>Admin</strong> リンクからログイン後、
-        画面下部の <strong>EDIT PAGE</strong> ボタンをクリックしてください。<br>
-        テキストをクリックして直接編集し、<strong>SAVE CHANGES</strong> で保存されます。
-        画像エリアをクリックすると画像ファイルを選択・置換できます。
+        ✏ カードをクリックするとそのページが編集モードで開きます。テキストを直接クリックして編集し、<strong>SAVE CHANGES</strong> で保存されます。
       </p>
     </div>
 
@@ -281,40 +278,16 @@
     <div class="panel" id="panel-pages">
       <p class="section-title">ページ一覧</p>
       <div class="page-list">
-        <a href="../index.html" target="_blank" class="page-card">
-          <span class="page-card-icon">🏠</span>
-          <div class="page-card-info"><div class="page-card-name">トップページ</div><div class="page-card-file">index.html</div></div>
-        </a>
-        <a href="../about.html" target="_blank" class="page-card">
-          <span class="page-card-icon">📖</span>
-          <div class="page-card-info"><div class="page-card-name">宿について</div><div class="page-card-file">about.html</div></div>
-        </a>
-        <a href="../rooms.html" target="_blank" class="page-card">
-          <span class="page-card-icon">🛏</span>
-          <div class="page-card-info"><div class="page-card-name">お部屋</div><div class="page-card-file">rooms.html</div></div>
-        </a>
-        <a href="../food.html" target="_blank" class="page-card">
-          <span class="page-card-icon">🍽</span>
-          <div class="page-card-info"><div class="page-card-name">お食事</div><div class="page-card-file">food.html</div></div>
-        </a>
-        <a href="../experience.html" target="_blank" class="page-card">
-          <span class="page-card-icon">⭐</span>
-          <div class="page-card-info"><div class="page-card-name">体験・過ごし方</div><div class="page-card-file">experience.html</div></div>
-        </a>
-        <a href="../plan.html" target="_blank" class="page-card">
-          <span class="page-card-icon">📋</span>
-          <div class="page-card-info"><div class="page-card-name">プラン</div><div class="page-card-file">plan.html</div></div>
-        </a>
-        <a href="../access.html" target="_blank" class="page-card">
-          <span class="page-card-icon">📍</span>
-          <div class="page-card-info"><div class="page-card-name">アクセス</div><div class="page-card-file">access.html</div></div>
-        </a>
-        <a href="../reserve.html" target="_blank" class="page-card">
-          <span class="page-card-icon">📅</span>
-          <div class="page-card-info"><div class="page-card-name">ご予約</div><div class="page-card-file">reserve.html</div></div>
-        </a>
+        <a href="#" class="page-card edit-page-link" data-href="../index.html"><span class="page-card-icon">🏠</span><div class="page-card-info"><div class="page-card-name">トップページ</div><div class="page-card-file">index.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../about.html"><span class="page-card-icon">📖</span><div class="page-card-info"><div class="page-card-name">宿について</div><div class="page-card-file">about.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../rooms.html"><span class="page-card-icon">🛏</span><div class="page-card-info"><div class="page-card-name">お部屋</div><div class="page-card-file">rooms.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../food.html"><span class="page-card-icon">🍽</span><div class="page-card-info"><div class="page-card-name">キッチン＆アメニティ</div><div class="page-card-file">food.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../experience.html"><span class="page-card-icon">⭐</span><div class="page-card-info"><div class="page-card-name">体験・過ごし方</div><div class="page-card-file">experience.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../plan.html"><span class="page-card-icon">📋</span><div class="page-card-info"><div class="page-card-name">プラン</div><div class="page-card-file">plan.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../access.html"><span class="page-card-icon">📍</span><div class="page-card-info"><div class="page-card-name">アクセス</div><div class="page-card-file">access.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../reserve.html"><span class="page-card-icon">📅</span><div class="page-card-info"><div class="page-card-name">ご予約</div><div class="page-card-file">reserve.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
       </div>
-      <p style="font-size:13px;color:var(--light);line-height:2;">各ページを開き、フッターの Admin リンクよりログインして編集してください。</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;">✏ カードをクリックするとそのページが編集モードで開きます。</p>
     </div>
 
     <!-- MEDIA PANEL -->
@@ -482,6 +455,18 @@
     document.getElementById('cur-pass').value = '';
     document.getElementById('new-pass').value = '';
     document.getElementById('new-pass2').value = '';
+  });
+
+  /* Edit page links — open page in edit mode */
+  const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
+  document.querySelectorAll('.edit-page-link').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const href = link.dataset.href;
+      // フラグをセット → 遷移先ページのmain.jsがこれを検知して自動でEDIT MODEを起動
+      sessionStorage.setItem(EDIT_TRIGGER_KEY, 'true');
+      window.open(href, '_blank');
+    });
   });
 
   /* Toast */
