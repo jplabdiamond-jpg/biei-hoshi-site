@@ -81,9 +81,55 @@
   </div>
 </section>
 
+<!-- 近隣施設 -->
+<section class="section-pad" style="background:var(--color-bg-warm);">
+  <div class="container">
+    <div style="margin-bottom:clamp(32px,5vw,48px);" class="fade-in">
+      <div class="sec-heading">
+        <span class="en-label">NEARBY</span>
+        <h2>近隣施設</h2>
+        <div class="sec-divider"></div>
+        <p style="font-size:14px;color:var(--color-text-mid);max-width:600px;" data-editable data-field="nearby_intro">周辺には美瑛の自然や観光スポットが点在しています。</p>
+      </div>
+    </div>
+    <div id="nearbyFacilitiesWrap" class="fade-in" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;"></div>
+  </div>
+</section>
+
 <section class="reserve-cta"><div class="reserve-cta-inner container fade-in"><p class="en">RESERVATION</p><h2>ご予約・お問い合わせ</h2><a href="reserve.html" class="btn-cta">RESERVE YOUR STAY</a></div></section>
 <footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address data-setting-address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
 <div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script><script src="js/cms.js?v=5"></script>
+<script>
+/* ─── 近隣施設レンダリング ─── */
+(function() {
+  const NEARBY_KEY = 'biei_nearby_facilities';
+  const DEFAULT_NEARBY = [
+    { img: '', name: '青い池', desc: '白髭の滝から流れ込んだコバルトブルーの神秘的な池。美瑛を代表する観光スポット。', dist: '車で約15分' },
+    { img: '', name: 'ファーム富田', desc: '北海道を代表するラベンダー畑。夏には紫の絨毯が広がります。', dist: '車で約20分' },
+    { img: '', name: '旭川市旭山動物園', desc: '日本最北の動物園。行動展示で有名。', dist: '車で約50分' }
+  ];
+
+  function renderNearby() {
+    const wrap = document.getElementById('nearbyFacilitiesWrap');
+    if (!wrap) return;
+    const stored = localStorage.getItem(NEARBY_KEY);
+    const items = stored ? JSON.parse(stored) : DEFAULT_NEARBY;
+    if (!items.length) { wrap.innerHTML = '<p style="font-size:14px;color:var(--color-text-light);">近隣施設の情報はまだ登録されていません。</p>'; return; }
+    wrap.innerHTML = items.map(item => `
+      <div style="background:var(--color-white);overflow:hidden;">
+        ${item.img ? `<div style="aspect-ratio:16/9;overflow:hidden;"><img src="${item.img}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;"></div>` : ''}
+        <div style="padding:20px 24px;">
+          <p style="font-family:var(--font-en);font-size:10px;letter-spacing:.2em;color:var(--color-accent);margin-bottom:8px;">${item.dist || ''}</p>
+          <h4 style="font-family:var(--font-jp);font-size:16px;font-weight:400;letter-spacing:.1em;margin-bottom:10px;">${item.name}</h4>
+          <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">${item.desc}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', renderNearby);
+})();
+</script>
 </body>
 </html>

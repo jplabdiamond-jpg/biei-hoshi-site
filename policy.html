@@ -36,32 +36,43 @@
       <h2>宿泊規約・キャンセルポリシー</h2>
       <div class="sec-divider"></div>
     </div>
-    <div class="fade-in">
-      <div class="policy-section">
-        <h3>1. チェックイン・チェックアウト</h3>
-        <ul><li>チェックイン：15:00〜18:00</li><li>チェックアウト：〜11:00</li><li>時間変更をご希望の場合は事前にご相談ください。</li></ul>
-      </div>
-      <div class="policy-section">
-        <h3>2. お支払い</h3>
-        <ul><li>現金、クレジットカード（VISA/MC/JCB/AMEX）、電子マネーに対応しています。</li><li>宿泊料金はチェックアウト時にお支払いください。</li></ul>
-      </div>
-      <div class="policy-section">
-        <h3>3. キャンセルポリシー</h3>
-        <ul><li>ご宿泊14日前：宿泊料金の30%</li><li>ご宿泊7日前：宿泊料金の50%</li><li>ご宿泊3日前〜当日：宿泊料金の100%</li><li>無断キャンセルの場合：宿泊料金の100%</li></ul>
-      </div>
-      <div class="policy-section">
-        <h3>4. 禁止事項</h3>
-        <ul><li>施設内での喫煙（屋外の指定場所のみ可）</li><li>ペットの同伴</li><li>他のゲストへの迷惑行為</li><li>施設・備品の破損・汚損（損害が生じた場合はご負担いただきます）</li></ul>
-      </div>
-      <div class="policy-section">
-        <h3>5. その他</h3>
-        <ul><li>天災・自然災害等の不可抗力によりご宿泊いただけない場合は、キャンセル料はいただきません。</li><li>宿泊者の都合による早期退館の場合、宿泊料金の返金はいたしかねます。</li></ul>
-      </div>
+    <div class="fade-in" id="policyContent">
+      <!-- 管理者ダッシュボードから編集。JSで描画 -->
     </div>
   </div>
 </section>
 
 <footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address data-setting-address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
+<div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script>
+<script src="js/cms.js?v=5"></script>
+<script>
+/* ─── 規約コンテンツ描画 ─── */
+(function() {
+  const POLICY_KEY = 'biei_policy_sections';
+  const DEFAULT_POLICY = [
+    { title: '1. チェックイン・チェックアウト', body: 'チェックイン：15:00〜18:00\nチェックアウト：〜11:00\n時間変更をご希望の場合は事前にご相談ください。' },
+    { title: '2. お支払い', body: '現金、クレジットカード（VISA/MC/JCB/AMEX）、電子マネーに対応しています。\n宿泊料金はチェックアウト時にお支払いください。' },
+    { title: '3. キャンセルポリシー', body: 'ご宿泊14日前：宿泊料金の30%\nご宿泊7日前：宿泊料金の50%\nご宿泊3日前〜当日：宿泊料金の100%\n無断キャンセルの場合：宿泊料金の100%' },
+    { title: '4. 禁止事項', body: '施設内での喫煙（屋外の指定場所のみ可）\nペットの同伴\n他のゲストへの迷惑行為\n施設・備品の破損・汚損（損害が生じた場合はご負担いただきます）' },
+    { title: '5. その他', body: '天災・自然災害等の不可抗力によりご宿泊いただけない場合は、キャンセル料はいただきません。\n宿泊者の都合による早期退館の場合、宿泊料金の返金はいたしかねます。' }
+  ];
+
+  function renderPolicy() {
+    const el = document.getElementById('policyContent');
+    if (!el) return;
+    const stored = localStorage.getItem(POLICY_KEY);
+    const sections = stored ? JSON.parse(stored) : DEFAULT_POLICY;
+    el.innerHTML = sections.map(s => `
+      <div class="policy-section">
+        <h3>${s.title}</h3>
+        <ul>${s.body.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>
+    `).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', renderPolicy);
+})();
+</script>
 </body>
 </html>

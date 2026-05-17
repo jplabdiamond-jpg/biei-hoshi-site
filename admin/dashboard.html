@@ -179,6 +179,15 @@
     <button class="nav-item" data-panel="news">
       <span class="nav-item-icon">📰</span>お知らせ管理
     </button>
+    <button class="nav-item" data-panel="amenity">
+      <span class="nav-item-icon">🛁</span>アメニティ管理
+    </button>
+    <button class="nav-item" data-panel="nearby">
+      <span class="nav-item-icon">📍</span>近隣施設管理
+    </button>
+    <button class="nav-item" data-panel="policy">
+      <span class="nav-item-icon">📜</span>規約管理
+    </button>
     <button class="nav-item" data-panel="transport">
       <span class="nav-item-icon">🚗</span>交通案内管理
     </button>
@@ -396,6 +405,36 @@
       </div>
     </div>
 
+    <!-- AMENITY PANEL -->
+    <div class="panel" id="panel-amenity">
+      <p class="section-title">全室共通設備・アメニティ管理（お部屋ページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">お部屋ページの「全室共通の設備・アメニティ」の各カテゴリの見出しと項目を編集できます。</p>
+      <div id="amenityAdminList"></div>
+      <button class="btn-save" id="saveAmenityBtn" style="margin-top:8px;">アメニティを保存</button>
+    </div>
+
+    <!-- NEARBY FACILITIES PANEL -->
+    <div class="panel" id="panel-nearby">
+      <p class="section-title">近隣施設管理（アクセスページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">アクセスページの「近隣施設」セクションに表示する施設を管理します。画像URL・施設名・説明・距離を設定してください。</p>
+      <div id="nearbyAdminList" style="margin-bottom:16px;"></div>
+      <button class="btn-add" id="addNearbyBtn">＋ 施設を追加</button>
+      <div style="margin-top:8px;">
+        <button class="btn-save" id="saveNearbyBtn">近隣施設を保存</button>
+      </div>
+    </div>
+
+    <!-- POLICY PANEL -->
+    <div class="panel" id="panel-policy">
+      <p class="section-title">宿泊規約管理（規約ページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">宿泊規約・キャンセルポリシーの各セクションを編集できます。本文は1行1項目（箇条書き）で入力してください。</p>
+      <div id="policyAdminList" style="margin-bottom:16px;"></div>
+      <button class="btn-add" id="addPolicySectionBtn">＋ セクションを追加</button>
+      <div style="margin-top:8px;">
+        <button class="btn-save" id="savePolicyBtn">規約を保存</button>
+      </div>
+    </div>
+
     <!-- SETTINGS PANEL -->
     <div class="panel" id="panel-settings">
       <p class="section-title">サイト設定</p>
@@ -494,7 +533,7 @@
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -509,6 +548,9 @@
       if (id === 'news') renderNewsAdmin();
       if (id === 'transport') loadTransportAdmin();
       if (id === 'reserve-notes') renderReserveNotesAdmin();
+      if (id === 'amenity') renderAmenityAdmin();
+      if (id === 'nearby') renderNearbyAdmin();
+      if (id === 'policy') renderPolicyAdmin();
     });
   });
 
@@ -865,6 +907,221 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
+  /* ========================
+     アメニティ管理
+  ======================== */
+  const AMENITY_KEY = 'biei_amenity_sections';
+  const DEFAULT_AMENITY = [
+    { title: 'BATH & TOILET', items: 'バスタブ（深浴槽）\nシャワーブース\n洗面化粧台\n温水洗浄便座\nドライヤー\nバスタオル・フェイスタオル\nボディーソープ・シャンプー等' },
+    { title: 'KITCHEN', items: 'IHクッキングヒーター（2口）\n電子レンジ・オーブントースター\n冷蔵庫（大型）・製氷機\n食器洗い乾燥機\n食器・カトラリー一式\n調理器具・鍋類\nドルチェグスト（スタバ対応）' },
+    { title: 'LIVING', items: '4K大型テレビ\nBluetoothスピーカー\n高速WiFi（有線LAN対応）\nエアコン・床暖房\nソファ・ダイニングセット\n書籍・雑誌ライブラリ\n加湿器・空気清浄機' },
+    { title: 'BEDROOM', items: '高級マットレス・羽毛布団\n枕（高さ選択可）\nベッドサイドランプ\nウォークインクローゼット\n全身鏡\nパジャマ・スリッパ\n電気毛布（冬季）' },
+    { title: 'WELCOME GIFT', items: '美瑛サイダー（各部屋1本）\n美瑛のお菓子（1箱）\nドルチェグスト カプセル\n天体望遠鏡\nランタン・ローソク\n除雪道具（冬季）' },
+    { title: 'SERVICE', items: 'チェックイン 15:00〜18:00\nチェックアウト〜11:00\n駐車場（無料・2台分）\nゴミ分別サービス\nアーリーチェックイン相談可\n荷物預かりサービス' }
+  ];
+
+  function getAmenity() {
+    const stored = localStorage.getItem(AMENITY_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_AMENITY;
+  }
+
+  function renderAmenityAdmin() {
+    const sections = getAmenity();
+    const list = document.getElementById('amenityAdminList');
+    list.innerHTML = sections.map((s, i) => `
+      <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;" data-amenity-idx="${i}">
+        <div class="form-group">
+          <label class="form-label">カテゴリ見出し（例: BATH &amp; TOILET）</label>
+          <input class="form-input amenity-title-input" type="text" value="${escHtml(s.title)}" placeholder="カテゴリ名">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">項目（1行1項目）</label>
+          <textarea class="form-textarea amenity-items-input" style="min-height:140px;" placeholder="1行ずつ項目を入力">${escHtml(s.items)}</textarea>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function collectAmenity() {
+    const rows = document.querySelectorAll('#amenityAdminList [data-amenity-idx]');
+    return Array.from(rows).map(row => ({
+      title: row.querySelector('.amenity-title-input').value.trim(),
+      items: row.querySelector('.amenity-items-input').value.trim()
+    }));
+  }
+
+  document.getElementById('saveAmenityBtn')?.addEventListener('click', () => {
+    const sections = collectAmenity();
+    localStorage.setItem(AMENITY_KEY, JSON.stringify(sections));
+
+    /* rooms.htmlのCMSキーにも反映 */
+    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    sections.forEach((s, i) => {
+      const idx = i + 1;
+      cmsData[`amenity${idx}_title`] = s.title;
+      cmsData[`amenity${idx}_items`] = s.items.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('');
+    });
+    localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('アメニティを保存しました');
+    updateStats();
+  });
+
+  /* ========================
+     近隣施設管理
+  ======================== */
+  const NEARBY_KEY = 'biei_nearby_facilities';
+  const DEFAULT_NEARBY = [
+    { img: '', name: '青い池', desc: '白髭の滝から流れ込んだコバルトブルーの神秘的な池。美瑛を代表する観光スポット。', dist: '車で約15分' },
+    { img: '', name: 'ファーム富田', desc: '北海道を代表するラベンダー畑。夏には紫の絨毯が広がります。', dist: '車で約20分' },
+    { img: '', name: '旭川市旭山動物園', desc: '日本最北の動物園。行動展示で有名。', dist: '車で約50分' }
+  ];
+
+  function getNearby() {
+    const stored = localStorage.getItem(NEARBY_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_NEARBY;
+  }
+
+  function renderNearbyAdmin() {
+    const items = getNearby();
+    const list = document.getElementById('nearbyAdminList');
+    if (!items.length) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--light);margin-bottom:12px;">施設が登録されていません。「＋ 施設を追加」で追加してください。</p>';
+    } else {
+      list.innerHTML = items.map((item, i) => `
+        <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;" data-nearby-idx="${i}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+            <div>
+              <label class="form-label">施設名</label>
+              <input class="form-input nearby-name-input" type="text" value="${escHtml(item.name)}" placeholder="施設名">
+            </div>
+            <div>
+              <label class="form-label">距離・アクセス</label>
+              <input class="form-input nearby-dist-input" type="text" value="${escHtml(item.dist)}" placeholder="車で約◯分">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">説明文</label>
+            <textarea class="form-textarea nearby-desc-input" placeholder="施設の説明">${escHtml(item.desc)}</textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">画像URL（空欄可）</label>
+            <input class="form-input nearby-img-input" type="url" value="${escHtml(item.img)}" placeholder="https://...">
+          </div>
+          <div style="margin-top:12px;"><button class="btn-sm danger nearby-del-btn">削除</button></div>
+        </div>
+      `).join('');
+      list.querySelectorAll('.nearby-del-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (!confirm('この施設を削除しますか？')) return;
+          const items = collectNearby();
+          const idx = parseInt(btn.closest('[data-nearby-idx]').dataset.nearbyIdx);
+          items.splice(idx, 1);
+          localStorage.setItem(NEARBY_KEY, JSON.stringify(items));
+          renderNearbyAdmin();
+          showToast('削除しました');
+        });
+      });
+    }
+  }
+
+  function collectNearby() {
+    const rows = document.querySelectorAll('#nearbyAdminList [data-nearby-idx]');
+    return Array.from(rows).map(row => ({
+      name: row.querySelector('.nearby-name-input').value.trim(),
+      dist: row.querySelector('.nearby-dist-input').value.trim(),
+      desc: row.querySelector('.nearby-desc-input').value.trim(),
+      img:  row.querySelector('.nearby-img-input').value.trim()
+    }));
+  }
+
+  document.getElementById('addNearbyBtn')?.addEventListener('click', () => {
+    const items = collectNearby();
+    items.push({ img: '', name: '', desc: '', dist: '' });
+    localStorage.setItem(NEARBY_KEY, JSON.stringify(items));
+    renderNearbyAdmin();
+    document.getElementById('nearbyAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
+  });
+
+  document.getElementById('saveNearbyBtn')?.addEventListener('click', () => {
+    const items = collectNearby().filter(i => i.name);
+    localStorage.setItem(NEARBY_KEY, JSON.stringify(items));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('近隣施設を保存しました');
+    renderNearbyAdmin();
+  });
+
+  /* ========================
+     規約管理
+  ======================== */
+  const POLICY_KEY = 'biei_policy_sections';
+  const DEFAULT_POLICY = [
+    { title: '1. チェックイン・チェックアウト', body: 'チェックイン：15:00〜18:00\nチェックアウト：〜11:00\n時間変更をご希望の場合は事前にご相談ください。' },
+    { title: '2. お支払い', body: '現金、クレジットカード（VISA/MC/JCB/AMEX）、電子マネーに対応しています。\n宿泊料金はチェックアウト時にお支払いください。' },
+    { title: '3. キャンセルポリシー', body: 'ご宿泊14日前：宿泊料金の30%\nご宿泊7日前：宿泊料金の50%\nご宿泊3日前〜当日：宿泊料金の100%\n無断キャンセルの場合：宿泊料金の100%' },
+    { title: '4. 禁止事項', body: '施設内での喫煙（屋外の指定場所のみ可）\nペットの同伴\n他のゲストへの迷惑行為\n施設・備品の破損・汚損（損害が生じた場合はご負担いただきます）' },
+    { title: '5. その他', body: '天災・自然災害等の不可抗力によりご宿泊いただけない場合は、キャンセル料はいただきません。\n宿泊者の都合による早期退館の場合、宿泊料金の返金はいたしかねます。' }
+  ];
+
+  function getPolicySections() {
+    const stored = localStorage.getItem(POLICY_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_POLICY;
+  }
+
+  function renderPolicyAdmin() {
+    const sections = getPolicySections();
+    const list = document.getElementById('policyAdminList');
+    list.innerHTML = sections.map((s, i) => `
+      <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;" data-policy-idx="${i}">
+        <div class="form-group">
+          <label class="form-label">セクション見出し</label>
+          <input class="form-input policy-title-input" type="text" value="${escHtml(s.title)}" placeholder="例: 1. チェックイン・チェックアウト">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">本文（1行1項目で箇条書き表示）</label>
+          <textarea class="form-textarea policy-body-input" style="min-height:120px;" placeholder="1行ずつ項目を入力">${escHtml(s.body)}</textarea>
+        </div>
+        <div style="margin-top:12px;"><button class="btn-sm danger policy-del-btn">削除</button></div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.policy-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('このセクションを削除しますか？')) return;
+        const sections = collectPolicy();
+        const idx = parseInt(btn.closest('[data-policy-idx]').dataset.policyIdx);
+        sections.splice(idx, 1);
+        localStorage.setItem(POLICY_KEY, JSON.stringify(sections));
+        renderPolicyAdmin();
+        showToast('削除しました');
+      });
+    });
+  }
+
+  function collectPolicy() {
+    const rows = document.querySelectorAll('#policyAdminList [data-policy-idx]');
+    return Array.from(rows).map(row => ({
+      title: row.querySelector('.policy-title-input').value.trim(),
+      body:  row.querySelector('.policy-body-input').value.trim()
+    }));
+  }
+
+  document.getElementById('addPolicySectionBtn')?.addEventListener('click', () => {
+    const sections = collectPolicy();
+    sections.push({ title: '', body: '' });
+    localStorage.setItem(POLICY_KEY, JSON.stringify(sections));
+    renderPolicyAdmin();
+    document.getElementById('policyAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
+  });
+
+  document.getElementById('savePolicyBtn')?.addEventListener('click', () => {
+    const sections = collectPolicy().filter(s => s.title);
+    localStorage.setItem(POLICY_KEY, JSON.stringify(sections));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('規約を保存しました');
+    updateStats();
+    renderPolicyAdmin();
+  });
 
   /* HTML escape */
   function escHtml(str) {
