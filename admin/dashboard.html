@@ -179,6 +179,9 @@
     <button class="nav-item" data-panel="news">
       <span class="nav-item-icon">📰</span>お知らせ管理
     </button>
+    <button class="nav-item" data-panel="room-images">
+      <span class="nav-item-icon">🛏</span>部屋画像管理
+    </button>
     <button class="nav-item" data-panel="amenity">
       <span class="nav-item-icon">🛁</span>アメニティ管理
     </button>
@@ -405,6 +408,17 @@
       </div>
     </div>
 
+    <!-- ROOM IMAGES PANEL -->
+    <div class="panel" id="panel-room-images">
+      <p class="section-title">部屋画像管理（お部屋ページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">
+        各部屋のメイン画像・サブ画像・ナビサムネイルをアップロードして入れ替えできます。<br>
+        「画像を選択」ボタンでファイルを選ぶと即プレビュー表示され、「保存」で反映されます。
+      </p>
+      <div id="roomImagesAdmin"></div>
+      <button class="btn-save" id="saveRoomImagesBtn" style="margin-top:16px;">部屋画像をすべて保存</button>
+    </div>
+
     <!-- AMENITY PANEL -->
     <div class="panel" id="panel-amenity">
       <p class="section-title">全室共通設備・アメニティ管理（お部屋ページ）</p>
@@ -533,7 +547,7 @@
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -548,6 +562,7 @@
       if (id === 'news') renderNewsAdmin();
       if (id === 'transport') loadTransportAdmin();
       if (id === 'reserve-notes') renderReserveNotesAdmin();
+      if (id === 'room-images') renderRoomImagesAdmin();
       if (id === 'amenity') renderAmenityAdmin();
       if (id === 'nearby') renderNearbyAdmin();
       if (id === 'policy') renderPolicyAdmin();
@@ -907,6 +922,95 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
+  /* ========================
+     部屋画像管理
+  ======================== */
+  const ROOM_IMG_FIELDS = [
+    {
+      roomLabel: '1LDKタイプ',
+      fields: [
+        { key: 'room1_bedroom', label: 'メイン画像（寝室）',   defaultSrc: 'images/sample_bedroom2.jpg' },
+        { key: 'room1_living',  label: 'サブ画像①（リビング）', defaultSrc: 'images/sample_livingroom.jpg' },
+        { key: 'room1_bath',    label: 'サブ画像②（バスルーム）', defaultSrc: 'images/sample_bathroom.jpg' },
+        { key: 'room1_thumb',   label: 'ナビサムネイル',        defaultSrc: 'images/sample_bedroom2.jpg' }
+      ]
+    },
+    {
+      roomLabel: '2LDKタイプ',
+      fields: [
+        { key: 'room2_main',    label: 'メイン画像',           defaultSrc: 'images/sample_bedroom2.jpg' },
+        { key: 'room2_living',  label: 'サブ画像①（リビング）', defaultSrc: 'images/sample_room1.jpg' },
+        { key: 'room2_bath',    label: 'サブ画像②（バスルーム）', defaultSrc: 'images/sample_bathroom.jpg' },
+        { key: 'room2_thumb',   label: 'ナビサムネイル',        defaultSrc: 'images/sample_bedroom2.jpg' }
+      ]
+    }
+  ];
+
+  function renderRoomImagesAdmin() {
+    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const wrap = document.getElementById('roomImagesAdmin');
+
+    wrap.innerHTML = ROOM_IMG_FIELDS.map(room => `
+      <div style="margin-bottom:40px;">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:.18em;font-style:italic;color:var(--accent);margin-bottom:16px;">${room.roomLabel}</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+          ${room.fields.map(f => {
+            const src = cmsData[f.key] || f.defaultSrc;
+            return `
+              <div style="background:var(--white);border:1px solid var(--border);padding:16px;" data-img-field="${f.key}">
+                <p style="font-size:11px;letter-spacing:.12em;color:var(--mid);margin-bottom:10px;">${f.label}</p>
+                <div style="aspect-ratio:4/3;overflow:hidden;margin-bottom:12px;background:#111;">
+                  <img src="${escHtml(src)}" alt="${f.label}"
+                    style="width:100%;height:100%;object-fit:cover;"
+                    class="room-img-preview" data-field="${f.key}">
+                </div>
+                <label style="display:block;width:100%;padding:8px;text-align:center;border:1px dashed var(--accent-light);color:var(--accent);font-size:12px;letter-spacing:.1em;cursor:pointer;">
+                  📂 画像を選択
+                  <input type="file" accept="image/*" style="display:none;" class="room-img-file-input" data-field="${f.key}">
+                </label>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    /* ファイル選択 → プレビュー */
+    wrap.querySelectorAll('.room-img-file-input').forEach(input => {
+      input.addEventListener('change', () => {
+        if (!input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const preview = wrap.querySelector(`.room-img-preview[data-field="${input.dataset.field}"]`);
+          if (preview) preview.src = ev.target.result;
+          /* 一時保持 */
+          input.dataset.dataUrl = ev.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+      });
+    });
+  }
+
+  document.getElementById('saveRoomImagesBtn')?.addEventListener('click', () => {
+    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const wrap = document.getElementById('roomImagesAdmin');
+    let saved = 0;
+
+    wrap.querySelectorAll('.room-img-file-input').forEach(input => {
+      if (input.dataset.dataUrl) {
+        cmsData[input.dataset.field] = input.dataset.dataUrl;
+        saved++;
+      }
+    });
+
+    localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast(saved > 0 ? `${saved}枚の画像を保存しました ✓` : '変更がありません（画像を選択してください）');
+    updateStats();
+    /* 保存後プレビューをリフレッシュ */
+    renderRoomImagesAdmin();
+  });
 
   /* ========================
      アメニティ管理
