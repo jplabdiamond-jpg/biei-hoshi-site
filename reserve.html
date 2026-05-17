@@ -92,13 +92,13 @@
       <div style="background:var(--color-bg-warm);padding:clamp(24px,4vw,40px);">
         <p style="font-family:var(--font-en);font-size:11px;letter-spacing:.25em;color:var(--color-accent);margin-bottom:14px;">IMPORTANT</p>
         <h3 style="font-family:var(--font-jp);font-size:16px;font-weight:400;letter-spacing:.1em;margin-bottom:16px;">ご予約前にご確認ください</h3>
-        <ul style="font-size:13px;color:var(--color-text-mid);line-height:2.4;list-style:disc;padding-left:16px;">
-          <li>最小宿泊人数：2名様〜（1棟貸し）</li>
-          <li>チェックイン：15:00〜18:00 / チェックアウト：〜11:00</li>
-          <li>お子様連れのご滞在は事前にご相談ください</li>
-          <li>ペットの同伴はご遠慮いただいております</li>
-          <li>キャンセルポリシー：3日前100%、7日前50%、14日前30%</li>
-          <li>ご予約は1ヶ月前より承っております</li>
+        <ul style="font-size:13px;color:var(--color-text-mid);line-height:2.4;list-style:disc;padding-left:16px;" id="reserveNotesList">
+          <li data-editable data-field="reserve_note1">最小宿泊人数：2名様〜（1棟貸し）</li>
+          <li data-editable data-field="reserve_note2">チェックイン：15:00〜18:00 / チェックアウト：〜11:00</li>
+          <li data-editable data-field="reserve_note3">お子様連れのご滞在は事前にご相談ください</li>
+          <li data-editable data-field="reserve_note4">ペットの同伴はご遠慮いただいております</li>
+          <li data-editable data-field="reserve_note5">キャンセルポリシー：3日前100%、7日前50%、14日前30%</li>
+          <li data-editable data-field="reserve_note6">ご予約は1ヶ月前より承っております</li>
         </ul>
       </div>
 
@@ -167,7 +167,9 @@
 
 <footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address data-setting-address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX<br>Mail: info@biei-hoshi.jp</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
 
+<div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script>
+<script src="js/cms.js?v=5"></script>
 <script>
 // ---- 外部予約ボタン描画 ----
 const BOOKING_BTNS_KEY = 'biei_booking_buttons';

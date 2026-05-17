@@ -176,6 +176,15 @@
     </button>
 
     <div class="nav-section">CONTENT</div>
+    <button class="nav-item" data-panel="news">
+      <span class="nav-item-icon">📰</span>お知らせ管理
+    </button>
+    <button class="nav-item" data-panel="transport">
+      <span class="nav-item-icon">🚗</span>交通案内管理
+    </button>
+    <button class="nav-item" data-panel="reserve-notes">
+      <span class="nav-item-icon">📋</span>予約前確認事項
+    </button>
     <button class="nav-item" data-panel="faq">
       <span class="nav-item-icon">❓</span>Q&A管理
     </button>
@@ -288,6 +297,75 @@
         <a href="#" class="page-card edit-page-link" data-href="../access.html"><span class="page-card-icon">📍</span><div class="page-card-info"><div class="page-card-name">アクセス</div><div class="page-card-file">access.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
         <a href="#" class="page-card edit-page-link" data-href="../reserve.html"><span class="page-card-icon">📅</span><div class="page-card-info"><div class="page-card-name">ご予約</div><div class="page-card-file">reserve.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
       </div>
+    </div>
+
+    <!-- NEWS PANEL -->
+    <div class="panel" id="panel-news">
+      <p class="section-title">お知らせ管理（トップページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">トップページの「お知らせ」セクションに表示される4件の情報を編集できます。</p>
+      <div id="newsAdminList"></div>
+      <button class="btn-save" id="saveNewsBtn" style="margin-top:8px;">お知らせを保存</button>
+    </div>
+
+    <!-- TRANSPORT PANEL -->
+    <div class="panel" id="panel-transport">
+      <p class="section-title">交通案内管理（アクセスページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">アクセスページの「交通案内」セクションの各交通手段の説明を編集できます。</p>
+      <div class="settings-form" style="max-width:720px;">
+        <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;">
+          <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;">BY AIR — 飛行機</p>
+          <div class="form-group">
+            <label class="form-label">見出し</label>
+            <input class="form-input" type="text" id="transport-air-title" value="飛行機でお越しの方">
+          </div>
+          <div class="form-group">
+            <label class="form-label">本文</label>
+            <textarea class="form-textarea" id="transport-air-body">旭川空港よりレンタカーで約40分。空港からの送迎も承っております（要予約）。</textarea>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;">
+          <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;">BY TRAIN — 電車</p>
+          <div class="form-group">
+            <label class="form-label">見出し</label>
+            <input class="form-input" type="text" id="transport-train-title" value="電車でお越しの方">
+          </div>
+          <div class="form-group">
+            <label class="form-label">本文</label>
+            <textarea class="form-textarea" id="transport-train-body">JR富良野線「美瑛駅」よりタクシーで約10分。駅からの送迎も承っております（要予約）。</textarea>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;">
+          <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;">BY CAR — お車</p>
+          <div class="form-group">
+            <label class="form-label">見出し</label>
+            <input class="form-input" type="text" id="transport-car-title" value="お車でお越しの方">
+          </div>
+          <div class="form-group">
+            <label class="form-label">本文</label>
+            <textarea class="form-textarea" id="transport-car-body">旭川紋別自動車道「比布北IC」より約60分。敷地内駐車場（4台分）を無料でご利用いただけます。</textarea>
+          </div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:24px;">
+          <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;">PICKUP — 送迎</p>
+          <div class="form-group">
+            <label class="form-label">見出し</label>
+            <input class="form-input" type="text" id="transport-pickup-title" value="送迎サービス">
+          </div>
+          <div class="form-group">
+            <label class="form-label">本文</label>
+            <textarea class="form-textarea" id="transport-pickup-body">旭川空港・JR美瑛駅からの送迎サービスをご提供しています。ご予約時にお申し付けください（有料）。</textarea>
+          </div>
+        </div>
+        <button class="btn-save" id="saveTransportBtn">交通案内を保存</button>
+      </div>
+    </div>
+
+    <!-- RESERVE NOTES PANEL -->
+    <div class="panel" id="panel-reserve-notes">
+      <p class="section-title">予約前確認事項管理（ご予約ページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">ご予約ページの「ご予約前にご確認ください」に表示される6項目を編集できます。</p>
+      <div id="reserveNotesAdminList"></div>
+      <button class="btn-save" id="saveReserveNotesBtn" style="margin-top:8px;">確認事項を保存</button>
     </div>
 
     <!-- FAQ PANEL -->
@@ -416,7 +494,7 @@
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -428,6 +506,9 @@
       panelTitle.textContent = titles[id] || id;
       if (id === 'faq') renderFaqAdmin();
       if (id === 'booking') renderBookingAdmin();
+      if (id === 'news') renderNewsAdmin();
+      if (id === 'transport') loadTransportAdmin();
+      if (id === 'reserve-notes') renderReserveNotesAdmin();
     });
   });
 
@@ -613,6 +694,136 @@
     localStorage.setItem('biei_last_save', new Date().toISOString());
     showToast('設定を保存しました');
     updateStats();
+  });
+
+  /* ========================
+     お知らせ管理
+  ======================== */
+  const NEWS_KEY = 'biei_cms_content';
+  const DEFAULT_NEWS = [
+    { date:'2026.05.01', cat:'お知らせ', title:'2026年夏季のご予約受付を開始いたしました。' },
+    { date:'2026.04.15', cat:'イベント', title:'【春の特別プラン】イルミネーション×星空観察プランのご案内。' },
+    { date:'2026.03.20', cat:'メディア', title:'旅行誌「旅と暮らし」2026年4月号にて紹介いただきました。' },
+    { date:'2026.02.10', cat:'お知らせ', title:'冬の星空観察プランに新しい特典が加わりました。' }
+  ];
+
+  function getNewsItems() {
+    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    return DEFAULT_NEWS.map((d, i) => ({
+      date:  data[`news${i+1}_date`]  || d.date,
+      cat:   data[`news${i+1}_cat`]   || d.cat,
+      title: data[`news${i+1}_title`] || d.title
+    }));
+  }
+
+  function renderNewsAdmin() {
+    const items = getNewsItems();
+    const list = document.getElementById('newsAdminList');
+    list.innerHTML = items.map((item, i) => `
+      <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;">
+        <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;">お知らせ ${i+1}</p>
+        <div style="display:grid;grid-template-columns:140px 160px 1fr;gap:12px;align-items:start;">
+          <div>
+            <label class="form-label">日付</label>
+            <input class="form-input news-date-input" type="text" data-news-idx="${i}" value="${escHtml(item.date)}" placeholder="2026.01.01">
+          </div>
+          <div>
+            <label class="form-label">カテゴリ</label>
+            <input class="form-input news-cat-input" type="text" data-news-idx="${i}" value="${escHtml(item.cat)}" placeholder="お知らせ">
+          </div>
+          <div>
+            <label class="form-label">タイトル</label>
+            <input class="form-input news-title-input" type="text" data-news-idx="${i}" value="${escHtml(item.title)}" placeholder="お知らせタイトル">
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('saveNewsBtn').addEventListener('click', () => {
+    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    document.querySelectorAll('#newsAdminList [data-news-idx]').forEach(el => {
+      const i = parseInt(el.dataset.newsIdx) + 1;
+      if (el.classList.contains('news-date-input'))  data[`news${i}_date`]  = el.value.trim();
+      if (el.classList.contains('news-cat-input'))   data[`news${i}_cat`]   = el.value.trim();
+      if (el.classList.contains('news-title-input')) data[`news${i}_title`] = el.value.trim();
+    });
+    localStorage.setItem(NEWS_KEY, JSON.stringify(data));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('お知らせを保存しました');
+  });
+
+  /* ========================
+     交通案内管理
+  ======================== */
+  const TRANSPORT_KEY = 'biei_transport';
+  const TRANSPORT_FIELDS = [
+    { key:'air',    label:'BY AIR — 飛行機',   titleId:'transport-air-title',    bodyId:'transport-air-body',    defaultTitle:'飛行機でお越しの方', defaultBody:'旭川空港よりレンタカーで約40分。空港からの送迎も承っております（要予約）。' },
+    { key:'train',  label:'BY TRAIN — 電車',   titleId:'transport-train-title',  bodyId:'transport-train-body',  defaultTitle:'電車でお越しの方',  defaultBody:'JR富良野線「美瑛駅」よりタクシーで約10分。駅からの送迎も承っております（要予約）。' },
+    { key:'car',    label:'BY CAR — お車',     titleId:'transport-car-title',    bodyId:'transport-car-body',    defaultTitle:'お車でお越しの方',  defaultBody:'旭川紋別自動車道「比布北IC」より約60分。敷地内駐車場（4台分）を無料でご利用いただけます。' },
+    { key:'pickup', label:'PICKUP — 送迎',     titleId:'transport-pickup-title', bodyId:'transport-pickup-body', defaultTitle:'送迎サービス',      defaultBody:'旭川空港・JR美瑛駅からの送迎サービスをご提供しています。ご予約時にお申し付けください（有料）。' }
+  ];
+
+  function loadTransportAdmin() {
+    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    TRANSPORT_FIELDS.forEach(f => {
+      const titleEl = document.getElementById(f.titleId);
+      const bodyEl  = document.getElementById(f.bodyId);
+      if (titleEl) titleEl.value = data[`access_${f.key}_title`] || f.defaultTitle;
+      if (bodyEl)  bodyEl.value  = data[`access_${f.key}_body`]  || f.defaultBody;
+    });
+  }
+
+  document.getElementById('saveTransportBtn').addEventListener('click', () => {
+    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    TRANSPORT_FIELDS.forEach(f => {
+      const titleEl = document.getElementById(f.titleId);
+      const bodyEl  = document.getElementById(f.bodyId);
+      if (titleEl) data[`access_${f.key}_title`] = titleEl.value.trim();
+      if (bodyEl)  data[`access_${f.key}_body`]  = bodyEl.value.trim();
+    });
+    localStorage.setItem(NEWS_KEY, JSON.stringify(data));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('交通案内を保存しました');
+  });
+
+  /* ========================
+     予約前確認事項管理
+  ======================== */
+  const DEFAULT_RESERVE_NOTES = [
+    '最小宿泊人数：2名様〜（1棟貸し）',
+    'チェックイン：15:00〜18:00 / チェックアウト：〜11:00',
+    'お子様連れのご滞在は事前にご相談ください',
+    'ペットの同伴はご遠慮いただいております',
+    'キャンセルポリシー：3日前100%、7日前50%、14日前30%',
+    'ご予約は1ヶ月前より承っております'
+  ];
+
+  function getReserveNotes() {
+    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    return DEFAULT_RESERVE_NOTES.map((d, i) => data[`reserve_note${i+1}`] || d);
+  }
+
+  function renderReserveNotesAdmin() {
+    const notes = getReserveNotes();
+    const list = document.getElementById('reserveNotesAdminList');
+    list.innerHTML = notes.map((note, i) => `
+      <div style="background:var(--white);border:1px solid var(--border);padding:16px 20px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:11px;letter-spacing:.15em;color:var(--accent);min-width:60px;">項目 ${i+1}</span>
+        <input class="form-input reserve-note-input" type="text" data-note-idx="${i}" value="${escHtml(note)}" style="flex:1;">
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('saveReserveNotesBtn').addEventListener('click', () => {
+    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    document.querySelectorAll('#reserveNotesAdminList .reserve-note-input').forEach(el => {
+      const i = parseInt(el.dataset.noteIdx) + 1;
+      data[`reserve_note${i}`] = el.value.trim();
+    });
+    localStorage.setItem(NEWS_KEY, JSON.stringify(data));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('確認事項を保存しました');
   });
 
   /* Password change */
