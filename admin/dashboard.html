@@ -42,7 +42,7 @@
     .sidebar-brand .jp { font-family: 'Noto Serif JP', serif; font-size: 14px; letter-spacing: 0.12em; }
     .sidebar-brand .en { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; color: var(--accent-light); font-style: italic; margin-top: 4px; }
     .sidebar-brand .badge { display: inline-block; background: var(--accent); color: white; font-size: 9px; letter-spacing: 0.12em; padding: 2px 8px; margin-top: 10px; }
-    .sidebar-nav { padding: 16px 0; flex: 1; }
+    .sidebar-nav { padding: 16px 0; flex: 1; overflow-y: auto; }
     .nav-section { padding: 20px 16px 8px; font-size: 9px; letter-spacing: 0.25em; color: rgba(255,255,255,0.35); }
     .nav-item {
       display: flex; align-items: center; gap: 12px;
@@ -65,7 +65,7 @@
     .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
     .topbar h1 { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.15em; font-style: italic; color: var(--mid); }
     .topbar-actions { display: flex; gap: 12px; align-items: center; }
-    .topbar-btn { padding: 8px 20px; border: 1px solid var(--border); font-size: 12px; letter-spacing: 0.1em; cursor: pointer; background: #1e1c18; color: var(--mid); transition: all 0.2s; }
+    .topbar-btn { padding: 8px 20px; border: 1px solid var(--border); font-size: 12px; letter-spacing: 0.1em; cursor: pointer; background: #1e1c18; color: var(--mid); transition: all 0.2s; text-decoration: none; }
     .topbar-btn.primary { background: rgba(196,168,130,0.15); color: var(--accent); border-color: rgba(196,168,130,0.4); }
     .topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
     .topbar-btn.primary:hover { opacity: 0.85; background: rgba(196,168,130,0.25); }
@@ -98,21 +98,13 @@
     .page-card-file { font-size: 11px; color: var(--light); letter-spacing: 0.06em; }
     .page-card-badge { margin-left: auto; font-size: 10px; padding: 3px 10px; border: 1px solid var(--border); color: var(--light); }
 
-    /* Media manager preview */
-    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-    .media-item { position: relative; aspect-ratio: 1; background: var(--bg-warm); overflow: hidden; cursor: pointer; }
-    .media-item img { width: 100%; height: 100%; object-fit: cover; }
-    .media-item-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.55); color: white; font-size: 10px; letter-spacing: 0.08em; padding: 4px 8px; }
-    .media-upload-btn { border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; cursor: pointer; transition: border-color 0.2s; }
-    .media-upload-btn:hover { border-color: var(--accent); }
-    .media-upload-btn span { font-size: 11px; color: var(--light); letter-spacing: 0.1em; }
-
     /* Settings */
     .settings-form { max-width: 560px; }
     .form-group { margin-bottom: 24px; }
     .form-label { display: block; font-size: 12px; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 8px; }
-    .form-input { width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: #1e1c18; font-size: 14px; color: var(--dark); outline: none; transition: border-color 0.2s; }
-    .form-input:focus { border-color: var(--accent); }
+    .form-input, .form-textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--border); background: #1e1c18; font-size: 14px; color: var(--dark); outline: none; transition: border-color 0.2s; font-family: 'Noto Sans JP', sans-serif; }
+    .form-input:focus, .form-textarea:focus { border-color: var(--accent); }
+    .form-textarea { resize: vertical; min-height: 80px; }
     .btn-save { padding: 13px 36px; background: rgba(196,168,130,0.15); color: var(--accent); border: 1px solid rgba(196,168,130,0.4); font-size: 13px; letter-spacing: 0.15em; cursor: pointer; transition: opacity 0.2s; }
     .btn-save:hover { opacity: 0.82; }
 
@@ -121,12 +113,44 @@
     .panel.active { display: block; }
 
     /* Toast */
-    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--dark); color: white; padding: 12px 28px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.4s; pointer-events: none; }
+    .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--dark); color: #111; padding: 12px 28px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.4s; pointer-events: none; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* FAQ管理 */
+    .faq-admin-list { margin-bottom: 24px; }
+    .faq-admin-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .faq-admin-item .faq-fields { display: grid; gap: 10px; }
+    .faq-admin-item .faq-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .btn-sm { padding: 6px 16px; font-size: 12px; letter-spacing: 0.08em; border: 1px solid var(--border); background: #1e1c18; color: var(--mid); cursor: pointer; transition: all 0.2s; }
+    .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-sm.danger { border-color: #8b2020; color: #c0392b; }
+    .btn-sm.danger:hover { background: rgba(192,57,43,0.1); }
+    .btn-add { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 1px dashed var(--accent-light); background: none; color: var(--accent); font-size: 13px; letter-spacing: 0.1em; cursor: pointer; margin-bottom: 24px; transition: all 0.2s; }
+    .btn-add:hover { background: rgba(196,168,130,0.08); }
+
+    /* 予約ボタン管理 */
+    .booking-admin-item {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .booking-admin-item .btn-sm { white-space: nowrap; }
 
     @media (max-width: 767px) {
       .sidebar { width: 200px; }
       .main { margin-left: 200px; }
+      .booking-admin-item { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -151,9 +175,12 @@
       <span class="nav-item-icon">📄</span>ページ編集
     </button>
 
-    <div class="nav-section">ASSETS</div>
-    <button class="nav-item" data-panel="media">
-      <span class="nav-item-icon">🖼</span>メディア管理
+    <div class="nav-section">CONTENT</div>
+    <button class="nav-item" data-panel="faq">
+      <span class="nav-item-icon">❓</span>Q&A管理
+    </button>
+    <button class="nav-item" data-panel="booking">
+      <span class="nav-item-icon">🔗</span>予約ボタン管理
     </button>
 
     <div class="nav-section">SETTINGS</div>
@@ -186,13 +213,18 @@
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">TOTAL PAGES</div>
-          <div class="stat-value">8</div>
+          <div class="stat-value">7</div>
           <div class="stat-sub">公開ページ数</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">MEDIA FILES</div>
-          <div class="stat-value" id="mediaCount">0</div>
-          <div class="stat-sub">アップロード済み画像</div>
+          <div class="stat-label">FAQ ITEMS</div>
+          <div class="stat-value" id="faqCount">—</div>
+          <div class="stat-sub">Q&A 登録件数</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">BOOKING LINKS</div>
+          <div class="stat-value" id="bookingCount">—</div>
+          <div class="stat-sub">予約ボタン数</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">LAST UPDATED</div>
@@ -205,72 +237,42 @@
       <div class="page-list">
         <a href="#" class="page-card edit-page-link" data-href="../index.html">
           <span class="page-card-icon">🏠</span>
-          <div class="page-card-info">
-            <div class="page-card-name">トップページ</div>
-            <div class="page-card-file">index.html</div>
-          </div>
+          <div class="page-card-info"><div class="page-card-name">トップページ</div><div class="page-card-file">index.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
         <a href="#" class="page-card edit-page-link" data-href="../about.html">
           <span class="page-card-icon">📖</span>
-          <div class="page-card-info">
-            <div class="page-card-name">宿について</div>
-            <div class="page-card-file">about.html</div>
-          </div>
+          <div class="page-card-info"><div class="page-card-name">宿について</div><div class="page-card-file">about.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
         <a href="#" class="page-card edit-page-link" data-href="../rooms.html">
           <span class="page-card-icon">🛏</span>
-          <div class="page-card-info">
-            <div class="page-card-name">お部屋</div>
-            <div class="page-card-file">rooms.html</div>
-          </div>
+          <div class="page-card-info"><div class="page-card-name">お部屋</div><div class="page-card-file">rooms.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="#" class="page-card edit-page-link" data-href="../food.html">
+        <a href="#" class="page-card edit-page-link" data-href="../kitchen.html">
           <span class="page-card-icon">🍽</span>
-          <div class="page-card-info">
-            <div class="page-card-name">キッチン＆アメニティ</div>
-            <div class="page-card-file">food.html</div>
-          </div>
+          <div class="page-card-info"><div class="page-card-name">キッチン＆アメニティ</div><div class="page-card-file">kitchen.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
-        <a href="#" class="page-card edit-page-link" data-href="../experience.html">
-          <span class="page-card-icon">⭐</span>
-          <div class="page-card-info">
-            <div class="page-card-name">体験・過ごし方</div>
-            <div class="page-card-file">experience.html</div>
-          </div>
-          <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
-        </a>
-        <a href="#" class="page-card edit-page-link" data-href="../plan.html">
-          <span class="page-card-icon">📋</span>
-          <div class="page-card-info">
-            <div class="page-card-name">プラン</div>
-            <div class="page-card-file">plan.html</div>
-          </div>
+        <a href="#" class="page-card edit-page-link" data-href="../faq.html">
+          <span class="page-card-icon">❓</span>
+          <div class="page-card-info"><div class="page-card-name">よくある質問</div><div class="page-card-file">faq.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
         <a href="#" class="page-card edit-page-link" data-href="../access.html">
           <span class="page-card-icon">📍</span>
-          <div class="page-card-info">
-            <div class="page-card-name">アクセス</div>
-            <div class="page-card-file">access.html</div>
-          </div>
+          <div class="page-card-info"><div class="page-card-name">アクセス</div><div class="page-card-file">access.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
         <a href="#" class="page-card edit-page-link" data-href="../reserve.html">
           <span class="page-card-icon">📅</span>
-          <div class="page-card-info">
-            <div class="page-card-name">ご予約</div>
-            <div class="page-card-file">reserve.html</div>
-          </div>
+          <div class="page-card-info"><div class="page-card-name">ご予約</div><div class="page-card-file">reserve.html</div></div>
           <span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span>
         </a>
       </div>
-
       <p style="font-size:13px;color:var(--light);line-height:2;max-width:560px;">
-        ✏ カードをクリックするとそのページが編集モードで開きます。テキストを直接クリックして編集し、<strong>SAVE CHANGES</strong> で保存されます。
+        ✏ カードをクリックするとそのページが編集モードで開きます。
       </p>
     </div>
 
@@ -281,32 +283,38 @@
         <a href="#" class="page-card edit-page-link" data-href="../index.html"><span class="page-card-icon">🏠</span><div class="page-card-info"><div class="page-card-name">トップページ</div><div class="page-card-file">index.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
         <a href="#" class="page-card edit-page-link" data-href="../about.html"><span class="page-card-icon">📖</span><div class="page-card-info"><div class="page-card-name">宿について</div><div class="page-card-file">about.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
         <a href="#" class="page-card edit-page-link" data-href="../rooms.html"><span class="page-card-icon">🛏</span><div class="page-card-info"><div class="page-card-name">お部屋</div><div class="page-card-file">rooms.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
-        <a href="#" class="page-card edit-page-link" data-href="../food.html"><span class="page-card-icon">🍽</span><div class="page-card-info"><div class="page-card-name">キッチン＆アメニティ</div><div class="page-card-file">food.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
-        <a href="#" class="page-card edit-page-link" data-href="../experience.html"><span class="page-card-icon">⭐</span><div class="page-card-info"><div class="page-card-name">体験・過ごし方</div><div class="page-card-file">experience.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
-        <a href="#" class="page-card edit-page-link" data-href="../plan.html"><span class="page-card-icon">📋</span><div class="page-card-info"><div class="page-card-name">プラン</div><div class="page-card-file">plan.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../kitchen.html"><span class="page-card-icon">🍽</span><div class="page-card-info"><div class="page-card-name">キッチン＆アメニティ</div><div class="page-card-file">kitchen.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
+        <a href="#" class="page-card edit-page-link" data-href="../faq.html"><span class="page-card-icon">❓</span><div class="page-card-info"><div class="page-card-name">よくある質問</div><div class="page-card-file">faq.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
         <a href="#" class="page-card edit-page-link" data-href="../access.html"><span class="page-card-icon">📍</span><div class="page-card-info"><div class="page-card-name">アクセス</div><div class="page-card-file">access.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
         <a href="#" class="page-card edit-page-link" data-href="../reserve.html"><span class="page-card-icon">📅</span><div class="page-card-info"><div class="page-card-name">ご予約</div><div class="page-card-file">reserve.html</div></div><span class="page-card-badge" style="background:var(--accent);color:white;border-color:var(--accent);">✏ EDIT</span></a>
       </div>
-      <p style="font-size:13px;color:var(--light);line-height:2;">✏ カードをクリックするとそのページが編集モードで開きます。</p>
     </div>
 
-    <!-- MEDIA PANEL -->
-    <div class="panel" id="panel-media">
-      <p class="section-title">メディア管理</p>
-      <p style="font-size:13px;color:var(--light);margin-bottom:24px;line-height:2;">
-        画像・動画ファイルを管理します。各ページの編集モードで画像エリアをクリックするとファイルを直接置換できます。<br>
-        ここでは画像データの一覧確認・削除が行えます。
-      </p>
+    <!-- FAQ PANEL -->
+    <div class="panel" id="panel-faq">
+      <p class="section-title">Q&A 管理</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">よくあるご質問の質問と回答を追加・編集・削除できます。保存ボタンを押すと即座にサイトに反映されます。</p>
 
-      <div style="margin-bottom:24px;">
-        <label style="display:inline-flex;align-items:center;gap:10px;padding:12px 24px;border:1px dashed var(--accent-light);cursor:pointer;font-size:13px;color:var(--accent);">
-          <span>＋ 画像をアップロード</span>
-          <input type="file" accept="image/*,video/*" multiple id="mediaUpload" style="display:none;">
-        </label>
+      <div class="faq-admin-list" id="faqAdminList"></div>
+
+      <button class="btn-add" id="addFaqBtn">＋ Q&Aを追加</button>
+
+      <div style="margin-top:8px;">
+        <button class="btn-save" id="saveFaqBtn">Q&Aを保存</button>
       </div>
+    </div>
 
-      <div class="media-grid" id="mediaGrid">
-        <p style="font-size:13px;color:var(--light);">アップロードされた画像がここに表示されます。</p>
+    <!-- BOOKING BUTTONS PANEL -->
+    <div class="panel" id="panel-booking">
+      <p class="section-title">予約ボタン管理</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">ご予約ページに表示する外部予約サイトへのボタンを管理します。ボタン名とリンク先URLを設定してください。</p>
+
+      <div id="bookingAdminList" style="margin-bottom:16px;"></div>
+
+      <button class="btn-add" id="addBookingBtn">＋ 予約ボタンを追加</button>
+
+      <div style="margin-top:8px;">
+        <button class="btn-save" id="saveBookingBtn">予約ボタンを保存</button>
       </div>
     </div>
 
@@ -333,10 +341,6 @@
         <div class="form-group">
           <label class="form-label">メールアドレス</label>
           <input class="form-input" type="email" id="set-email" value="info@biei-hoshi.jp">
-        </div>
-        <div class="form-group">
-          <label class="form-label">予約リンク URL</label>
-          <input class="form-input" type="url" id="set-reserve" placeholder="https://...">
         </div>
         <button class="btn-save" id="saveSettings">設定を保存</button>
       </div>
@@ -376,7 +380,26 @@
   const SESSION_KEY = 'biei_admin_session';
   const CREDS_KEY = 'biei_admin_creds';
   const SETTINGS_KEY = 'biei_settings';
-  const CMS_KEY = 'biei_cms_content';
+  const FAQ_KEY = 'biei_faq_items';
+  const BOOKING_BTNS_KEY = 'biei_booking_buttons';
+
+  const DEFAULT_FAQ = [
+    { q: 'チェックイン・チェックアウトの時間を教えてください。', a: 'チェックインは15:00〜18:00、チェックアウトは〜11:00となっております。ご都合により時間の変更をご希望の場合は、事前にご相談ください。' },
+    { q: '何名から宿泊できますか？', a: '最小2名様からご利用いただけます。最大6名様（添い寝のお子様を除く）まで対応しております。1名様でのご利用はご相談ください。' },
+    { q: '子供連れでも宿泊できますか？', a: 'お子様連れのご滞在も歓迎しております。ただし、施設内の露天風呂や暖炉など、安全面でご注意いただく箇所がございますため、事前にご一報ください。' },
+    { q: 'ペットの同伴は可能ですか？', a: '誠に恐れ入りますが、現在はペットの同伴はご遠慮いただいております。' },
+    { q: '食事のアレルギー対応はしていただけますか？', a: 'はい、対応しております。ご予約時またはご来泊前にアレルギーや食事制限についてお知らせください。' },
+    { q: '駐車場はありますか？', a: 'はい、敷地内に無料駐車場（4台分）をご用意しております。' },
+    { q: 'Wi-Fiは使えますか？', a: 'はい、高速Wi-Fiを完備しております。接続情報はチェックイン時にお伝えします。' },
+    { q: 'キャンセルポリシーを教えてください。', a: 'ご宿泊日より14日前：30%、7日前：50%、3日前〜：100%のキャンセル料を申し受けます。' },
+    { q: '支払い方法は何が使えますか？', a: '現金、各種クレジットカード（VISA、Mastercard、JCB、AMEX）、電子マネー（PayPay、LINE Pay等）に対応しております。' },
+    { q: '送迎サービスはありますか？', a: '旭川空港・JR美瑛駅からの送迎サービスをご提供しています（有料、要事前予約）。' }
+  ];
+
+  const DEFAULT_BOOKING_BTNS = [
+    { name: 'じゃらんnet', url: 'https://www.jalan.net/' },
+    { name: '楽天トラベル', url: 'https://travel.rakuten.co.jp/' }
+  ];
 
   /* Auth guard */
   if (sessionStorage.getItem(SESSION_KEY) !== 'true') {
@@ -393,7 +416,7 @@
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', media:'Media', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -403,21 +426,178 @@
       panels.forEach(p => p.classList.remove('active'));
       document.getElementById('panel-' + id)?.classList.add('active');
       panelTitle.textContent = titles[id] || id;
+      if (id === 'faq') renderFaqAdmin();
+      if (id === 'booking') renderBookingAdmin();
     });
   });
 
   /* Stats */
   function updateStats() {
-    const cms = JSON.parse(localStorage.getItem(CMS_KEY) || '{}');
-    const imgCount = Object.values(cms).filter(v => v && v.startsWith('data:')).length;
-    document.getElementById('mediaCount').textContent = imgCount;
+    const faqItems = JSON.parse(localStorage.getItem(FAQ_KEY) || 'null') || DEFAULT_FAQ;
+    const bookingBtns = JSON.parse(localStorage.getItem(BOOKING_BTNS_KEY) || 'null') || DEFAULT_BOOKING_BTNS;
+    document.getElementById('faqCount').textContent = faqItems.length;
+    document.getElementById('bookingCount').textContent = bookingBtns.length;
     const ts = localStorage.getItem('biei_last_save');
     if (ts) document.getElementById('lastUpdated').textContent = new Date(ts).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
   }
   updateStats();
 
+  /* ========================
+     FAQ 管理
+  ======================== */
+  function getFaqItems() {
+    const stored = localStorage.getItem(FAQ_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_FAQ;
+  }
+
+  function renderFaqAdmin() {
+    const items = getFaqItems();
+    const list = document.getElementById('faqAdminList');
+    list.innerHTML = items.map((item, i) => `
+      <div class="faq-admin-item" data-faq-idx="${i}">
+        <div class="faq-fields">
+          <div>
+            <label class="form-label">Q（質問）</label>
+            <input class="form-input faq-q-input" type="text" value="${escHtml(item.q)}" placeholder="質問を入力">
+          </div>
+          <div>
+            <label class="form-label">A（回答）</label>
+            <textarea class="form-textarea faq-a-input" placeholder="回答を入力">${escHtml(item.a)}</textarea>
+          </div>
+        </div>
+        <div class="faq-actions">
+          <button class="btn-sm faq-up-btn" title="上へ">↑</button>
+          <button class="btn-sm faq-down-btn" title="下へ">↓</button>
+          <button class="btn-sm danger faq-del-btn">削除</button>
+        </div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.faq-up-btn').forEach(btn => {
+      btn.addEventListener('click', () => moveFaq(btn.closest('[data-faq-idx]'), -1));
+    });
+    list.querySelectorAll('.faq-down-btn').forEach(btn => {
+      btn.addEventListener('click', () => moveFaq(btn.closest('[data-faq-idx]'), 1));
+    });
+    list.querySelectorAll('.faq-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('このQ&Aを削除しますか？')) return;
+        const items = collectFaqItems();
+        const idx = parseInt(btn.closest('[data-faq-idx]').dataset.faqIdx);
+        items.splice(idx, 1);
+        localStorage.setItem(FAQ_KEY, JSON.stringify(items));
+        renderFaqAdmin();
+        showToast('削除しました');
+        updateStats();
+      });
+    });
+  }
+
+  function collectFaqItems() {
+    const rows = document.querySelectorAll('#faqAdminList [data-faq-idx]');
+    return Array.from(rows).map(row => ({
+      q: row.querySelector('.faq-q-input').value.trim(),
+      a: row.querySelector('.faq-a-input').value.trim()
+    }));
+  }
+
+  function moveFaq(el, dir) {
+    const items = collectFaqItems();
+    const idx = parseInt(el.dataset.faqIdx);
+    const newIdx = idx + dir;
+    if (newIdx < 0 || newIdx >= items.length) return;
+    [items[idx], items[newIdx]] = [items[newIdx], items[idx]];
+    localStorage.setItem(FAQ_KEY, JSON.stringify(items));
+    renderFaqAdmin();
+  }
+
+  document.getElementById('addFaqBtn').addEventListener('click', () => {
+    const items = collectFaqItems();
+    items.push({ q: '', a: '' });
+    localStorage.setItem(FAQ_KEY, JSON.stringify(items));
+    renderFaqAdmin();
+    document.getElementById('faqAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
+  });
+
+  document.getElementById('saveFaqBtn').addEventListener('click', () => {
+    const items = collectFaqItems().filter(i => i.q || i.a);
+    localStorage.setItem(FAQ_KEY, JSON.stringify(items));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('Q&Aを保存しました');
+    updateStats();
+    renderFaqAdmin();
+  });
+
+  /* ========================
+     予約ボタン管理
+  ======================== */
+  function getBookingBtns() {
+    const stored = localStorage.getItem(BOOKING_BTNS_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_BOOKING_BTNS;
+  }
+
+  function renderBookingAdmin() {
+    const btns = getBookingBtns();
+    const list = document.getElementById('bookingAdminList');
+    if (btns.length === 0) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--light);margin-bottom:12px;">予約ボタンがありません。「＋ 予約ボタンを追加」で追加してください。</p>';
+      return;
+    }
+    list.innerHTML = btns.map((btn, i) => `
+      <div class="booking-admin-item" data-booking-idx="${i}">
+        <div>
+          <label class="form-label" style="margin-bottom:4px;">ボタン名</label>
+          <input class="form-input booking-name-input" type="text" value="${escHtml(btn.name)}" placeholder="例: じゃらんnet">
+        </div>
+        <div>
+          <label class="form-label" style="margin-bottom:4px;">リンク先URL</label>
+          <input class="form-input booking-url-input" type="url" value="${escHtml(btn.url)}" placeholder="https://...">
+        </div>
+        <button class="btn-sm danger booking-del-btn">削除</button>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.booking-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('このボタンを削除しますか？')) return;
+        const btns = collectBookingBtns();
+        const idx = parseInt(btn.closest('[data-booking-idx]').dataset.bookingIdx);
+        btns.splice(idx, 1);
+        localStorage.setItem(BOOKING_BTNS_KEY, JSON.stringify(btns));
+        renderBookingAdmin();
+        showToast('削除しました');
+        updateStats();
+      });
+    });
+  }
+
+  function collectBookingBtns() {
+    const rows = document.querySelectorAll('#bookingAdminList [data-booking-idx]');
+    return Array.from(rows).map(row => ({
+      name: row.querySelector('.booking-name-input').value.trim(),
+      url: row.querySelector('.booking-url-input').value.trim()
+    }));
+  }
+
+  document.getElementById('addBookingBtn').addEventListener('click', () => {
+    const btns = collectBookingBtns();
+    btns.push({ name: '', url: '' });
+    localStorage.setItem(BOOKING_BTNS_KEY, JSON.stringify(btns));
+    renderBookingAdmin();
+    document.getElementById('bookingAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
+  });
+
+  document.getElementById('saveBookingBtn').addEventListener('click', () => {
+    const btns = collectBookingBtns().filter(b => b.name || b.url);
+    localStorage.setItem(BOOKING_BTNS_KEY, JSON.stringify(btns));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    showToast('予約ボタンを保存しました');
+    updateStats();
+    renderBookingAdmin();
+  });
+
   /* Settings */
-  const SETTINGS_FIELDS = ['name','tagline','address','tel','email','reserve'];
+  const SETTINGS_FIELDS = ['name','tagline','address','tel','email'];
   function loadSettings() {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
     SETTINGS_FIELDS.forEach(f => {
@@ -457,15 +637,13 @@
     document.getElementById('new-pass2').value = '';
   });
 
-  /* Edit page links — 同一タブで遷移 + 自動EDIT MODE起動 */
+  /* Edit page links */
   const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
   document.querySelectorAll('.edit-page-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
-      const href = link.dataset.href;
-      // 同一タブで遷移 → sessionStorageが引き継がれる
       sessionStorage.setItem(EDIT_TRIGGER_KEY, 'true');
-      window.location.href = href;
+      window.location.href = link.dataset.href;
     });
   });
 
@@ -475,6 +653,11 @@
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* HTML escape */
+  function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 </script>
 </body>
