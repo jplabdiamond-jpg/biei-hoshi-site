@@ -28,15 +28,8 @@
 
 <section class="section-pad" style="background:var(--color-white);">
   <div class="container" style="max-width:800px;">
-    <div class="news-list fade-in">
-      <div class="news-item"><span class="news-date">2026.05.01</span><span class="news-cat">お知らせ</span><span class="news-title">2026年夏季のご予約受付を開始いたしました。</span></div>
-      <div class="news-item"><span class="news-date">2026.04.15</span><span class="news-cat">イベント</span><span class="news-title">【春の特選コース】春の恵みを味わう特別ディナーのご案内。</span></div>
-      <div class="news-item"><span class="news-date">2026.03.20</span><span class="news-cat">メディア</span><span class="news-title">旅行誌「旅と暮らし」2026年4月号にて紹介いただきました。</span></div>
-      <div class="news-item"><span class="news-date">2026.02.10</span><span class="news-cat">お知らせ</span><span class="news-title">冬の星空観察プランに新しい特典が加わりました。</span></div>
-      <div class="news-item"><span class="news-date">2026.01.05</span><span class="news-cat">お知らせ</span><span class="news-title">2026年1月より、農家訪問プログラムを新たに開始いたします。</span></div>
-      <div class="news-item"><span class="news-date">2025.12.01</span><span class="news-cat">お知らせ</span><span class="news-title">年末年始の特別プランのご予約受付を開始しました。</span></div>
-      <div class="news-item"><span class="news-date">2025.11.15</span><span class="news-cat">メディア</span><span class="news-title">北海道観光誌「北の旅人」にて当宿が特集されました。</span></div>
-      <div class="news-item"><span class="news-date">2025.10.01</span><span class="news-cat">お知らせ</span><span class="news-title">「星の光の宿 BIEI」グランドオープンのお知らせ。</span></div>
+    <div class="news-list fade-in" id="newsListAll">
+      <!-- JSで動的レンダリング -->
     </div>
   </div>
 </section>
@@ -45,5 +38,31 @@
 <div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script>
 <script src="js/cms.js?v=5"></script>
+<script>
+(function() {
+  const NEWS_LIST_KEY = 'biei_news_list';
+  const DEFAULT_NEWS = [
+    { date:'2026.05.01', cat:'お知らせ', title:'2026年夏季のご予約受付を開始いたしました。' },
+    { date:'2026.04.15', cat:'イベント', title:'【春の特別プラン】イルミネーション×星空観察プランのご案内。' },
+    { date:'2026.03.20', cat:'メディア', title:'旅行誌「旅と暮らし」2026年4月号にて紹介いただきました。' },
+    { date:'2026.02.10', cat:'お知らせ', title:'冬の星空観察プランに新しい特典が加わりました。' }
+  ];
+  const stored = localStorage.getItem(NEWS_LIST_KEY);
+  const items = stored ? JSON.parse(stored) : DEFAULT_NEWS;
+  const wrap = document.getElementById('newsListAll');
+  if (!wrap) return;
+  if (!items.length) {
+    wrap.innerHTML = '<p style="font-size:14px;color:var(--color-text-light);text-align:center;padding:40px 0;">お知らせはまだありません。</p>';
+    return;
+  }
+  wrap.innerHTML = items.map(item => `
+    <div class="news-item">
+      <span class="news-date">${item.date}</span>
+      <span class="news-cat">${item.cat}</span>
+      <span class="news-title">${item.title}</span>
+    </div>
+  `).join('');
+})();
+</script>
 </body>
 </html>

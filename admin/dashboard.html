@@ -313,10 +313,13 @@
 
     <!-- NEWS PANEL -->
     <div class="panel" id="panel-news">
-      <p class="section-title">お知らせ管理（トップページ）</p>
-      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">トップページの「お知らせ」セクションに表示される4件の情報を編集できます。</p>
-      <div id="newsAdminList"></div>
-      <button class="btn-save" id="saveNewsBtn" style="margin-top:8px;">お知らせを保存</button>
+      <p class="section-title">お知らせ管理</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">お知らせの追加・編集・削除ができます。トップページ・お知らせページに反映されます。</p>
+      <div id="newsAdminList" style="max-height:520px;overflow-y:auto;padding-right:4px;"></div>
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <button class="btn-save" id="addNewsBtn" style="background:var(--accent-dim,#3a3530);border:1px solid var(--accent);color:var(--accent);">＋ お知らせを追加</button>
+        <button class="btn-save" id="saveNewsBtn">保存する</button>
+      </div>
     </div>
 
     <!-- TRANSPORT PANEL -->
@@ -770,7 +773,8 @@ OUT〜11:00</textarea>
   /* ========================
      お知らせ管理
   ======================== */
-  const NEWS_KEY = 'biei_cms_content';
+  const NEWS_KEY = 'biei_cms_content'; /* 後方互換のため保持 */
+  const NEWS_LIST_KEY = 'biei_news_list';
   const DEFAULT_NEWS = [
     { date:'2026.05.01', cat:'お知らせ', title:'2026年夏季のご予約受付を開始いたしました。' },
     { date:'2026.04.15', cat:'イベント', title:'【春の特別プラン】イルミネーション×星空観察プランのご案内。' },
@@ -779,49 +783,81 @@ OUT〜11:00</textarea>
   ];
 
   function getNewsItems() {
-    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
-    return DEFAULT_NEWS.map((d, i) => ({
-      date:  data[`news${i+1}_date`]  || d.date,
-      cat:   data[`news${i+1}_cat`]   || d.cat,
-      title: data[`news${i+1}_title`] || d.title
-    }));
+    const stored = localStorage.getItem(NEWS_LIST_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_NEWS;
+  }
+
+  function saveNewsItems(items) {
+    localStorage.setItem(NEWS_LIST_KEY, JSON.stringify(items));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+  }
+
+  function collectNewsFromDOM() {
+    const rows = document.querySelectorAll('#newsAdminList .news-row');
+    const items = [];
+    rows.forEach(row => {
+      items.push({
+        date:  row.querySelector('.news-date-input').value.trim(),
+        cat:   row.querySelector('.news-cat-input').value.trim(),
+        title: row.querySelector('.news-title-input').value.trim()
+      });
+    });
+    return items;
   }
 
   function renderNewsAdmin() {
     const items = getNewsItems();
     const list = document.getElementById('newsAdminList');
     list.innerHTML = items.map((item, i) => `
-      <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;">
-        <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;">お知らせ ${i+1}</p>
+      <div class="news-row" style="background:var(--white);border:1px solid var(--border);padding:16px 20px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <p style="font-size:11px;letter-spacing:.2em;color:var(--accent);margin:0;">お知らせ ${i+1}</p>
+          <button type="button" class="news-delete-btn" data-idx="${i}" style="background:none;border:1px solid #c0392b;color:#c0392b;font-size:11px;padding:3px 10px;cursor:pointer;letter-spacing:.05em;">削除</button>
+        </div>
         <div style="display:grid;grid-template-columns:140px 160px 1fr;gap:12px;align-items:start;">
           <div>
             <label class="form-label">日付</label>
-            <input class="form-input news-date-input" type="text" data-news-idx="${i}" value="${escHtml(item.date)}" placeholder="2026.01.01">
+            <input class="form-input news-date-input" type="text" value="${escHtml(item.date)}" placeholder="2026.01.01">
           </div>
           <div>
             <label class="form-label">カテゴリ</label>
-            <input class="form-input news-cat-input" type="text" data-news-idx="${i}" value="${escHtml(item.cat)}" placeholder="お知らせ">
+            <input class="form-input news-cat-input" type="text" value="${escHtml(item.cat)}" placeholder="お知らせ">
           </div>
           <div>
             <label class="form-label">タイトル</label>
-            <input class="form-input news-title-input" type="text" data-news-idx="${i}" value="${escHtml(item.title)}" placeholder="お知らせタイトル">
+            <input class="form-input news-title-input" type="text" value="${escHtml(item.title)}" placeholder="お知らせタイトル">
           </div>
         </div>
       </div>
     `).join('');
+
+    /* 削除ボタン */
+    list.querySelectorAll('.news-delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const items = collectNewsFromDOM();
+        items.splice(parseInt(btn.dataset.idx), 1);
+        saveNewsItems(items);
+        renderNewsAdmin();
+        showToast('削除しました');
+      });
+    });
   }
 
+  document.getElementById('addNewsBtn').addEventListener('click', () => {
+    const items = collectNewsFromDOM();
+    const today = new Date();
+    const d = `${today.getFullYear()}.${String(today.getMonth()+1).padStart(2,'0')}.${String(today.getDate()).padStart(2,'0')}`;
+    items.unshift({ date: d, cat: 'お知らせ', title: '' });
+    saveNewsItems(items);
+    renderNewsAdmin();
+    document.getElementById('newsAdminList').scrollTop = 0;
+  });
+
   document.getElementById('saveNewsBtn').addEventListener('click', () => {
-    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
-    document.querySelectorAll('#newsAdminList [data-news-idx]').forEach(el => {
-      const i = parseInt(el.dataset.newsIdx) + 1;
-      if (el.classList.contains('news-date-input'))  data[`news${i}_date`]  = el.value.trim();
-      if (el.classList.contains('news-cat-input'))   data[`news${i}_cat`]   = el.value.trim();
-      if (el.classList.contains('news-title-input')) data[`news${i}_title`] = el.value.trim();
-    });
-    localStorage.setItem(NEWS_KEY, JSON.stringify(data));
-    localStorage.setItem('biei_last_save', new Date().toISOString());
+    const items = collectNewsFromDOM();
+    saveNewsItems(items);
     showToast('お知らせを保存しました');
+    updateStats();
   });
 
   /* ========================
@@ -861,6 +897,7 @@ OUT〜11:00</textarea>
   /* ========================
      予約前確認事項管理
   ======================== */
+  const RESERVE_NOTES_KEY = 'biei_reserve_notes';
   const DEFAULT_RESERVE_NOTES = [
     '最小宿泊人数：2名様〜（1棟貸し）',
     'チェックイン：15:00〜18:00 / チェックアウト：〜11:00',
@@ -871,8 +908,8 @@ OUT〜11:00</textarea>
   ];
 
   function getReserveNotes() {
-    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
-    return DEFAULT_RESERVE_NOTES.map((d, i) => data[`reserve_note${i+1}`] || d);
+    const stored = localStorage.getItem(RESERVE_NOTES_KEY);
+    return stored ? JSON.parse(stored) : DEFAULT_RESERVE_NOTES;
   }
 
   function renderReserveNotesAdmin() {
@@ -881,18 +918,17 @@ OUT〜11:00</textarea>
     list.innerHTML = notes.map((note, i) => `
       <div style="background:var(--white);border:1px solid var(--border);padding:16px 20px;margin-bottom:8px;display:flex;align-items:center;gap:12px;">
         <span style="font-size:11px;letter-spacing:.15em;color:var(--accent);min-width:60px;">項目 ${i+1}</span>
-        <input class="form-input reserve-note-input" type="text" data-note-idx="${i}" value="${escHtml(note)}" style="flex:1;">
+        <input class="form-input reserve-note-input" type="text" value="${escHtml(note)}" style="flex:1;">
       </div>
     `).join('');
   }
 
   document.getElementById('saveReserveNotesBtn').addEventListener('click', () => {
-    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    const notes = [];
     document.querySelectorAll('#reserveNotesAdminList .reserve-note-input').forEach(el => {
-      const i = parseInt(el.dataset.noteIdx) + 1;
-      data[`reserve_note${i}`] = el.value.trim();
+      if (el.value.trim()) notes.push(el.value.trim());
     });
-    localStorage.setItem(NEWS_KEY, JSON.stringify(data));
+    localStorage.setItem(RESERVE_NOTES_KEY, JSON.stringify(notes));
     localStorage.setItem('biei_last_save', new Date().toISOString());
     showToast('確認事項を保存しました');
   });
