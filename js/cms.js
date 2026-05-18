@@ -52,16 +52,17 @@ function applySettings() {
   const s = settingsLoad();
   if (!Object.keys(s).length) return;
 
-  /* data-setting="address/tel/email" 要素 */
+  /* data-setting="address/tel/checkin/checkout/checkinout" 要素 */
   document.querySelectorAll('[data-setting]').forEach(el => {
     const key = el.dataset.setting;
     if (!s[key]) return;
     if (key === 'address') {
-      /* 住所: 〒 + 改行を保持しつつ上書き */
       el.innerHTML = s[key].replace(/\n/g, '<br>');
     } else if (key === 'tel') {
-      /* 電話: 後半の受付時間テキストは保持 */
       el.innerHTML = s[key] + '<br>（受付時間：9:00〜20:00）';
+    } else if (key === 'checkinout') {
+      /* rooms.html のIN/OUT表示（改行HTMLを保持）*/
+      el.innerHTML = s[key].replace(/\n/g, '<br>');
     } else {
       el.textContent = s[key];
     }
@@ -71,12 +72,10 @@ function applySettings() {
   document.querySelectorAll('[data-setting-address]').forEach(el => {
     const addr = s.address || '';
     const tel  = s.tel   || '';
-    const mail = s.email || '';
     const lines = [];
     if (addr) lines.push(addr.replace(/\n/g, '<br>'));
-    if (tel || mail) lines.push('');
+    if (tel) lines.push('');
     if (tel)  lines.push('TEL: ' + tel);
-    if (mail) lines.push('Mail: ' + mail);
     if (lines.length) el.innerHTML = lines.join('<br>');
   });
 

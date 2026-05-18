@@ -471,7 +471,21 @@
         </div>
         <div class="form-group">
           <label class="form-label">メールアドレス</label>
-          <input class="form-input" type="email" id="set-email" value="info@biei-hoshi.jp">
+          <input class="form-input" type="email" id="set-email" value="">
+        </div>
+        <div class="form-group">
+          <label class="form-label">チェックイン時間</label>
+          <input class="form-input" type="text" id="set-checkin" value="15:00〜18:00" placeholder="例: 15:00〜18:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">チェックアウト時間</label>
+          <input class="form-input" type="text" id="set-checkout" value="〜11:00" placeholder="例: 〜11:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">CHECK IN / OUT 表示（お部屋ページ用）</label>
+          <textarea class="form-input" id="set-checkinout" rows="2" style="resize:vertical;" placeholder="例: IN 15:00〜18:00&#10;OUT〜11:00">IN 15:00〜18:00
+OUT〜11:00</textarea>
+          <p style="font-size:11px;color:var(--color-text-light);margin-top:4px;">改行でIN/OUTを分けて入力してください</p>
         </div>
         <button class="btn-save" id="saveSettings">設定を保存</button>
       </div>
@@ -735,7 +749,7 @@
   });
 
   /* Settings */
-  const SETTINGS_FIELDS = ['name','tagline','address','tel','email'];
+  const SETTINGS_FIELDS = ['name','tagline','address','tel','email','checkin','checkout','checkinout'];
   function loadSettings() {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
     SETTINGS_FIELDS.forEach(f => {
