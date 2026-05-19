@@ -644,8 +644,31 @@ OUT〜11:00</textarea>
   }
   updateStats();
 
-  /* 全管理パネルを初期ロード時に描画（保存ボタン押下時にDOMが空にならないよう） */
-  function initAllPanels() {
+  /* 全管理パネルを初期ロード時に描画（Supabaseデータ優先） */
+  async function initAllPanels() {
+    // Supabaseから全データ取得してlocalStorageに反映してからパネル描画
+    try {
+      const res = await fetch(`${_SB_URL}/rest/v1/biei_cms?select=key,value`, {
+        headers: { 'apikey': _SB_ANON, 'Authorization': `Bearer ${_SB_ANON}` }
+      });
+      if (res.ok) {
+        const rows = await res.json();
+        rows.forEach(r => {
+          if (r.key === 'faq'          && Array.isArray(r.value) && r.value.length) localStorage.setItem(FAQ_KEY, JSON.stringify(r.value));
+          if (r.key === 'booking_btns' && Array.isArray(r.value) && r.value.length) localStorage.setItem(BOOKING_BTNS_KEY, JSON.stringify(r.value));
+          if (r.key === 'news'         && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_news_list', JSON.stringify(r.value));
+          if (r.key === 'reserve_notes'&& Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_reserve_notes', JSON.stringify(r.value));
+          if (r.key === 'policy'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_policy_sections', JSON.stringify(r.value));
+          if (r.key === 'amenity'      && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_amenity_sections', JSON.stringify(r.value));
+          if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
+          if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_cms_content', JSON.stringify(r.value));
+          if (r.key === 'settings'     && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_settings', JSON.stringify(r.value));
+        });
+        console.log('[initAllPanels] Supabaseデータ取得完了→localStorageに反映');
+      }
+    } catch(e) {
+      console.warn('[initAllPanels] Supabase取得失敗、localStorageで初期化', e);
+    }
     renderNewsAdmin();
     renderFaqAdmin();
     renderBookingAdmin();
@@ -654,6 +677,7 @@ OUT〜11:00</textarea>
     renderAmenityAdmin();
     renderNearbyAdmin();
     loadTransportAdmin();
+    updateStats();
   }
 
   /* ========================
@@ -1403,7 +1427,7 @@ OUT〜11:00</textarea>
     }
   });
 
-  /* 全パネルの初期描画（保存ボタン押下時にDOMが空にならないよう） */
+  /* 全パネルの初期描画（Supabaseデータ優先） */
   initAllPanels();
 
 </script>
