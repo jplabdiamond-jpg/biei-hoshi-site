@@ -343,9 +343,13 @@ ul { list-style: none; }
   margin-bottom: 20px;
   animation: fadeUp 1.2s 0.6s both;
 }
-/* モバイルではnowrapを解除して折り返し許可 */
+/* モバイル：タイトルを必ず2行に収める */
 @media (max-width: 600px) {
-  .hero-title span { white-space: normal !important; }
+  .hero-title {
+    font-size: clamp(18px, 5.5vw, 26px);
+    white-space: nowrap;
+  }
+  .hero-title span { white-space: nowrap; }
 }
 
 /* ---- Mobile Header Compact ---- */
