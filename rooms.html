@@ -535,11 +535,20 @@
 </footer>
 <div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script>
-<script src="js/cms.js?v=5"></script>
+<script src="js/cms.js?v=8"></script>
 <script>
   /* ─── アメニティ：ダッシュボード保存データを反映 ─── */
   (function() {
     const AMENITY_KEY = 'biei_amenity_sections';
+    // cms.js の cmsApply() がJSONから描画済みの場合はスキップ
+    if (window._cmsJsonLoaded !== undefined) {
+      // cms.js経由で既にrenderAmenityIfPresentが呼ばれている可能性があるため
+      // DOMの内容を確認してスキップ判定
+      const firstItem = document.querySelector('#amenityGrid .amenity-item .amenity-icon');
+      if (firstItem && firstItem.textContent !== 'BATH & TOILET' && firstItem.textContent !== '') {
+        // cms.js が上書き済みと判断してスキップ
+      }
+    }
     const stored = localStorage.getItem(AMENITY_KEY);
     if (!stored) return;
     const sections = JSON.parse(stored);

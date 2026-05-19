@@ -67,8 +67,15 @@
     .topbar-actions { display: flex; gap: 12px; align-items: center; }
     .topbar-btn { padding: 8px 20px; border: 1px solid var(--border); font-size: 12px; letter-spacing: 0.1em; cursor: pointer; background: #1e1c18; color: var(--mid); transition: all 0.2s; text-decoration: none; }
     .topbar-btn.primary { background: rgba(196,168,130,0.15); color: var(--accent); border-color: rgba(196,168,130,0.4); }
+    .topbar-btn.export { background: rgba(100,180,100,0.12); color: #8dcf8d; border-color: rgba(100,180,100,0.4); }
     .topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
     .topbar-btn.primary:hover { opacity: 0.85; background: rgba(196,168,130,0.25); }
+    .topbar-btn.export:hover { background: rgba(100,180,100,0.22); color: #a8e6a8; }
+    /* エクスポート案内バナー */
+    .export-banner { background: rgba(100,180,100,0.08); border: 1px solid rgba(100,180,100,0.3); padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 14px; }
+    .export-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .export-banner-text { font-size: 12px; color: #8dcf8d; line-height: 1.8; letter-spacing: 0.04em; }
+    .export-banner-text strong { font-size: 13px; display: block; margin-bottom: 4px; color: #a8e6a8; letter-spacing: 0.08em; }
 
     .content { padding: 32px; flex: 1; }
 
@@ -223,6 +230,7 @@
   <div class="topbar">
     <h1 id="panelTitle">Dashboard</h1>
     <div class="topbar-actions">
+      <button id="exportJsonBtn" class="topbar-btn export">📥 データをエクスポート</button>
       <a href="../index.html" target="_blank" class="topbar-btn">サイトを開く</a>
     </div>
   </div>
@@ -231,6 +239,17 @@
 
     <!-- DASHBOARD PANEL -->
     <div class="panel active" id="panel-dashboard">
+
+      <!-- エクスポート案内バナー -->
+      <div class="export-banner">
+        <div class="export-banner-icon">📡</div>
+        <div class="export-banner-text">
+          <strong>モバイル・全デバイスに反映するには「データをエクスポート」が必要です</strong>
+          各管理画面で「保存する」を押したあと、右上の <strong style="display:inline;">📥 データをエクスポート</strong> ボタンをクリックしてください。<br>
+          ダウンロードされた <code style="background:rgba(255,255,255,0.08);padding:1px 5px;">cms-data.json</code> を、サイトの <code style="background:rgba(255,255,255,0.08);padding:1px 5px;">data/</code> フォルダに上書き配置するとすべてのデバイスに即時反映されます。
+        </div>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">TOTAL PAGES</div>
@@ -524,7 +543,35 @@ OUT〜11:00</textarea>
 
 <div class="toast" id="toast"></div>
 
+<script src="../js/cms.js?v=8"></script>
 <script>
+  /* ── Supabase直接保存（cms.jsへの依存なし・確実動作） ── */
+  const _SB_URL  = 'https://yevhirgmfjdvnargaitj.supabase.co';
+  const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlldmhpcmdtZmpkdm5hcmdhaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDg2NjUsImV4cCI6MjA5MzI4NDY2NX0.rksdAP956Y8I3E0y5n0PpvWddoB4-x6hLjqdr6dDIM4';
+  async function sbSave(key, value) {
+    try {
+      const res = await fetch(`${_SB_URL}/rest/v1/biei_cms`, {
+        method: 'POST',
+        headers: {
+          'apikey': _SB_ANON,
+          'Authorization': `Bearer ${_SB_ANON}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({ key, value })
+      });
+      if (!res.ok && res.status !== 201) {
+        console.error('[sbSave] error', res.status, key);
+        return false;
+      }
+      console.log('[sbSave] ok', key);
+      return true;
+    } catch(e) {
+      console.error('[sbSave] exception', key, e);
+      return false;
+    }
+  }
+
   const SESSION_KEY = 'biei_admin_session';
   const CREDS_KEY = 'biei_admin_creds';
   const SETTINGS_KEY = 'biei_settings';
@@ -596,6 +643,18 @@ OUT〜11:00</textarea>
     if (ts) document.getElementById('lastUpdated').textContent = new Date(ts).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
   }
   updateStats();
+
+  /* 全管理パネルを初期ロード時に描画（保存ボタン押下時にDOMが空にならないよう） */
+  function initAllPanels() {
+    renderNewsAdmin();
+    renderFaqAdmin();
+    renderBookingAdmin();
+    renderReserveNotesAdmin();
+    renderPolicyAdmin();
+    renderAmenityAdmin();
+    renderNearbyAdmin();
+    loadTransportAdmin();
+  }
 
   /* ========================
      FAQ 管理
@@ -674,10 +733,11 @@ OUT〜11:00</textarea>
     document.getElementById('faqAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
   });
 
-  document.getElementById('saveFaqBtn').addEventListener('click', () => {
+  document.getElementById('saveFaqBtn').addEventListener('click', async () => {
     const items = collectFaqItems().filter(i => i.q || i.a);
     localStorage.setItem(FAQ_KEY, JSON.stringify(items));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('faq', items);
     showToast('Q&Aを保存しました');
     updateStats();
     renderFaqAdmin();
@@ -742,10 +802,11 @@ OUT〜11:00</textarea>
     document.getElementById('bookingAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
   });
 
-  document.getElementById('saveBookingBtn').addEventListener('click', () => {
+  document.getElementById('saveBookingBtn').addEventListener('click', async () => {
     const btns = collectBookingBtns().filter(b => b.name || b.url);
     localStorage.setItem(BOOKING_BTNS_KEY, JSON.stringify(btns));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('booking_btns', btns);
     showToast('予約ボタンを保存しました');
     updateStats();
     renderBookingAdmin();
@@ -761,11 +822,12 @@ OUT〜11:00</textarea>
     });
   }
   loadSettings();
-  document.getElementById('saveSettings').addEventListener('click', () => {
+  document.getElementById('saveSettings').addEventListener('click', async () => {
     const s = {};
     SETTINGS_FIELDS.forEach(f => { const el = document.getElementById('set-' + f); if (el) s[f] = el.value; });
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('settings', s);
     showToast('設定を保存しました');
     updateStats();
   });
@@ -787,9 +849,10 @@ OUT〜11:00</textarea>
     return stored ? JSON.parse(stored) : DEFAULT_NEWS;
   }
 
-  function saveNewsItems(items) {
+  async function saveNewsItems(items) {
     localStorage.setItem(NEWS_LIST_KEY, JSON.stringify(items));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('news', items);
   }
 
   function collectNewsFromDOM() {
@@ -853,9 +916,10 @@ OUT〜11:00</textarea>
     document.getElementById('newsAdminList').scrollTop = 0;
   });
 
-  document.getElementById('saveNewsBtn').addEventListener('click', () => {
-    const items = collectNewsFromDOM();
-    saveNewsItems(items);
+  document.getElementById('saveNewsBtn').addEventListener('click', async () => {
+    const items = collectNewsFromDOM().filter(i => i.date || i.title);
+    if (!items.length) { showToast('お知らせがありません'); return; }
+    await saveNewsItems(items);
     showToast('お知らせを保存しました');
     updateStats();
   });
@@ -881,7 +945,7 @@ OUT〜11:00</textarea>
     });
   }
 
-  document.getElementById('saveTransportBtn').addEventListener('click', () => {
+  document.getElementById('saveTransportBtn').addEventListener('click', async () => {
     const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
     TRANSPORT_FIELDS.forEach(f => {
       const titleEl = document.getElementById(f.titleId);
@@ -891,6 +955,7 @@ OUT〜11:00</textarea>
     });
     localStorage.setItem(NEWS_KEY, JSON.stringify(data));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('cms_content', data);
     showToast('交通案内を保存しました');
   });
 
@@ -923,13 +988,14 @@ OUT〜11:00</textarea>
     `).join('');
   }
 
-  document.getElementById('saveReserveNotesBtn').addEventListener('click', () => {
+  document.getElementById('saveReserveNotesBtn').addEventListener('click', async () => {
     const notes = [];
     document.querySelectorAll('#reserveNotesAdminList .reserve-note-input').forEach(el => {
       if (el.value.trim()) notes.push(el.value.trim());
     });
     localStorage.setItem(RESERVE_NOTES_KEY, JSON.stringify(notes));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('reserve_notes', notes);
     showToast('確認事項を保存しました');
   });
 
@@ -1042,7 +1108,7 @@ OUT〜11:00</textarea>
     });
   }
 
-  document.getElementById('saveRoomImagesBtn')?.addEventListener('click', () => {
+  document.getElementById('saveRoomImagesBtn')?.addEventListener('click', async () => {
     const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
     const wrap = document.getElementById('roomImagesAdmin');
     let saved = 0;
@@ -1056,6 +1122,7 @@ OUT〜11:00</textarea>
 
     localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('cms_content', cmsData);
     showToast(saved > 0 ? `${saved}枚の画像を保存しました ✓` : '変更がありません（画像を選択してください）');
     updateStats();
     /* 保存後プレビューをリフレッシュ */
@@ -1105,7 +1172,7 @@ OUT〜11:00</textarea>
     }));
   }
 
-  document.getElementById('saveAmenityBtn')?.addEventListener('click', () => {
+  document.getElementById('saveAmenityBtn')?.addEventListener('click', async () => {
     const sections = collectAmenity();
     localStorage.setItem(AMENITY_KEY, JSON.stringify(sections));
 
@@ -1118,6 +1185,8 @@ OUT〜11:00</textarea>
     });
     localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('amenity', sections);
+    await sbSave('cms_content', cmsData);
     showToast('アメニティを保存しました');
     updateStats();
   });
@@ -1198,10 +1267,11 @@ OUT〜11:00</textarea>
     document.getElementById('nearbyAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
   });
 
-  document.getElementById('saveNearbyBtn')?.addEventListener('click', () => {
+  document.getElementById('saveNearbyBtn')?.addEventListener('click', async () => {
     const items = collectNearby().filter(i => i.name);
     localStorage.setItem(NEARBY_KEY, JSON.stringify(items));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('nearby', items);
     showToast('近隣施設を保存しました');
     renderNearbyAdmin();
   });
@@ -1246,6 +1316,7 @@ OUT〜11:00</textarea>
         const idx = parseInt(btn.closest('[data-policy-idx]').dataset.policyIdx);
         sections.splice(idx, 1);
         localStorage.setItem(POLICY_KEY, JSON.stringify(sections));
+        sbSave('policy', sections);
         renderPolicyAdmin();
         showToast('削除しました');
       });
@@ -1268,10 +1339,11 @@ OUT〜11:00</textarea>
     document.getElementById('policyAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
   });
 
-  document.getElementById('savePolicyBtn')?.addEventListener('click', () => {
+  document.getElementById('savePolicyBtn')?.addEventListener('click', async () => {
     const sections = collectPolicy().filter(s => s.title);
     localStorage.setItem(POLICY_KEY, JSON.stringify(sections));
     localStorage.setItem('biei_last_save', new Date().toISOString());
+    await sbSave('policy', sections);
     showToast('規約を保存しました');
     updateStats();
     renderPolicyAdmin();
@@ -1281,6 +1353,59 @@ OUT〜11:00</textarea>
   function escHtml(str) {
     return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+
+  /* ============================================================
+     全データをJSONエクスポート（data/cms-data.json として配置する用）
+     ============================================================ */
+  document.getElementById('exportJsonBtn').addEventListener('click', () => {
+    try {
+      // biei_cms_content（テキスト・画像フィールド）
+      const cmsContent  = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+      // 各専用ストレージ
+      const settings    = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
+      const faq         = JSON.parse(localStorage.getItem(FAQ_KEY)      || 'null') || DEFAULT_FAQ;
+      const booking     = JSON.parse(localStorage.getItem(BOOKING_BTNS_KEY) || 'null') || DEFAULT_BOOKING_BTNS;
+      const news        = JSON.parse(localStorage.getItem(NEWS_LIST_KEY) || 'null') || DEFAULT_NEWS;
+      const reserveNotes = JSON.parse(localStorage.getItem(RESERVE_NOTES_KEY) || 'null') || DEFAULT_RESERVE_NOTES;
+      const policy      = JSON.parse(localStorage.getItem(POLICY_KEY)   || 'null') || DEFAULT_POLICY;
+      const nearby      = JSON.parse(localStorage.getItem(NEARBY_KEY)   || 'null') || DEFAULT_NEARBY;
+      const amenity     = JSON.parse(localStorage.getItem(AMENITY_KEY)  || 'null') || DEFAULT_AMENITY;
+      const transport   = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+
+      // 全データを1つのオブジェクトにまとめる
+      const exportData = Object.assign({}, cmsContent, {
+        _settings:     settings,
+        _faq:          faq,
+        _bookingBtns:  booking,
+        _news:         news,
+        _reserveNotes: reserveNotes,
+        _policy:       policy,
+        _nearby:       nearby,
+        _amenity:      amenity,
+        _exportedAt:   new Date().toISOString(),
+        _version:      2
+      });
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = 'cms-data.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      showToast('✓ cms-data.json をダウンロードしました\nサイトの data/ フォルダに上書き配置してください');
+    } catch(e) {
+      console.error('Export error:', e);
+      showToast('エクスポートに失敗しました: ' + e.message);
+    }
+  });
+
+  /* 全パネルの初期描画（保存ボタン押下時にDOMが空にならないよう） */
+  initAllPanels();
+
 </script>
 </body>
 </html>

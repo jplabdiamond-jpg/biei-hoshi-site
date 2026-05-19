@@ -432,29 +432,6 @@
 
 
 <script src="js/main.js?v=4"></script>
-<script src="js/cms.js?v=5"></script>
-<script>
-(function() {
-  const NEWS_LIST_KEY = 'biei_news_list';
-  const DEFAULT_NEWS = [
-    { date:'2026.05.01', cat:'お知らせ', title:'2026年夏季のご予約受付を開始いたしました。' },
-    { date:'2026.04.15', cat:'イベント', title:'【春の特別プラン】イルミネーション×星空観察プランのご案内。' },
-    { date:'2026.03.20', cat:'メディア', title:'旅行誌「旅と暮らし」2026年4月号にて紹介いただきました。' },
-    { date:'2026.02.10', cat:'お知らせ', title:'冬の星空観察プランに新しい特典が加わりました。' }
-  ];
-  const stored = localStorage.getItem(NEWS_LIST_KEY);
-  const all = stored ? JSON.parse(stored) : DEFAULT_NEWS;
-  const top4 = all.slice(0, 4);
-  const wrap = document.getElementById('newsListTop');
-  if (!wrap) return;
-  wrap.innerHTML = top4.map(item => `
-    <div class="news-item">
-      <span class="news-date">${item.date}</span>
-      <span class="news-cat">${item.cat}</span>
-      <span class="news-title">${item.title}</span>
-    </div>
-  `).join('');
-})();
-</script>
+<script src="js/cms.js?v=8"></script>
 </body>
 </html>

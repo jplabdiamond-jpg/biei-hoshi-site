@@ -45,34 +45,7 @@
 <footer><div class="container"><div class="footer-inner"><div class="footer-brand fade-in"><img src="images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="logo-full"><address data-setting-address>〒071-0200<br>北海道上川郡美瑛町〇〇番地<br><br>TEL: 0166-XX-XXXX</address></div><nav class="footer-nav fade-in delay-1"><h4>NAVIGATION</h4><ul><li><a href="about.html">宿について</a></li><li><a href="rooms.html">お部屋</a></li><li><a href="kitchen.html">キッチン＆アメニティ</a></li><li><a href="access.html">アクセス</a></li><li><a href="reserve.html">ご予約</a></li></ul></nav><div class="footer-nav fade-in delay-2"><h4>INFORMATION</h4><ul><li><a href="news.html">お知らせ</a></li><li><a href="faq.html">よくあるご質問</a></li><li><a href="policy.html">宿泊規約</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></div></div><div class="footer-bottom"><p>© 2026 星の光の宿 BIEI. All Rights Reserved.</p><a href="admin/login.html" class="footer-admin-link">Admin</a></div></div></footer>
 <div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script>
-<script src="js/cms.js?v=5"></script>
-<script>
-/* ─── 規約コンテンツ描画 ─── */
-(function() {
-  const POLICY_KEY = 'biei_policy_sections';
-  const DEFAULT_POLICY = [
-    { title: '1. チェックイン・チェックアウト', body: 'チェックイン：15:00〜18:00\nチェックアウト：〜11:00\n時間変更をご希望の場合は事前にご相談ください。' },
-    { title: '2. お支払い', body: '現金、クレジットカード（VISA/MC/JCB/AMEX）、電子マネーに対応しています。\n宿泊料金はチェックアウト時にお支払いください。' },
-    { title: '3. キャンセルポリシー', body: 'ご宿泊14日前：宿泊料金の30%\nご宿泊7日前：宿泊料金の50%\nご宿泊3日前〜当日：宿泊料金の100%\n無断キャンセルの場合：宿泊料金の100%' },
-    { title: '4. 禁止事項', body: '施設内での喫煙（屋外の指定場所のみ可）\nペットの同伴\n他のゲストへの迷惑行為\n施設・備品の破損・汚損（損害が生じた場合はご負担いただきます）' },
-    { title: '5. その他', body: '天災・自然災害等の不可抗力によりご宿泊いただけない場合は、キャンセル料はいただきません。\n宿泊者の都合による早期退館の場合、宿泊料金の返金はいたしかねます。' }
-  ];
+<script src="js/cms.js?v=8"></script>
 
-  function renderPolicy() {
-    const el = document.getElementById('policyContent');
-    if (!el) return;
-    const stored = localStorage.getItem(POLICY_KEY);
-    const sections = stored ? JSON.parse(stored) : DEFAULT_POLICY;
-    el.innerHTML = sections.map(s => `
-      <div class="policy-section">
-        <h3>${s.title}</h3>
-        <ul>${s.body.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('')}</ul>
-      </div>
-    `).join('');
-  }
-
-  document.addEventListener('DOMContentLoaded', renderPolicy);
-})();
-</script>
 </body>
 </html>
