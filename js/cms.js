@@ -4,17 +4,15 @@
      1. Supabase (全デバイス共通・即時反映)
      2. localStorage (オフライン時フォールバック)
    ============================================================ */
-'use strict';
-
 /* ============================================================
    Supabase 設定
    ============================================================ */
-const SUPABASE_URL    = 'https://yevhirgmfjdvnargaitj.supabase.co';
-const SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlldmhpcmdtZmpkdm5hcmdhaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDg2NjUsImV4cCI6MjA5MzI4NDY2NX0.rksdAP956Y8I3E0y5n0PpvWddoB4-x6hLjqdr6dDIM4';
+var SUPABASE_URL    = 'https://yevhirgmfjdvnargaitj.supabase.co';
+var SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlldmhpcmdtZmpkdm5hcmdhaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDg2NjUsImV4cCI6MjA5MzI4NDY2NX0.rksdAP956Y8I3E0y5n0PpvWddoB4-x6hLjqdr6dDIM4';
 
-const CMS_KEY           = 'biei_cms_content';
-const ADMIN_SESSION_KEY = 'biei_admin_session';
-const SETTINGS_KEY      = 'biei_settings';
+var CMS_KEY           = 'biei_cms_content';
+var ADMIN_SESSION_KEY = 'biei_admin_session';
+var SETTINGS_KEY      = 'biei_settings';
 
 /* ============================================================
    Supabase API ユーティリティ
