@@ -240,13 +240,12 @@
     <!-- DASHBOARD PANEL -->
     <div class="panel active" id="panel-dashboard">
 
-      <!-- エクスポート案内バナー -->
-      <div class="export-banner">
-        <div class="export-banner-icon">📡</div>
+      <!-- Supabase自動同期バナー -->
+      <div class="export-banner" style="background:rgba(100,180,100,0.06);border-color:rgba(100,180,100,0.25);">
+        <div class="export-banner-icon">☁️</div>
         <div class="export-banner-text">
-          <strong>モバイル・全デバイスに反映するには「データをエクスポート」が必要です</strong>
-          各管理画面で「保存する」を押したあと、右上の <strong style="display:inline;">📥 データをエクスポート</strong> ボタンをクリックしてください。<br>
-          ダウンロードされた <code style="background:rgba(255,255,255,0.08);padding:1px 5px;">cms-data.json</code> を、サイトの <code style="background:rgba(255,255,255,0.08);padding:1px 5px;">data/</code> フォルダに上書き配置するとすべてのデバイスに即時反映されます。
+          <strong>保存した内容はSupabaseに自動同期されます</strong>
+          各管理画面で「保存する」を押すだけで、デスクトップ・モバイル問わずすべてのデバイスに即時反映されます。
         </div>
       </div>
 
@@ -543,7 +542,7 @@ OUT〜11:00</textarea>
 
 <div class="toast" id="toast"></div>
 
-<script src="../js/cms.js?v=8"></script>
+<script src="../js/cms.js?v=9"></script>
 <script>
   /* ── Supabase直接保存（cms.jsへの依存なし・確実動作） ── */
   const _SB_URL  = 'https://yevhirgmfjdvnargaitj.supabase.co';
@@ -615,25 +614,30 @@ OUT〜11:00</textarea>
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
-      navItems.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const id = btn.dataset.panel;
-      panels.forEach(p => p.classList.remove('active'));
-      document.getElementById('panel-' + id)?.classList.add('active');
-      panelTitle.textContent = titles[id] || id;
-      if (id === 'faq') renderFaqAdmin();
-      if (id === 'booking') renderBookingAdmin();
-      if (id === 'news') renderNewsAdmin();
-      if (id === 'transport') loadTransportAdmin();
-      if (id === 'reserve-notes') renderReserveNotesAdmin();
-      if (id === 'room-images') renderRoomImagesAdmin();
-      if (id === 'amenity') renderAmenityAdmin();
-      if (id === 'nearby') renderNearbyAdmin();
-      if (id === 'policy') renderPolicyAdmin();
+      try {
+        navItems.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.dataset.panel;
+        panels.forEach(p => p.classList.remove('active'));
+        const target = document.getElementById('panel-' + id);
+        if (target) target.classList.add('active');
+        panelTitle.textContent = titles[id] || id;
+        if (id === 'faq')           renderFaqAdmin();
+        if (id === 'booking')       renderBookingAdmin();
+        if (id === 'news')          renderNewsAdmin();
+        if (id === 'transport')     loadTransportAdmin();
+        if (id === 'reserve-notes') renderReserveNotesAdmin();
+        if (id === 'room-images')   renderRoomImagesAdmin();
+        if (id === 'amenity')       renderAmenityAdmin();
+        if (id === 'nearby')        renderNearbyAdmin();
+        if (id === 'policy')        renderPolicyAdmin();
+      } catch(e) {
+        console.error('[nav] panel switch error:', e);
+      }
     });
   });
 
-  /* Stats */
+  /* Stats（initAllPanels後に呼ばれるためlocalStorageにはSupabaseデータが反映済み） */
   function updateStats() {
     const faqItems = JSON.parse(localStorage.getItem(FAQ_KEY) || 'null') || DEFAULT_FAQ;
     const bookingBtns = JSON.parse(localStorage.getItem(BOOKING_BTNS_KEY) || 'null') || DEFAULT_BOOKING_BTNS;
@@ -642,7 +646,7 @@ OUT〜11:00</textarea>
     const ts = localStorage.getItem('biei_last_save');
     if (ts) document.getElementById('lastUpdated').textContent = new Date(ts).toLocaleDateString('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
   }
-  updateStats();
+  // updateStats()はinitAllPanels()の末尾で呼ぶ（Supabaseデータ反映後）
 
   /* 全管理パネルを初期ロード時に描画（Supabaseデータ優先） */
   async function initAllPanels() {
