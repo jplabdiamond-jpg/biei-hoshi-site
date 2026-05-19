@@ -1051,11 +1051,10 @@ OUT〜11:00</textarea>
   });
 
   /* Edit page links */
-  const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
   document.querySelectorAll('.edit-page-link').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
-      sessionStorage.setItem(EDIT_TRIGGER_KEY, 'true');
+      sessionStorage.setItem('biei_admin_edit_trigger', 'true');
       window.location.href = link.dataset.href;
     });
   });
