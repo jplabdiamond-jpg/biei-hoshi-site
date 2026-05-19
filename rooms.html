@@ -537,30 +537,7 @@
 <script src="js/main.js?v=4"></script>
 <script src="js/cms.js?v=9"></script>
 <script>
-  /* ─── アメニティ：ダッシュボード保存データを反映 ─── */
-  (function() {
-    const AMENITY_KEY = 'biei_amenity_sections';
-    // cms.js の cmsApply() がJSONから描画済みの場合はスキップ
-    if (window._cmsJsonLoaded !== undefined) {
-      // cms.js経由で既にrenderAmenityIfPresentが呼ばれている可能性があるため
-      // DOMの内容を確認してスキップ判定
-      const firstItem = document.querySelector('#amenityGrid .amenity-item .amenity-icon');
-      if (firstItem && firstItem.textContent !== 'BATH & TOILET' && firstItem.textContent !== '') {
-        // cms.js が上書き済みと判断してスキップ
-      }
-    }
-    const stored = localStorage.getItem(AMENITY_KEY);
-    if (!stored) return;
-    const sections = JSON.parse(stored);
-    const items = document.querySelectorAll('#amenityGrid .amenity-item');
-    sections.forEach((s, i) => {
-      if (!items[i]) return;
-      const titleEl = items[i].querySelector('.amenity-icon');
-      const listEl  = items[i].querySelector('.amenity-list');
-      if (titleEl) titleEl.textContent = s.title;
-      if (listEl)  listEl.innerHTML = s.items.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('');
-    });
-  })();
+  /* アメニティはcms.js cmsApply()がSupabaseから自動描画 */
 
   /* ─── Room Nav Thumbnail Smooth Scroll ─── */
   document.querySelectorAll('.room-nav-thumb').forEach(thumb => {

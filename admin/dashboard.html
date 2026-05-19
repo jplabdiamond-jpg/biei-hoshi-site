@@ -682,6 +682,7 @@ OUT〜11:00</textarea>
     renderAmenityAdmin();
     renderNearbyAdmin();
     loadTransportAdmin();
+    loadSettings();
     updateStats();
   }
 
@@ -850,7 +851,7 @@ OUT〜11:00</textarea>
       if (el && s[f]) el.value = s[f];
     });
   }
-  loadSettings();
+  // loadSettings()はinitAllPanels()内でSupabaseデータ反映後に呼ぶ
   document.getElementById('saveSettings').addEventListener('click', async () => {
     const s = {};
     SETTINGS_FIELDS.forEach(f => { const el = document.getElementById('set-' + f); if (el) s[f] = el.value; });
