@@ -92,8 +92,8 @@ async function cmsApply() {
     if (!f || !cmsContent[f]) return;
     if (el.tagName === 'IMG') el.src = cmsContent[f];
     else if (el.dataset.editableType === 'html') el.innerHTML = cmsContent[f];
-    // hero_title/hero_subtitleはHTMLタグを含む可能性があるためinnerHTMLで適用
-    else if (f === 'hero_title' || f === 'hero_subtitle') el.innerHTML = cmsContent[f];
+    // hero_title/hero_subtitle系はHTMLタグを含む可能性があるためinnerHTMLで適用
+    else if (f === 'hero_title' || f === 'hero_subtitle' || f === 'hero_subtitle_sp') el.innerHTML = cmsContent[f];
     else el.textContent = cmsContent[f];
   });
   document.querySelectorAll('[data-bg-field]').forEach(el => {

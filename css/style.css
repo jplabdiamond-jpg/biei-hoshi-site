@@ -365,16 +365,14 @@ ul { list-style: none; }
     letter-spacing: 0.04em;
     line-height: 2;
   }
-  /* モバイル：サブタイトル3行切り替え */
-  .subtitle-desktop { display: none !important; }
-  .subtitle-mobile-line2,
-  .subtitle-mobile-line3 { display: block; }
+  /* モバイル：PC用非表示・SP用表示 */
+  .hero-subtitle-pc { display: none !important; }
+  .hero-subtitle-sp { display: block; }
 }
 
-/* デスクトップ：モバイル用span非表示、デスクトップ用表示 */
-.subtitle-desktop { display: block; }
-.subtitle-mobile-line2,
-.subtitle-mobile-line3 { display: none; }
+/* デスクトップ：PC用表示・SP用非表示 */
+.hero-subtitle-pc { display: block; }
+.hero-subtitle-sp { display: none; }
 
 /* ---- Mobile Header Compact ---- */
 @media (max-width: 899px) {
