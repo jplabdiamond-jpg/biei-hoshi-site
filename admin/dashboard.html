@@ -571,11 +571,12 @@ OUT〜11:00</textarea>
     }
   }
 
-  const SESSION_KEY = 'biei_admin_session';
-  const CREDS_KEY = 'biei_admin_creds';
-  const SETTINGS_KEY = 'biei_settings';
-  const FAQ_KEY = 'biei_faq_items';
-  const BOOKING_BTNS_KEY = 'biei_booking_buttons';
+  // cms.jsと重複する定数はvarで再宣言（const重複SyntaxError回避）
+  var SESSION_KEY = 'biei_admin_session';
+  var CREDS_KEY = 'biei_admin_creds';
+  var SETTINGS_KEY = 'biei_settings';
+  var FAQ_KEY = 'biei_faq_items';
+  var BOOKING_BTNS_KEY = 'biei_booking_buttons';
 
   const DEFAULT_FAQ = [
     { q: 'チェックイン・チェックアウトの時間を教えてください。', a: 'チェックインは15:00〜18:00、チェックアウトは〜11:00となっております。ご都合により時間の変更をご希望の場合は、事前にご相談ください。' },
