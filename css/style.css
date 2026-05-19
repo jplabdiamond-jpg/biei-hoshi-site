@@ -365,7 +365,15 @@ ul { list-style: none; }
     letter-spacing: 0.04em;
     line-height: 2;
   }
+  /* モバイル：サブタイトル3行切り替え */
+  .subtitle-line2-desktop { display: none !important; }
+  .subtitle-line2-mobile { display: block; }
+  .subtitle-line3-mobile { display: block; }
 }
+
+/* デスクトップ：モバイル用span非表示 */
+.subtitle-line2-mobile,
+.subtitle-line3-mobile { display: none; }
 
 /* ---- Mobile Header Compact ---- */
 @media (max-width: 899px) {
