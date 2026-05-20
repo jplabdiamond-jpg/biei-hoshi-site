@@ -111,7 +111,10 @@ async function cmsApply() {
   // 画像src差し替え + cms-ready付与ヘルパー
   // base64やキャッシュ済み画像は onload が発火しない場合があるため complete チェックも行う
   function _setImgSrc(img, src) {
-    const markReady = () => img.classList.add('cms-ready');
+    const markReady = () => {
+      img.classList.add('cms-ready');
+      img.style.visibility = 'visible'; // CSSキャッシュに依存せず確実に表示
+    };
     img.onload  = markReady;
     img.onerror = markReady; // エラー時も表示
     img.src = src;
@@ -134,6 +137,7 @@ async function cmsApply() {
         _setImgSrc(el, cmsContent[f]);
       } else {
         el.classList.add('cms-ready');
+        el.style.visibility = 'visible';
       }
     } else if (el.dataset.editableType === 'html') {
       if (cmsContent[f]) el.innerHTML = cmsContent[f];
@@ -156,7 +160,7 @@ async function cmsApply() {
         _setImgSrc(el, cmsContent[f]);
       }
     } else {
-      if (!isHeroSlide) el.classList.add('cms-ready');
+      if (!isHeroSlide) { el.classList.add('cms-ready'); el.style.visibility = 'visible'; }
     }
   });
 
@@ -716,7 +720,7 @@ function showToast(msg) {
 // すべてのCMS画像を強制表示（cmsApply完了後・フォールバック共用）
 function _forceShowAllCmsImages() {
   document.querySelectorAll('img[data-bg-field], img[data-editable]').forEach(el => {
-    if (!el.closest('.hero-slide')) el.classList.add('cms-ready');
+    if (!el.closest('.hero-slide')) { el.classList.add('cms-ready'); el.style.visibility = 'visible'; }
   });
   const slider = document.querySelector('.hero-slider');
   if (slider) slider.classList.add('cms-hero-ready');
