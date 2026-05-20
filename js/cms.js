@@ -108,8 +108,19 @@ async function cmsApply() {
   document.querySelectorAll('[data-bg-field]').forEach(el => {
     const f = el.dataset.bgField;
     if (!f || !cmsContent[f]) return;
-    if (el.tagName === 'IMG') el.src = cmsContent[f];
+    if (el.tagName === 'IMG') {
+      // src差し替え後にロード完了してから表示（ちらつき防止）
+      if (f.startsWith('hero_slide')) {
+        el.style.opacity = '0';
+        el.onload = () => { el.style.opacity = ''; };
+        el.src = cmsContent[f];
+      } else {
+        el.src = cmsContent[f];
+      }
+    }
   });
+  // ヒーロースライダーを表示（CMS適用完了 = 正しい画像が設定済み）
+  _showHeroSlider();
 
   // --- サイト設定 ---
   const settings = hasSb ? (sb.settings || {}) : settingsLoad();
@@ -367,6 +378,19 @@ function _defaultAmenity() {
     { title: 'SERVICE', items: 'チェックイン 15:00〜18:00\nチェックアウト〜11:00\n駐車場（無料・2台分）\nゴミ分別サービス\nアーリーチェックイン相談可\n荷物預かりサービス' }
   ];
 }
+
+/* ============================================================
+   ヒーロースライダー 表示制御（ちらつき防止）
+   ============================================================ */
+function _showHeroSlider() {
+  const slider = document.querySelector('.hero-slider');
+  if (!slider) return;
+  slider.style.visibility = 'visible';
+}
+// 万一 cmsApply が失敗・遅延しても最大800ms後に強制表示
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => _showHeroSlider(), 800);
+});
 
 /* ============================================================
    メンテナンスモード表示
