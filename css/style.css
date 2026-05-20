@@ -1405,3 +1405,24 @@ footer {
   background: #d4bc9a;
   transform: scale(1.05);
 }
+
+/* ============================================================
+   CMS ちらつき防止
+   data-bg-field / data-editable の IMG は CMS適用前に非表示。
+   cms.js の cmsApply() 完了後に .cms-ready クラスでフェードイン。
+   ============================================================ */
+img[data-bg-field],
+img[data-editable] {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+img[data-bg-field].cms-ready,
+img[data-editable].cms-ready {
+  opacity: 1;
+}
+
+/* ヒーロースライドのimgは .hero-slide 側の opacity で制御するため上書き */
+.hero-slide img[data-bg-field] {
+  opacity: 1 !important;
+  transition: none !important;
+}
