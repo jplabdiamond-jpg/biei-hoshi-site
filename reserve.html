@@ -65,6 +65,7 @@
       font-style: italic;
     }
   </style>
+  <style id="cms-flash-guard">img[data-bg-field],img[data-editable]{opacity:0!important;transition:none!important;}img[data-bg-field].cms-ready,img[data-editable].cms-ready{opacity:1!important;transition:opacity 0.4s ease!important;}</style>
 </head>
 <body>
 <header id="site-header" class="scrolled">
@@ -158,7 +159,7 @@
 
 <div class="admin-edit-bar"><span>ADMIN MODE</span><button class="admin-btn primary" data-action="edit">EDIT PAGE</button><button class="admin-btn" data-action="save">SAVE CHANGES</button><button class="admin-btn" data-action="media">DASHBOARD</button><button class="admin-btn" data-action="exit">LOG OUT</button></div>
 <script src="js/main.js?v=4"></script>
-<script src="js/cms.js?v=10"></script>
+<script src="js/cms.js?v=13"></script>
 <script>
 // ---- お問い合わせフォーム送信 ----
 document.getElementById('reserveForm').addEventListener('submit', function(e) {

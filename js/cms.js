@@ -1,5 +1,5 @@
 /* ============================================================
-   星の光の宿 BIEI — CMS Shared Logic  v7
+   星の光の宿 BIEI — CMS Shared Logic  v13
    データ読み込み優先順:
      1. Supabase (全デバイス共通・即時反映)
      2. localStorage (オフライン時フォールバック)
@@ -445,17 +445,9 @@ function _showHeroSlider(cmsContent) {
   });
 }
 
-// フォールバック: cmsApply が失敗・遅延しても最大1500ms後に強制表示
+// フォールバック: 最大800ms後に強制表示（cmsApply完了後も同関数が呼ばれるので二重適用は無害）
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    // 非ヒーロー画像
-    document.querySelectorAll('img[data-bg-field], img[data-editable]').forEach(el => {
-      if (!el.closest('.hero-slide')) el.classList.add('cms-ready');
-    });
-    // ヒーロースライダー
-    const slider = document.querySelector('.hero-slider');
-    if (slider) slider.classList.add('cms-hero-ready');
-  }, 1500);
+  setTimeout(_forceShowAllCmsImages, 800);
 });
 
 /* ============================================================
@@ -704,8 +696,24 @@ function showToast(msg) {
 /* ============================================================
    DOMContentLoaded
    ============================================================ */
+// すべてのCMS画像を強制表示（cmsApply完了後・フォールバック共用）
+function _forceShowAllCmsImages() {
+  document.querySelectorAll('img[data-bg-field], img[data-editable]').forEach(el => {
+    if (!el.closest('.hero-slide')) el.classList.add('cms-ready');
+  });
+  const slider = document.querySelector('.hero-slider');
+  if (slider) slider.classList.add('cms-hero-ready');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
-  await cmsApply();
+  try {
+    await cmsApply();
+  } catch(e) {
+    console.error('[cms] cmsApply error:', e);
+  } finally {
+    // cmsApply完了後（成功・失敗問わず）必ず全画像を表示
+    _forceShowAllCmsImages();
+  }
   initAdminBar();
 
   const EDIT_TRIGGER_KEY = 'biei_admin_edit_trigger';
