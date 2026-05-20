@@ -1412,15 +1412,12 @@ footer {
    cms.js の cmsApply() 完了後に .cms-ready クラスでフェードイン。
    ヒーロースライドは .hero-slider の visibility で制御。
    ============================================================ */
-/* CMS画像: 適用前に非表示 → .cms-ready でフェードイン */
-img[data-bg-field],
-img[data-editable] {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
+/* CMS画像: 適用前に非表示 → .cms-ready でフェードイン
+   ※ opacity:0はinline <style>の!importantに委ねる。ここでは!importantを使わない */
 img[data-bg-field].cms-ready,
 img[data-editable].cms-ready {
   opacity: 1 !important;
+  transition: opacity 0.4s ease !important;
 }
 
 /* ヒーロースライダー: visibility制御でフラッシュ防止 */
