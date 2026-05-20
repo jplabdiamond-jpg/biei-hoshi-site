@@ -120,7 +120,6 @@ async function cmsApply() {
   });
 
   // data-bg-field 画像: 差し替え→フェードイン
-  // ※ .hero-slide img は CSS側で opacity:1 固定のため .cms-ready 不要
   document.querySelectorAll('[data-bg-field]').forEach(el => {
     const f = el.dataset.bgField;
     if (el.tagName !== 'IMG') return;
@@ -131,13 +130,12 @@ async function cmsApply() {
       }
       el.src = cmsContent[f];
     } else {
-      // CMSデータなし: デフォルト画像のままフェードイン（hero-slideは除く）
       if (!isHeroSlide) el.classList.add('cms-ready');
     }
   });
 
-  // ヒーロースライダーを表示（CMS適用完了 = 正しい画像が設定済み）
-  _showHeroSlider();
+  // ヒーロースライダーを表示（全スライド画像のsrc設定完了後）
+  _showHeroSlider(cmsContent);
 
   // --- サイト設定 ---
   const settings = hasSb ? (sb.settings || {}) : settingsLoad();
@@ -397,18 +395,57 @@ function _defaultAmenity() {
 }
 
 /* ============================================================
-   ヒーロースライダー 表示制御（後方互換のため残す）
+   ヒーロースライダー 表示制御
+   全スライド画像のsrc置換完了後に visibility: visible
    ============================================================ */
-function _showHeroSlider() { /* style.css の cms-ready クラスで制御するため不要 */ }
+function _showHeroSlider(cmsContent) {
+  const slider = document.querySelector('.hero-slider');
+  if (!slider) return;
 
-// フォールバック: cmsApply が失敗・遅延しても最大1000ms後に全CMS画像を強制表示
-// ※ .hero-slide img は CSS側で制御するため除外
+  const slideImgs = Array.from(slider.querySelectorAll('.hero-slide img[data-bg-field]'));
+  if (!slideImgs.length) {
+    slider.classList.add('cms-hero-ready');
+    return;
+  }
+
+  // CMS画像が設定されているスライドのみ待機対象
+  const waitTargets = slideImgs.filter(img => {
+    const f = img.dataset.bgField;
+    return cmsContent && cmsContent[f];
+  });
+
+  if (!waitTargets.length) {
+    // CMSデータなし → デフォルト画像をそのまま表示
+    slider.classList.add('cms-hero-ready');
+    return;
+  }
+
+  let loaded = 0;
+  const total = waitTargets.length;
+  const reveal = () => { slider.classList.add('cms-hero-ready'); };
+
+  waitTargets.forEach(img => {
+    if (img.complete && img.naturalWidth > 0) {
+      loaded++;
+      if (loaded >= total) reveal();
+    } else {
+      img.addEventListener('load', () => { loaded++; if (loaded >= total) reveal(); }, { once: true });
+      img.addEventListener('error', () => { loaded++; if (loaded >= total) reveal(); }, { once: true });
+    }
+  });
+}
+
+// フォールバック: cmsApply が失敗・遅延しても最大1500ms後に強制表示
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
+    // 非ヒーロー画像
     document.querySelectorAll('img[data-bg-field], img[data-editable]').forEach(el => {
       if (!el.closest('.hero-slide')) el.classList.add('cms-ready');
     });
-  }, 1000);
+    // ヒーロースライダー
+    const slider = document.querySelector('.hero-slider');
+    if (slider) slider.classList.add('cms-hero-ready');
+  }, 1500);
 });
 
 /* ============================================================

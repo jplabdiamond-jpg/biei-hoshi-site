@@ -1421,8 +1421,12 @@ img[data-editable].cms-ready {
   opacity: 1;
 }
 
-/* ヒーロースライドのimgは .hero-slide 側の opacity で制御するため上書き */
-.hero-slide img[data-bg-field] {
-  opacity: 1 !important;
-  transition: none !important;
+/* ヒーロースライダーはJS側の _showHeroSlider() が visibility: visible にするまで非表示 */
+/* → .hero-slide img は opacity: 0 のまま（.hero-slide の opacity アニメーションと独立） */
+/* ヒーローコンテナ内の img は visibility 制御で隠す（opacity:0 は .hero-slide の制御に干渉するため使用しない） */
+.hero-slider {
+  visibility: hidden;
+}
+.hero-slider.cms-hero-ready {
+  visibility: visible;
 }
