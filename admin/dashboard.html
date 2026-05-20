@@ -1239,6 +1239,11 @@ OUT〜11:00</textarea>
     {
       page: 'トップページ（index.html）', icon: '🏠',
       groups: [
+        { label: 'ヒーロースライド', fields: [
+          { key: 'hero_slide1', label: 'スライド1',             defaultSrc: '../images/sample_house.jpg' },
+          { key: 'hero_slide2', label: 'スライド2',             defaultSrc: '../images/IMG_0804_Original.jpeg' },
+          { key: 'hero_slide3', label: 'スライド3',             defaultSrc: '../images/IMG_9547_Original.jpeg' }
+        ]},
         { label: 'イントロ画像', fields: [
           { key: 'intro_img',   label: 'イントロ写真',         defaultSrc: '../images/IMG_9937_Original.jpeg' }
         ]},
@@ -1269,6 +1274,9 @@ OUT〜11:00</textarea>
       groups: [
         { label: 'ヒーロー背景', fields: [
           { key: 'about_hero_bg', label: 'ヒーロー背景',       defaultSrc: '../images/sample_house.jpg' }
+        ]},
+        { label: '外観・メイン画像', fields: [
+          { key: 'about_exterior', label: '宿外観写真',         defaultSrc: '../images/sample_house2.jpg' }
         ]}
       ]
     },
@@ -1278,6 +1286,18 @@ OUT〜11:00</textarea>
         { label: 'ヒーロー・メイン', fields: [
           { key: 'rooms_hero_bg',  label: 'ヒーロー背景',      defaultSrc: '../images/sample_bedroom2.jpg' },
           { key: 'rooms_main_img', label: 'メインビジュアル',  defaultSrc: '../images/sample_livingroom.jpg' }
+        ]},
+        { label: '月の間（1LDK）', fields: [
+          { key: 'room1_thumb',    label: '月の間 サムネイル',  defaultSrc: '../images/sample_bedroom2.jpg' },
+          { key: 'room1_bedroom',  label: '月の間 寝室',        defaultSrc: '../images/sample_bedroom2.jpg' },
+          { key: 'room1_living',   label: '月の間 リビング',    defaultSrc: '../images/sample_livingroom.jpg' },
+          { key: 'room1_bath',     label: '月の間 バスルーム',  defaultSrc: '../images/sample_bathroom.jpg' }
+        ]},
+        { label: '星の間（2LDK）', fields: [
+          { key: 'room2_thumb',    label: '星の間 サムネイル',  defaultSrc: '../images/sample_bedroom2.jpg' },
+          { key: 'room2_main',     label: '星の間 メイン',      defaultSrc: '../images/sample_bedroom2.jpg' },
+          { key: 'room2_living',   label: '星の間 リビング',    defaultSrc: '../images/sample_room1.jpg' },
+          { key: 'room2_bath',     label: '星の間 バスルーム',  defaultSrc: '../images/sample_bathroom.jpg' }
         ]}
       ]
     },
