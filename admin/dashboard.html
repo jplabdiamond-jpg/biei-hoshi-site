@@ -692,6 +692,33 @@ OUT〜11:00</textarea>
   /* ── Supabase直接保存（cms.jsへの依存なし・確実動作） ── */
   const _SB_URL  = 'https://yevhirgmfjdvnargaitj.supabase.co';
   const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlldmhpcmdtZmpkdm5hcmdhaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDg2NjUsImV4cCI6MjA5MzI4NDY2NX0.rksdAP956Y8I3E0y5n0PpvWddoB4-x6hLjqdr6dDIM4';
+  // 画像圧縮ユーティリティ（最大1200px, JPEG 0.78）→ Promise<dataURL>
+  function compressImage(file, maxPx = 1200, quality = 0.78) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxPx || h > maxPx) {
+            if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+            else       { w = Math.round(w * maxPx / h); h = maxPx; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          const dataurl = canvas.toDataURL('image/jpeg', quality);
+          console.log(`[compress] ${file.name}: ${Math.round(dataurl.length/1024)}KB`);
+          resolve(dataurl);
+        };
+        img.onerror = reject;
+        img.src = ev.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   async function sbSave(key, value) {
     try {
       const res = await fetch(`${_SB_URL}/rest/v1/biei_cms`, {
@@ -1504,18 +1531,14 @@ OUT〜11:00</textarea>
           footer.appendChild(selLabel);
           card.appendChild(footer);
 
-          // ファイル選択→プレビュー（両inputに付与）
+          // ファイル選択→共通圧縮関数→プレビュー
           [overlayInput, selInput].forEach(input => {
-            input.addEventListener('change', () => {
-              const file = input.files[0];
-              if (!file) return;
-              const reader = new FileReader();
-              reader.onload = ev => {
-                secDiv.querySelectorAll(`.all-img-preview[data-key="${f.key}"]`).forEach(i => i.src = ev.target.result);
-                overlayInput.dataset.dataurl = ev.target.result;
-                selInput.dataset.dataurl = ev.target.result;
-              };
-              reader.readAsDataURL(file);
+            input.addEventListener('change', async () => {
+              if (!input.files[0]) return;
+              const dataurl = await compressImage(input.files[0]);
+              secDiv.querySelectorAll(`.all-img-preview[data-key="${f.key}"]`).forEach(i => i.src = dataurl);
+              overlayInput.dataset.dataurl = dataurl;
+              selInput.dataset.dataurl = dataurl;
             });
           });
 
@@ -1578,21 +1601,16 @@ OUT〜11:00</textarea>
         }).join('')}
       </div>`;
 
-    // ファイル選択→即プレビュー
+    // ファイル選択→圧縮→即プレビュー
     wrap.querySelectorAll('.hero-img-file-input').forEach(input => {
-      input.addEventListener('change', () => {
+      input.addEventListener('change', async () => {
         const file = input.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-          // 同じkeyを持つ全プレビュー画像を更新
-          wrap.querySelectorAll(`.hero-img-preview[data-key="${input.dataset.key}"]`).forEach(img => {
-            img.src = ev.target.result;
-          });
-          // tempに保持
-          input.dataset.dataurl = ev.target.result;
-        };
-        reader.readAsDataURL(file);
+        const dataurl = await compressImage(file);
+        wrap.querySelectorAll(`.hero-img-preview[data-key="${input.dataset.key}"]`).forEach(img => {
+          img.src = dataurl;
+        });
+        input.dataset.dataurl = dataurl;
       });
     });
 
@@ -1684,18 +1702,14 @@ OUT〜11:00</textarea>
       </div>
     `).join('');
 
-    /* ファイル選択 → プレビュー */
+    /* ファイル選択 → 圧縮 → プレビュー */
     wrap.querySelectorAll('.room-img-file-input').forEach(input => {
-      input.addEventListener('change', () => {
+      input.addEventListener('change', async () => {
         if (!input.files[0]) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const preview = wrap.querySelector(`.room-img-preview[data-field="${input.dataset.field}"]`);
-          if (preview) preview.src = ev.target.result;
-          /* 一時保持 */
-          input.dataset.dataUrl = ev.target.result;
-        };
-        reader.readAsDataURL(input.files[0]);
+        const dataurl = await compressImage(input.files[0]);
+        const preview = wrap.querySelector(`.room-img-preview[data-field="${input.dataset.field}"]`);
+        if (preview) preview.src = dataurl;
+        input.dataset.dataUrl = dataurl;
       });
     });
   }
