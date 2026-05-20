@@ -854,6 +854,12 @@ OUT〜11:00</textarea>
           if (r.key === 'amenity'      && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_amenity_sections', JSON.stringify(r.value));
           if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
           if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   _setCmsContent(r.value);
+          // transport キーをcmsContentにマージ
+          if (r.key === 'transport' && r.value && Object.keys(r.value).length) {
+            const cms = _getCmsContent();
+            Object.assign(cms, r.value);
+            _setCmsContent(cms);
+          }
           // 個別画像キー img_{fieldkey} をcmsContentにマージ
           if (r.key && r.key.startsWith('img_') && r.value) {
             const cms = _getCmsContent();
@@ -1163,7 +1169,7 @@ OUT〜11:00</textarea>
   ];
 
   function loadTransportAdmin() {
-    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    const data = _getCmsContent();
     TRANSPORT_FIELDS.forEach(f => {
       const titleEl = document.getElementById(f.titleId);
       const bodyEl  = document.getElementById(f.bodyId);
@@ -1173,16 +1179,17 @@ OUT〜11:00</textarea>
   }
 
   document.getElementById('saveTransportBtn').addEventListener('click', async () => {
-    const data = JSON.parse(localStorage.getItem(NEWS_KEY) || '{}');
+    const cms = _getCmsContent();
+    const transportData = {};
     TRANSPORT_FIELDS.forEach(f => {
       const titleEl = document.getElementById(f.titleId);
       const bodyEl  = document.getElementById(f.bodyId);
-      if (titleEl) data[`access_${f.key}_title`] = titleEl.value.trim();
-      if (bodyEl)  data[`access_${f.key}_body`]  = bodyEl.value.trim();
+      if (titleEl) { cms[`access_${f.key}_title`] = titleEl.value.trim(); transportData[`access_${f.key}_title`] = titleEl.value.trim(); }
+      if (bodyEl)  { cms[`access_${f.key}_body`]  = bodyEl.value.trim();  transportData[`access_${f.key}_body`]  = bodyEl.value.trim(); }
     });
-    localStorage.setItem(NEWS_KEY, JSON.stringify(data));
+    _setCmsContent(cms);
     localStorage.setItem('biei_last_save', new Date().toISOString());
-    await sbSave('cms_content', data);
+    await sbSave('transport', transportData);
     showToast('交通案内を保存しました');
   });
 
@@ -1814,7 +1821,6 @@ OUT〜11:00</textarea>
     _setCmsContent(cmsData);
     localStorage.setItem('biei_last_save', new Date().toISOString());
     await sbSave('amenity', sections);
-    await sbSave('cms_content', cmsData);
     showToast('アメニティを保存しました');
     updateStats();
   });
