@@ -98,7 +98,15 @@ async function cmsApply() {
   }
 
   // --- テキスト・画像フィールド (data-editable / data-bg-field) ---
-  const cmsContent = hasSb ? (sb.cms_content || {}) : cmsLoad();
+  // cms_contentと個別キー img_{fieldkey} をマージ（大容量画像の分割保存対応）
+  const cmsContent = hasSb ? Object.assign({}, sb.cms_content || {}) : cmsLoad();
+  if (hasSb) {
+    Object.keys(sb).forEach(k => {
+      if (k.startsWith('img_') && sb[k]) {
+        cmsContent[k.slice(4)] = sb[k]; // "img_room1_bedroom" → "room1_bedroom"
+      }
+    });
+  }
 
   // 画像src差し替え + cms-ready付与ヘルパー
   // base64やキャッシュ済み画像は onload が発火しない場合があるため complete チェックも行う

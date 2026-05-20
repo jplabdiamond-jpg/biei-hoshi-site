@@ -827,6 +827,12 @@ OUT〜11:00</textarea>
           if (r.key === 'amenity'      && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_amenity_sections', JSON.stringify(r.value));
           if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
           if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   _setCmsContent(r.value);
+          // 個別画像キー img_{fieldkey} をcmsContentにマージ
+          if (r.key && r.key.startsWith('img_') && r.value) {
+            const cms = _getCmsContent();
+            cms[r.key.slice(4)] = r.value; // "img_room1_bedroom" → "room1_bedroom"
+            _setCmsContent(cms);
+          }
           if (r.key === 'settings'     && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_settings', JSON.stringify(r.value));
           if (r.key === 'maintenance'  && r.value !== undefined && r.value !== null) localStorage.setItem('biei_maintenance', JSON.stringify(r.value));
         });
@@ -1396,22 +1402,29 @@ OUT〜11:00</textarea>
         saveBtn.disabled = true;
         saveBtn.textContent = '保存中...';
         try {
-          const cms = _getCmsContent();
           let newCount = 0;
-          // 新規選択画像を反映
+          const savePromises = [];
+          // 画像は1枚ずつ個別キー img_{fieldkey} でSupabaseに保存（cms_contentの肥大化を防ぐ）
           section.groups.forEach(grp => {
             grp.fields.forEach(f => {
               secDiv.querySelectorAll(`.all-img-file-input[data-key="${f.key}"]`).forEach(input => {
-                if (input.dataset.dataurl) { cms[f.key] = input.dataset.dataurl; newCount++; }
+                if (input.dataset.dataurl) {
+                  newCount++;
+                  savePromises.push(sbSave('img_' + f.key, input.dataset.dataurl));
+                }
               });
             });
           });
-          _setCmsContent(cms);
+          if (savePromises.length === 0) {
+            showToast('変更がありません（画像を選択してください）');
+            return;
+          }
           try { localStorage.setItem('biei_last_save', new Date().toISOString()); } catch(_) {}
-          const ok = await sbSave('cms_content', cms);
+          const results = await Promise.all(savePromises);
+          const ok = results.every(r => r);
           showToast(ok
-            ? (newCount > 0 ? `✓ ${newCount}枚の新画像を保存しました（${section.page}）` : `✓ Supabaseに同期しました（${section.page}）`)
-            : `保存しました（オフライン：次回同期時に反映）`);
+            ? `✓ ${newCount}枚の画像を保存しました（${section.page}）`
+            : `一部の画像保存に失敗しました`);
           updateStats();
           renderAllImagesAdmin();
         } catch(e) {
