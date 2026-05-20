@@ -834,6 +834,7 @@ OUT〜11:00</textarea>
     loadSettings();
     loadMaintenancePanel();
     renderHeroImagesAdmin();
+    renderAllImagesAdmin();
     updateStats();
   }
 
@@ -1359,105 +1360,148 @@ OUT〜11:00</textarea>
   function renderAllImagesAdmin() {
     const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
     const wrap = document.getElementById('allImagesAdmin');
+    wrap.innerHTML = '';
 
-    wrap.innerHTML = ALL_IMAGE_SECTIONS.map((section, si) => `
-      <div style="margin-bottom:40px;border:1px solid var(--border);background:var(--white);">
-        <div style="padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;">
-          <div>
-            <span style="font-size:16px;margin-right:10px;">${section.icon}</span>
-            <span style="font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:.15em;font-style:italic;color:var(--mid);">${section.page}</span>
-          </div>
-          <button class="btn-save all-section-save-btn" data-section-idx="${si}" style="padding:8px 20px;font-size:12px;">このページを保存</button>
-        </div>
-        ${section.groups.map((group, gi) => `
-          <div style="padding:20px 24px;${gi < section.groups.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : ''}">
-            <p style="font-size:10px;letter-spacing:.22em;color:var(--accent);margin-bottom:14px;">${group.label.toUpperCase()}</p>
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
-              ${group.fields.map(f => {
-                const src = cmsData[f.key] || f.defaultSrc;
-                return `
-                  <div style="background:#111;overflow:hidden;border:1px solid var(--border);" data-all-key="${f.key}">
-                    <div style="aspect-ratio:16/9;overflow:hidden;position:relative;">
-                      <img src="${src}" alt="${f.label}" style="width:100%;height:100%;object-fit:cover;display:block;" class="all-img-preview" data-key="${f.key}">
-                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;background:rgba(0,0,0,.5);" class="all-img-overlay">
-                        <label style="cursor:pointer;padding:8px 16px;border:1px solid rgba(196,168,130,.7);color:#d4bc9a;font-size:11px;letter-spacing:.12em;font-family:'Cormorant Garamond',serif;">
-                          ✎ 変更
-                          <input type="file" accept="image/*" class="all-img-file-input" data-key="${f.key}" style="display:none;">
-                        </label>
-                      </div>
-                    </div>
-                    <div style="padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-                      <span style="font-size:11px;color:var(--light);letter-spacing:.04em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.label}</span>
-                      <label class="btn-sm" style="cursor:pointer;white-space:nowrap;font-size:10px;padding:4px 10px;">
-                        選択
-                        <input type="file" accept="image/*" class="all-img-file-input" data-key="${f.key}" style="display:none;">
-                      </label>
-                    </div>
-                  </div>`;
-              }).join('')}
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `).join('');
+    ALL_IMAGE_SECTIONS.forEach((section, si) => {
+      // セクションコンテナ
+      const secDiv = document.createElement('div');
+      secDiv.style.cssText = 'margin-bottom:40px;border:1px solid var(--border);background:var(--white);';
 
-    // ファイル選択→即プレビュー
-    wrap.querySelectorAll('.all-img-file-input').forEach(input => {
-      input.addEventListener('change', () => {
-        const file = input.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-          wrap.querySelectorAll(`.all-img-preview[data-key="${input.dataset.key}"]`).forEach(img => {
-            img.src = ev.target.result;
-          });
-          input.dataset.dataurl = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    });
+      // ヘッダー行
+      const header = document.createElement('div');
+      header.style.cssText = 'padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;';
+      header.innerHTML = `<div><span style="font-size:16px;margin-right:10px;">${section.icon}</span><span style="font-family:\'Cormorant Garamond\',serif;font-size:15px;letter-spacing:.15em;font-style:italic;color:var(--mid);">${section.page}</span></div>`;
 
-    // オーバーレイhover
-    wrap.querySelectorAll('[data-all-key]').forEach(card => {
-      const overlay = card.querySelector('.all-img-overlay');
-      card.addEventListener('mouseenter', () => { if(overlay) overlay.style.opacity = '1'; });
-      card.addEventListener('mouseleave', () => { if(overlay) overlay.style.opacity = '0'; });
-    });
-
-    // セクション単位で保存
-    wrap.querySelectorAll('.all-section-save-btn').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const si = parseInt(btn.dataset.sectionIdx);
-        const section = ALL_IMAGE_SECTIONS[si];
-        const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
-        let saved = 0;
-
-        section.groups.forEach(group => {
-          group.fields.forEach(f => {
-            const inputs = wrap.querySelectorAll(`.all-img-file-input[data-key="${f.key}"]`);
-            inputs.forEach(input => {
-              if (input.dataset.dataurl) {
-                cmsData[f.key] = input.dataset.dataurl;
-                saved++;
-              }
+      // 「このページを保存」ボタン（DOM操作で生成してリスナーを直接付与）
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'btn-save';
+      saveBtn.style.cssText = 'padding:8px 20px;font-size:12px;';
+      saveBtn.textContent = 'このページを保存';
+      saveBtn.addEventListener('click', async () => {
+        saveBtn.disabled = true;
+        saveBtn.textContent = '保存中...';
+        try {
+          const cms = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+          let newCount = 0;
+          // 新規選択画像を反映
+          section.groups.forEach(grp => {
+            grp.fields.forEach(f => {
+              secDiv.querySelectorAll(`.all-img-file-input[data-key="${f.key}"]`).forEach(input => {
+                if (input.dataset.dataurl) { cms[f.key] = input.dataset.dataurl; newCount++; }
+              });
             });
           });
-        });
-
-        if (saved === 0) {
-          showToast('変更された画像がありません');
-          return;
+          localStorage.setItem('biei_cms_content', JSON.stringify(cms));
+          localStorage.setItem('biei_last_save', new Date().toISOString());
+          const ok = await sbSave('cms_content', cms);
+          showToast(ok
+            ? (newCount > 0 ? `✓ ${newCount}枚の新画像を保存しました（${section.page}）` : `✓ Supabaseに同期しました（${section.page}）`)
+            : `保存しました（オフライン：次回同期時に反映）`);
+          updateStats();
+          renderAllImagesAdmin();
+        } catch(e) {
+          showToast('エラー: ' + e.message);
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'このページを保存';
         }
-
-        localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
-        localStorage.setItem('biei_last_save', new Date().toISOString());
-        const ok = await sbSave('cms_content', cmsData);
-        showToast(ok
-          ? `✓ ${saved}枚の画像を保存しました\n（${section.page}）`
-          : `保存しました（オフライン：次回同期時に反映）`);
-        updateStats();
-        renderAllImagesAdmin();
       });
+      header.appendChild(saveBtn);
+      secDiv.appendChild(header);
+
+      // グループ
+      section.groups.forEach((group, gi) => {
+        const grpDiv = document.createElement('div');
+        grpDiv.style.cssText = 'padding:20px 24px;' + (gi < section.groups.length - 1 ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : '');
+        const grpLabel = document.createElement('p');
+        grpLabel.style.cssText = 'font-size:10px;letter-spacing:.22em;color:var(--accent);margin-bottom:14px;';
+        grpLabel.textContent = group.label.toUpperCase();
+        grpDiv.appendChild(grpLabel);
+
+        const grid = document.createElement('div');
+        grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;';
+
+        group.fields.forEach(f => {
+          const card = document.createElement('div');
+          card.style.cssText = 'background:#111;overflow:hidden;border:1px solid var(--border);';
+          card.dataset.allKey = f.key;
+
+          // 画像コンテナ
+          const imgWrap = document.createElement('div');
+          imgWrap.style.cssText = 'aspect-ratio:16/9;overflow:hidden;position:relative;';
+
+          const img = document.createElement('img');
+          img.alt = f.label;
+          img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+          img.className = 'all-img-preview';
+          img.dataset.key = f.key;
+          // base64をinnerHTMLに埋め込まずDOMで直接セット
+          img.src = cmsData[f.key] || f.defaultSrc;
+
+          const overlay = document.createElement('div');
+          overlay.className = 'all-img-overlay';
+          overlay.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;background:rgba(0,0,0,.5);';
+          const overlayLabel = document.createElement('label');
+          overlayLabel.style.cssText = 'cursor:pointer;padding:8px 16px;border:1px solid rgba(196,168,130,.7);color:#d4bc9a;font-size:11px;letter-spacing:.12em;font-family:\'Cormorant Garamond\',serif;';
+          overlayLabel.textContent = '✎ 変更';
+          const overlayInput = document.createElement('input');
+          overlayInput.type = 'file'; overlayInput.accept = 'image/*';
+          overlayInput.className = 'all-img-file-input';
+          overlayInput.dataset.key = f.key;
+          overlayInput.style.display = 'none';
+          overlayLabel.appendChild(overlayInput);
+          overlay.appendChild(overlayLabel);
+
+          imgWrap.appendChild(img);
+          imgWrap.appendChild(overlay);
+          card.appendChild(imgWrap);
+
+          // フッター
+          const footer = document.createElement('div');
+          footer.style.cssText = 'padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;';
+          const lbl = document.createElement('span');
+          lbl.style.cssText = 'font-size:11px;color:var(--light);letter-spacing:.04em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+          lbl.textContent = f.label;
+          const selLabel = document.createElement('label');
+          selLabel.className = 'btn-sm';
+          selLabel.style.cssText = 'cursor:pointer;white-space:nowrap;font-size:10px;padding:4px 10px;';
+          selLabel.textContent = '選択';
+          const selInput = document.createElement('input');
+          selInput.type = 'file'; selInput.accept = 'image/*';
+          selInput.className = 'all-img-file-input';
+          selInput.dataset.key = f.key;
+          selInput.style.display = 'none';
+          selLabel.appendChild(selInput);
+          footer.appendChild(lbl);
+          footer.appendChild(selLabel);
+          card.appendChild(footer);
+
+          // ファイル選択→プレビュー（両inputに付与）
+          [overlayInput, selInput].forEach(input => {
+            input.addEventListener('change', () => {
+              const file = input.files[0];
+              if (!file) return;
+              const reader = new FileReader();
+              reader.onload = ev => {
+                secDiv.querySelectorAll(`.all-img-preview[data-key="${f.key}"]`).forEach(i => i.src = ev.target.result);
+                overlayInput.dataset.dataurl = ev.target.result;
+                selInput.dataset.dataurl = ev.target.result;
+              };
+              reader.readAsDataURL(file);
+            });
+          });
+
+          // hover
+          card.addEventListener('mouseenter', () => { overlay.style.opacity = '1'; });
+          card.addEventListener('mouseleave', () => { overlay.style.opacity = '0'; });
+
+          grid.appendChild(card);
+        });
+        grpDiv.appendChild(grid);
+        secDiv.appendChild(grpDiv);
+      });
+
+      wrap.appendChild(secDiv);
     });
   }
 
