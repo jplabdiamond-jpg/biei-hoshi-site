@@ -1,5 +1,5 @@
 /* ============================================================
-   星の光の宿 BIEI — CMS Shared Logic  v13
+   星の光の宿 BIEI — CMS Shared Logic  v14
    データ読み込み優先順:
      1. Supabase (全デバイス共通・即時反映)
      2. localStorage (オフライン時フォールバック)
@@ -31,10 +31,13 @@ async function sbGet(key) {
 
 async function sbGetAll() {
   try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 4000); // 4秒タイムアウト
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/biei_cms?select=key,value`,
-      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
+      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }, signal: controller.signal }
     );
+    clearTimeout(timer);
     if (!res.ok) return {};
     const rows = await res.json();
     const out = {};
@@ -445,9 +448,10 @@ function _showHeroSlider(cmsContent) {
   });
 }
 
-// フォールバック: 最大800ms後に強制表示（cmsApply完了後も同関数が呼ばれるので二重適用は無害）
+// フォールバック: Supabaseが完全タイムアウトした場合のみ5秒後に強制表示
+// ※ 800ms等の短いタイマーはSupabase完了前に古い画像を表示させるため廃止
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(_forceShowAllCmsImages, 800);
+  setTimeout(_forceShowAllCmsImages, 5000);
 });
 
 /* ============================================================
