@@ -264,6 +264,9 @@
     <button class="nav-item" data-panel="hero-images">
       <span class="nav-item-icon">🖼</span>ヒーロー画像
     </button>
+    <button class="nav-item" data-panel="all-images">
+      <span class="nav-item-icon">🗂</span>全画像管理
+    </button>
     <button class="nav-item" data-panel="room-images">
       <span class="nav-item-icon">🛏</span>部屋画像管理
     </button>
@@ -550,6 +553,16 @@
       </div>
     </div>
 
+    <!-- ALL IMAGES PANEL -->
+    <div class="panel" id="panel-all-images">
+      <p class="section-title">全ページ画像管理</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">
+        サイト上のすべての画像をページ・セクションごとに管理できます。<br>
+        「画像を選択」でファイルを選ぶと即プレビュー。「このセクションを保存」で全デバイスに反映されます。
+      </p>
+      <div id="allImagesAdmin"></div>
+    </div>
+
     <!-- HERO IMAGES PANEL -->
     <div class="panel" id="panel-hero-images">
       <p class="section-title">ヒーロー画像管理（トップページ スライドショー）</p>
@@ -743,7 +756,7 @@ OUT〜11:00</textarea>
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'hero-images':'ヒーロー画像管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', maintenance:'メンテナンスモード', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'hero-images':'ヒーロー画像管理', 'all-images':'全ページ画像管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', maintenance:'メンテナンスモード', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -761,6 +774,7 @@ OUT〜11:00</textarea>
         if (id === 'transport')     loadTransportAdmin();
         if (id === 'reserve-notes') renderReserveNotesAdmin();
         if (id === 'hero-images')   renderHeroImagesAdmin();
+        if (id === 'all-images')    renderAllImagesAdmin();
         if (id === 'room-images')   renderRoomImagesAdmin();
         if (id === 'amenity')       renderAmenityAdmin();
         if (id === 'nearby')        renderNearbyAdmin();
@@ -1203,6 +1217,248 @@ OUT〜11:00</textarea>
     t.textContent = msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  /* ========================
+     全ページ画像管理
+  ======================== */
+  const ALL_IMAGE_SECTIONS = [
+    {
+      page: 'トップページ（index.html）', icon: '🏠',
+      groups: [
+        { label: 'イントロ画像', fields: [
+          { key: 'intro_img',   label: 'イントロ写真',         defaultSrc: 'images/IMG_9937_Original.jpeg' }
+        ]},
+        { label: 'バナー背景', fields: [
+          { key: 'banner1_bg',  label: 'バナー1 背景',         defaultSrc: 'images/IMG_1461_Original.jpeg' },
+          { key: 'banner2_bg',  label: 'バナー2 背景',         defaultSrc: 'images/sample_stars4.jpg' }
+        ]},
+        { label: '体験セクション', fields: [
+          { key: 'exp1_img',    label: '体験1 画像',           defaultSrc: 'images/sample_stars2.jpg' },
+          { key: 'exp2_img',    label: '体験2 画像',           defaultSrc: 'images/sample_seen.jpg' },
+          { key: 'exp3_img',    label: '体験3 画像',           defaultSrc: 'images/sample_stars.jpg' }
+        ]},
+        { label: '特徴セクション', fields: [
+          { key: 'feat1_img',   label: '特徴1 画像',           defaultSrc: 'images/sample_house.jpg' },
+          { key: 'feat2_img',   label: '特徴2 画像',           defaultSrc: 'images/sample_coffe.jpg' },
+          { key: 'feat3_img',   label: '特徴3 画像',           defaultSrc: 'images/sample_stars.jpg' }
+        ]},
+        { label: 'ロケーションセクション', fields: [
+          { key: 'loc1_img',    label: 'ロケーション1 画像',   defaultSrc: 'images/IMG_2594_Original.jpeg' },
+          { key: 'loc2_img',    label: 'ロケーション2 画像',   defaultSrc: 'images/IMG_1461_Original.jpeg' },
+          { key: 'loc3_img',    label: 'ロケーション3 画像',   defaultSrc: 'images/sample_okashi.jpg' },
+          { key: 'loc4_img',    label: 'ロケーション4 画像',   defaultSrc: 'images/sample_stars3.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: '宿について（about.html）', icon: '📖',
+      groups: [
+        { label: 'ヒーロー背景', fields: [
+          { key: 'about_hero_bg', label: 'ヒーロー背景',       defaultSrc: 'images/sample_house.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: 'お部屋（rooms.html）', icon: '🛏',
+      groups: [
+        { label: 'ヒーロー・メイン', fields: [
+          { key: 'rooms_hero_bg',  label: 'ヒーロー背景',      defaultSrc: 'images/sample_bedroom2.jpg' },
+          { key: 'rooms_main_img', label: 'メインビジュアル',  defaultSrc: 'images/sample_livingroom.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: '部屋詳細（room-detail.html）', icon: '🏡',
+      groups: [
+        { label: '2LDKギャラリー', fields: [
+          { key: 'detail2_img1', label: '2LDK メイン',         defaultSrc: 'images/sample_room1.jpg' },
+          { key: 'detail2_img2', label: '2LDK ベッドルーム',   defaultSrc: 'images/sample_bedroom.jpg' },
+          { key: 'detail2_img3', label: '2LDK バスルーム',     defaultSrc: 'images/sample_bathroom.jpg' },
+          { key: 'detail2_img4', label: '2LDK リビング',       defaultSrc: 'images/sample_livingroom.jpg' },
+          { key: 'detail2_img5', label: '2LDK 第2寝室',        defaultSrc: 'images/sample_bedroom2.jpg' }
+        ]},
+        { label: '1LDKギャラリー', fields: [
+          { key: 'detail1_img1', label: '1LDK ベッドルーム',   defaultSrc: 'images/sample_bedroom2.jpg' },
+          { key: 'detail1_img2', label: '1LDK リビング',       defaultSrc: 'images/sample_livingroom.jpg' },
+          { key: 'detail1_img3', label: '1LDK バスルーム',     defaultSrc: 'images/sample_bathroom.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: 'キッチン（kitchen.html）', icon: '🍽',
+      groups: [
+        { label: 'ヒーロー・ギャラリー', fields: [
+          { key: 'kitchen_hero_bg', label: 'ヒーロー背景',     defaultSrc: 'images/sample_kitchen.jpg' },
+          { key: 'kitchen_img1',    label: 'キッチン画像1',    defaultSrc: 'images/sample_kitchen.jpg' },
+          { key: 'kitchen_img2',    label: 'キッチン画像2',    defaultSrc: 'images/sample_coffe.jpg' },
+          { key: 'kitchen_img3',    label: 'キッチン画像3',    defaultSrc: 'images/sample_okashi.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: 'よくある質問（faq.html）', icon: '❓',
+      groups: [
+        { label: 'ヒーロー背景', fields: [
+          { key: 'faq_hero_bg',  label: 'ヒーロー背景',        defaultSrc: 'images/sample_stars5.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: 'アクセス（access.html）', icon: '📍',
+      groups: [
+        { label: 'ヒーロー背景', fields: [
+          { key: 'access_hero_bg', label: 'ヒーロー背景',      defaultSrc: 'images/sample_house2.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: 'ご予約（reserve.html）', icon: '📅',
+      groups: [
+        { label: 'ヒーロー背景', fields: [
+          { key: 'reserve_hero_bg', label: 'ヒーロー背景',     defaultSrc: 'images/contact.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: '体験（experience.html）', icon: '✨',
+      groups: [
+        { label: 'ヒーロー・ギャラリー', fields: [
+          { key: 'experience_hero_bg', label: 'ヒーロー背景',  defaultSrc: 'images/sample_stars.jpg' },
+          { key: 'exp_img1',           label: '体験画像1',     defaultSrc: 'images/sample_stars.jpg' },
+          { key: 'exp_img2',           label: '体験画像2',     defaultSrc: 'images/sample_bbq.jpg' },
+          { key: 'exp_img3',           label: '体験画像3',     defaultSrc: 'images/sample_seen.jpg' },
+          { key: 'exp_img4',           label: '体験画像4',     defaultSrc: 'images/IMG_1461_Original.jpeg' }
+        ]}
+      ]
+    },
+    {
+      page: 'お食事（food.html）', icon: '🍴',
+      groups: [
+        { label: 'ヒーロー・ギャラリー', fields: [
+          { key: 'food_hero_bg', label: 'ヒーロー背景',        defaultSrc: 'images/sample_kitchen.jpg' },
+          { key: 'food_img1',    label: 'お食事画像1',         defaultSrc: 'images/sample_kitchen.jpg' },
+          { key: 'food_img2',    label: 'お食事画像2',         defaultSrc: 'images/sample_coffe.jpg' },
+          { key: 'food_img3',    label: 'お食事画像3',         defaultSrc: 'images/sample_okashi.jpg' }
+        ]}
+      ]
+    },
+    {
+      page: 'プラン（plan.html）', icon: '📋',
+      groups: [
+        { label: 'ヒーロー・プラン画像', fields: [
+          { key: 'plan_hero_bg', label: 'ヒーロー背景',        defaultSrc: 'images/sample_plan_hero.jpg' },
+          { key: 'plan1_img',    label: 'プラン1 画像',        defaultSrc: 'images/sample_stars2.jpg' },
+          { key: 'plan3_img',    label: 'プラン3 画像',        defaultSrc: 'images/sample_kitchen.jpg' },
+          { key: 'plan4_img',    label: 'プラン4 画像',        defaultSrc: 'images/sample_family.jpg' }
+        ]}
+      ]
+    }
+  ];
+
+  function renderAllImagesAdmin() {
+    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const wrap = document.getElementById('allImagesAdmin');
+
+    wrap.innerHTML = ALL_IMAGE_SECTIONS.map((section, si) => `
+      <div style="margin-bottom:40px;border:1px solid var(--border);background:var(--white);">
+        <div style="padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:16px;">
+          <div>
+            <span style="font-size:16px;margin-right:10px;">${section.icon}</span>
+            <span style="font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:.15em;font-style:italic;color:var(--mid);">${section.page}</span>
+          </div>
+          <button class="btn-save all-section-save-btn" data-section-idx="${si}" style="padding:8px 20px;font-size:12px;">このページを保存</button>
+        </div>
+        ${section.groups.map((group, gi) => `
+          <div style="padding:20px 24px;${gi < section.groups.length-1 ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : ''}">
+            <p style="font-size:10px;letter-spacing:.22em;color:var(--accent);margin-bottom:14px;">${group.label.toUpperCase()}</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;">
+              ${group.fields.map(f => {
+                const src = cmsData[f.key] || f.defaultSrc;
+                return `
+                  <div style="background:#111;overflow:hidden;border:1px solid var(--border);" data-all-key="${f.key}">
+                    <div style="aspect-ratio:16/9;overflow:hidden;position:relative;">
+                      <img src="${src}" alt="${f.label}" style="width:100%;height:100%;object-fit:cover;display:block;" class="all-img-preview" data-key="${f.key}">
+                      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;background:rgba(0,0,0,.5);" class="all-img-overlay">
+                        <label style="cursor:pointer;padding:8px 16px;border:1px solid rgba(196,168,130,.7);color:#d4bc9a;font-size:11px;letter-spacing:.12em;font-family:'Cormorant Garamond',serif;">
+                          ✎ 変更
+                          <input type="file" accept="image/*" class="all-img-file-input" data-key="${f.key}" style="display:none;">
+                        </label>
+                      </div>
+                    </div>
+                    <div style="padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                      <span style="font-size:11px;color:var(--light);letter-spacing:.04em;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.label}</span>
+                      <label class="btn-sm" style="cursor:pointer;white-space:nowrap;font-size:10px;padding:4px 10px;">
+                        選択
+                        <input type="file" accept="image/*" class="all-img-file-input" data-key="${f.key}" style="display:none;">
+                      </label>
+                    </div>
+                  </div>`;
+              }).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+
+    // ファイル選択→即プレビュー
+    wrap.querySelectorAll('.all-img-file-input').forEach(input => {
+      input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          wrap.querySelectorAll(`.all-img-preview[data-key="${input.dataset.key}"]`).forEach(img => {
+            img.src = ev.target.result;
+          });
+          input.dataset.dataurl = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // オーバーレイhover
+    wrap.querySelectorAll('[data-all-key]').forEach(card => {
+      const overlay = card.querySelector('.all-img-overlay');
+      card.addEventListener('mouseenter', () => { if(overlay) overlay.style.opacity = '1'; });
+      card.addEventListener('mouseleave', () => { if(overlay) overlay.style.opacity = '0'; });
+    });
+
+    // セクション単位で保存
+    wrap.querySelectorAll('.all-section-save-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const si = parseInt(btn.dataset.sectionIdx);
+        const section = ALL_IMAGE_SECTIONS[si];
+        const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+        let saved = 0;
+
+        section.groups.forEach(group => {
+          group.fields.forEach(f => {
+            const inputs = wrap.querySelectorAll(`.all-img-file-input[data-key="${f.key}"]`);
+            inputs.forEach(input => {
+              if (input.dataset.dataurl) {
+                cmsData[f.key] = input.dataset.dataurl;
+                saved++;
+              }
+            });
+          });
+        });
+
+        if (saved === 0) {
+          showToast('変更された画像がありません');
+          return;
+        }
+
+        localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
+        localStorage.setItem('biei_last_save', new Date().toISOString());
+        const ok = await sbSave('cms_content', cmsData);
+        showToast(ok
+          ? `✓ ${saved}枚の画像を保存しました\n（${section.page}）`
+          : `保存しました（オフライン：次回同期時に反映）`);
+        updateStats();
+        renderAllImagesAdmin();
+      });
+    });
   }
 
   /* ========================
