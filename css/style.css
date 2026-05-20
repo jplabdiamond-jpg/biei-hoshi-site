@@ -1419,7 +1419,7 @@ img[data-editable] {
 }
 img[data-bg-field].cms-ready,
 img[data-editable].cms-ready {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 /* ヒーロースライダー: コンテナのvisibilityでフラッシュ防止 */
