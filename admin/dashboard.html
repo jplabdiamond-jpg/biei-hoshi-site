@@ -1631,27 +1631,32 @@ OUT〜11:00</textarea>
   }
 
   document.getElementById('saveHeroImagesBtn')?.addEventListener('click', async () => {
-    const cmsData = _getCmsContent();
     const wrap = document.getElementById('heroImagesAdmin');
-    let saved = 0;
+    const newImages = {};
+    const promises = [];
 
     wrap.querySelectorAll('.hero-img-file-input').forEach(input => {
       if (input.dataset.dataurl) {
-        cmsData[input.dataset.key] = input.dataset.dataurl;
-        saved++;
+        newImages[input.dataset.key] = input.dataset.dataurl;
+        promises.push(sbSave('img_' + input.dataset.key, input.dataset.dataurl));
       }
     });
 
-    if (saved === 0) {
+    if (promises.length === 0) {
       showToast('変更された画像がありません');
       return;
     }
 
-    _setCmsContent(cmsData);
     localStorage.setItem('biei_last_save', new Date().toISOString());
-    const ok = await sbSave('cms_content', cmsData);
+    const results = await Promise.all(promises);
+    const ok = results.every(r => r);
+    if (ok) {
+      const cms = _getCmsContent();
+      Object.assign(cms, newImages);
+      _setCmsContent(cms);
+    }
     showToast(ok
-      ? `✓ ${saved}枚のヒーロー画像を保存しました\n全デバイスに即時反映されます`
+      ? `✓ ${promises.length}枚のヒーロー画像を保存しました\n全デバイスに即時反映されます`
       : `保存しました（オフライン：次回同期時に反映）`);
     updateStats();
     renderHeroImagesAdmin();
@@ -1723,23 +1728,32 @@ OUT〜11:00</textarea>
   }
 
   document.getElementById('saveRoomImagesBtn')?.addEventListener('click', async () => {
-    const cmsData = _getCmsContent();
     const wrap = document.getElementById('roomImagesAdmin');
-    let saved = 0;
+    const newImages = {};
+    const promises = [];
 
     wrap.querySelectorAll('.room-img-file-input').forEach(input => {
       if (input.dataset.dataUrl) {
-        cmsData[input.dataset.field] = input.dataset.dataUrl;
-        saved++;
+        newImages[input.dataset.field] = input.dataset.dataUrl;
+        promises.push(sbSave('img_' + input.dataset.field, input.dataset.dataUrl));
       }
     });
 
-    _setCmsContent(cmsData);
+    if (promises.length === 0) {
+      showToast('変更がありません（画像を選択してください）');
+      return;
+    }
+
     localStorage.setItem('biei_last_save', new Date().toISOString());
-    await sbSave('cms_content', cmsData);
-    showToast(saved > 0 ? `${saved}枚の画像を保存しました ✓` : '変更がありません（画像を選択してください）');
+    const results = await Promise.all(promises);
+    const ok = results.every(r => r);
+    if (ok) {
+      const cms = _getCmsContent();
+      Object.assign(cms, newImages);
+      _setCmsContent(cms);
+    }
+    showToast(ok ? `${promises.length}枚の画像を保存しました ✓` : '一部の保存に失敗しました');
     updateStats();
-    /* 保存後プレビューをリフレッシュ */
     renderRoomImagesAdmin();
   });
 
