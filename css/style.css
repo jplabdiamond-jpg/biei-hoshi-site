@@ -1411,6 +1411,7 @@ footer {
    data-bg-field / data-editable の IMG は CMS適用前に非表示。
    cms.js の cmsApply() 完了後に .cms-ready クラスでフェードイン。
    ============================================================ */
+/* CMS画像: 適用前に非表示 → .cms-ready でフェードイン */
 img[data-bg-field],
 img[data-editable] {
   opacity: 0;
@@ -1421,12 +1422,15 @@ img[data-editable].cms-ready {
   opacity: 1;
 }
 
-/* ヒーロースライダーはJS側の _showHeroSlider() が visibility: visible にするまで非表示 */
-/* → .hero-slide img は opacity: 0 のまま（.hero-slide の opacity アニメーションと独立） */
-/* ヒーローコンテナ内の img は visibility 制御で隠す（opacity:0 は .hero-slide の制御に干渉するため使用しない） */
+/* ヒーロースライダー: コンテナのvisibilityでフラッシュ防止 */
+/* hero-slide内のimgはopacityをリセット（.hero-slideのopacityアニメーションに委ねる） */
 .hero-slider {
   visibility: hidden;
 }
 .hero-slider.cms-hero-ready {
   visibility: visible;
+}
+.hero-slide img[data-bg-field] {
+  opacity: 1;
+  transition: none;
 }
