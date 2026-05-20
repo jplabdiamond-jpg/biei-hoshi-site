@@ -154,10 +154,85 @@
     }
     .booking-admin-item .btn-sm { white-space: nowrap; }
 
+    /* メンテナンスモード */
+    .maintenance-toggle-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 32px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+    .maintenance-toggle-info { flex: 1; }
+    .maintenance-toggle-info .title { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 0.15em; color: var(--dark); margin-bottom: 8px; }
+    .maintenance-toggle-info .desc { font-size: 12px; color: var(--light); line-height: 2; letter-spacing: 0.04em; }
+    .toggle-switch { position: relative; width: 64px; height: 32px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0;
+      background: #2a2820; border: 1px solid var(--border);
+      border-radius: 32px; cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute;
+      width: 24px; height: 24px; left: 3px; top: 3px;
+      background: var(--light); border-radius: 50%;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: rgba(196,168,130,0.2); border-color: var(--accent); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(32px); background: var(--accent); }
+    .maintenance-status-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px; font-size: 12px; letter-spacing: 0.12em;
+      border: 1px solid var(--border); margin-top: 16px;
+    }
+    .maintenance-status-badge.on { border-color: rgba(196,168,130,0.5); color: var(--accent); background: rgba(196,168,130,0.08); }
+    .maintenance-status-badge.off { color: var(--light); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .maintenance-preview-box {
+      background: #111109;
+      border: 1px solid var(--border);
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .maintenance-preview-label {
+      font-size: 10px; letter-spacing: 0.2em; color: var(--light);
+      padding: 12px 20px; border-bottom: 1px solid var(--border);
+      background: var(--white);
+    }
+    .maintenance-preview-inner {
+      padding: 48px 32px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      background: #0a0a08;
+      min-height: 260px;
+    }
+    .maintenance-preview-inner .prev-logo { max-width: 180px; margin-bottom: 32px; opacity: 0.9; }
+    .maintenance-preview-inner .prev-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px; letter-spacing: 0.2em; color: #d4bc9a;
+      margin-bottom: 16px; font-style: italic;
+    }
+    .maintenance-preview-inner .prev-msg {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px; color: #8a8070;
+      letter-spacing: 0.1em; line-height: 2.2;
+    }
+    .maintenance-preview-inner .prev-stars {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; letter-spacing: 0.3em; color: rgba(196,168,130,0.4);
+      margin: 20px 0 0;
+    }
+
     @media (max-width: 767px) {
       .sidebar { width: 200px; }
       .main { margin-left: 200px; }
       .booking-admin-item { grid-template-columns: 1fr; }
+      .maintenance-toggle-wrap { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
@@ -209,6 +284,11 @@
     </button>
     <button class="nav-item" data-panel="booking">
       <span class="nav-item-icon">🔗</span>予約ボタン管理
+    </button>
+
+    <div class="nav-section">SITE</div>
+    <button class="nav-item" data-panel="maintenance">
+      <span class="nav-item-icon">🔒</span>メンテナンス
     </button>
 
     <div class="nav-section">SETTINGS</div>
@@ -313,6 +393,44 @@
       <p style="font-size:13px;color:var(--light);line-height:2;max-width:560px;">
         ✏ カードをクリックするとそのページが編集モードで開きます。
       </p>
+    </div>
+
+    <!-- MAINTENANCE PANEL -->
+    <div class="panel" id="panel-maintenance">
+      <p class="section-title">メンテナンスモード</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:28px;">ONにすると、訪問者にはサイトの代わりに「公開準備中」画面が表示されます。管理者（ログイン済み）は引き続きサイトを閲覧できます。</p>
+
+      <div class="maintenance-toggle-wrap">
+        <div class="maintenance-toggle-info">
+          <div class="title">サイト公開制限</div>
+          <div class="desc">トグルをONにするとすぐに全ページが非表示になります。<br>OFFに戻すと即座に公開状態に復帰します。</div>
+          <div class="maintenance-status-badge off" id="maintenanceStatusBadge">
+            <span class="status-dot"></span>
+            <span id="maintenanceStatusText">公開中 — ONLINE</span>
+          </div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="maintenanceToggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="maintenance-preview-box">
+        <div class="maintenance-preview-label">PREVIEW — 訪問者に表示される画面</div>
+        <div class="maintenance-preview-inner">
+          <img src="../images/hhy_BIEI_logo_03.png" alt="星の光の宿 BIEI" class="prev-logo">
+          <div class="prev-title">Coming Soon</div>
+          <div class="prev-msg">
+            サイト公開まで今しばらくお待ちください。<br>
+            We'll be back soon.
+          </div>
+          <div class="prev-stars">✦ &nbsp; ✦ &nbsp; ✦</div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;">
+        <button class="btn-save" id="saveMaintenanceBtn">設定を保存する</button>
+      </div>
     </div>
 
     <!-- PAGES PANEL -->
@@ -611,7 +729,7 @@ OUT〜11:00</textarea>
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', maintenance:'メンテナンスモード', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -632,6 +750,7 @@ OUT〜11:00</textarea>
         if (id === 'amenity')       renderAmenityAdmin();
         if (id === 'nearby')        renderNearbyAdmin();
         if (id === 'policy')        renderPolicyAdmin();
+        if (id === 'maintenance')  loadMaintenancePanel();
       } catch(e) {
         console.error('[nav] panel switch error:', e);
       }
@@ -668,6 +787,7 @@ OUT〜11:00</textarea>
           if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
           if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_cms_content', JSON.stringify(r.value));
           if (r.key === 'settings'     && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_settings', JSON.stringify(r.value));
+          if (r.key === 'maintenance'  && r.value !== undefined && r.value !== null) localStorage.setItem('biei_maintenance', JSON.stringify(r.value));
         });
         console.log('[initAllPanels] Supabaseデータ取得完了→localStorageに反映');
       }
@@ -683,6 +803,7 @@ OUT〜11:00</textarea>
     renderNearbyAdmin();
     loadTransportAdmin();
     loadSettings();
+    loadMaintenancePanel();
     updateStats();
   }
 
@@ -1430,6 +1551,50 @@ OUT〜11:00</textarea>
       console.error('Export error:', e);
       showToast('エクスポートに失敗しました: ' + e.message);
     }
+  });
+
+  /* ========================
+     メンテナンスモード管理
+  ======================== */
+  const MAINTENANCE_KEY = 'biei_maintenance';
+
+  function loadMaintenancePanel() {
+    const stored = localStorage.getItem(MAINTENANCE_KEY);
+    const isOn = stored !== null ? JSON.parse(stored) === true : false;
+    const toggle = document.getElementById('maintenanceToggle');
+    if (toggle) {
+      toggle.checked = isOn;
+      updateMaintenanceBadge(isOn);
+    }
+  }
+
+  function updateMaintenanceBadge(isOn) {
+    const badge = document.getElementById('maintenanceStatusBadge');
+    const text  = document.getElementById('maintenanceStatusText');
+    if (!badge || !text) return;
+    if (isOn) {
+      badge.className = 'maintenance-status-badge on';
+      text.textContent = 'メンテナンス中 — OFFLINE';
+    } else {
+      badge.className = 'maintenance-status-badge off';
+      text.textContent = '公開中 — ONLINE';
+    }
+  }
+
+  document.getElementById('maintenanceToggle')?.addEventListener('change', function() {
+    updateMaintenanceBadge(this.checked);
+  });
+
+  document.getElementById('saveMaintenanceBtn')?.addEventListener('click', async () => {
+    const isOn = document.getElementById('maintenanceToggle').checked;
+    localStorage.setItem(MAINTENANCE_KEY, JSON.stringify(isOn));
+    localStorage.setItem('biei_last_save', new Date().toISOString());
+    const ok = await sbSave('maintenance', isOn);
+    updateStats();
+    showToast(isOn
+      ? '🔒 メンテナンスモードをONにしました\nサイトは現在非公開です'
+      : '✓ メンテナンスモードをOFFにしました\nサイトを公開中です');
+    console.log('[maintenance] saved:', isOn, 'supabase:', ok);
   });
 
   /* 全パネルの初期描画（Supabaseデータ優先） */

@@ -85,6 +85,15 @@ async function cmsApply() {
   const sb = await sbGetAll();
   const hasSb = Object.keys(sb).length > 0;
 
+  /* ── メンテナンスモードチェック ── */
+  const maintenanceOn = hasSb
+    ? (sb.maintenance === true)
+    : (localStorage.getItem('biei_maintenance') === 'true');
+  if (maintenanceOn && !isAdmin()) {
+    showMaintenancePage();
+    return;
+  }
+
   // --- テキスト・画像フィールド (data-editable / data-bg-field) ---
   const cmsContent = hasSb ? (sb.cms_content || {}) : cmsLoad();
   document.querySelectorAll('[data-editable]').forEach(el => {
@@ -357,6 +366,107 @@ function _defaultAmenity() {
     { title: 'WELCOME GIFT', items: '美瑛サイダー（各部屋1本）\n美瑛のお菓子（1箱）\nドルチェグスト カプセル\n天体望遠鏡\nランタン・ローソク\n除雪道具（冬季）' },
     { title: 'SERVICE', items: 'チェックイン 15:00〜18:00\nチェックアウト〜11:00\n駐車場（無料・2台分）\nゴミ分別サービス\nアーリーチェックイン相談可\n荷物預かりサービス' }
   ];
+}
+
+/* ============================================================
+   メンテナンスモード表示
+   ============================================================ */
+function showMaintenancePage() {
+  // <body>を完全にメンテナンス画面で上書き
+  document.body.style.cssText = 'margin:0;padding:0;background:#0a0a08;overflow:hidden;';
+  document.body.innerHTML = `
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Noto+Serif+JP:wght@300;400&display=swap');
+      .maint-wrap {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: #0a0a08;
+        padding: 40px 24px;
+      }
+      .maint-logo {
+        max-width: 200px;
+        width: 80%;
+        margin-bottom: 40px;
+        opacity: 0.92;
+        animation: fadeInDown 1.2s ease both;
+      }
+      .maint-stars {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 20px;
+        letter-spacing: 0.4em;
+        color: rgba(196,168,130,0.35);
+        margin-bottom: 32px;
+        animation: fadeIn 2s ease both;
+        animation-delay: 0.3s;
+      }
+      .maint-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(24px, 5vw, 38px);
+        letter-spacing: 0.25em;
+        color: #d4bc9a;
+        font-style: italic;
+        margin-bottom: 20px;
+        animation: fadeIn 1.5s ease both;
+        animation-delay: 0.5s;
+      }
+      .maint-line {
+        width: 40px;
+        height: 1px;
+        background: rgba(196,168,130,0.3);
+        margin: 0 auto 28px;
+        animation: fadeIn 1.5s ease both;
+        animation-delay: 0.7s;
+      }
+      .maint-msg {
+        font-family: 'Noto Serif JP', serif;
+        font-size: clamp(13px, 2.5vw, 15px);
+        color: #8a8070;
+        letter-spacing: 0.1em;
+        line-height: 2.4;
+        animation: fadeIn 1.5s ease both;
+        animation-delay: 0.9s;
+      }
+      .maint-en {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 13px;
+        letter-spacing: 0.2em;
+        color: rgba(196,168,130,0.4);
+        margin-top: 24px;
+        animation: fadeIn 1.5s ease both;
+        animation-delay: 1.1s;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+    <div class="maint-wrap">
+      <img class="maint-logo" src="${_resolveLogoPath()}" alt="星の光の宿 BIEI">
+      <div class="maint-stars">✦ &nbsp; ✦ &nbsp; ✦</div>
+      <div class="maint-title">Coming Soon</div>
+      <div class="maint-line"></div>
+      <div class="maint-msg">
+        サイト公開まで今しばらくお待ちください。<br>
+        ご不便をおかけいたします。
+      </div>
+      <div class="maint-en">We'll be back soon — Hoshi no Hikari no Yado BIEI</div>
+    </div>
+  `;
+}
+
+function _resolveLogoPath() {
+  // ページのパス深度に応じてロゴパスを解決
+  const path = window.location.pathname;
+  if (path.includes('/admin/')) return '../images/hhy_BIEI_logo_03.png';
+  return 'images/hhy_BIEI_logo_03.png';
 }
 
 /* ============================================================
