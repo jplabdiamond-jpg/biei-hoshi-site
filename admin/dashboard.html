@@ -716,6 +716,18 @@ OUT〜11:00</textarea>
     }
   }
 
+  // cms_contentはlocalStorageのquota(5MB)を超えるためメモリキャッシュで管理
+  var _cmsContentCache = {};
+
+  function _getCmsContent() {
+    return _cmsContentCache;
+  }
+  function _setCmsContent(data) {
+    _cmsContentCache = data || {};
+    // localStorageへの書き込みはquotaエラーを起こすため行わない
+    // Supabaseが正となる
+  }
+
   // cms.jsと重複する定数はvarで再宣言（const重複SyntaxError回避）
   var SESSION_KEY = 'biei_admin_session';
   var CREDS_KEY = 'biei_admin_creds';
@@ -814,7 +826,7 @@ OUT〜11:00</textarea>
           if (r.key === 'policy'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_policy_sections', JSON.stringify(r.value));
           if (r.key === 'amenity'      && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_amenity_sections', JSON.stringify(r.value));
           if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
-          if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_cms_content', JSON.stringify(r.value));
+          if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   _setCmsContent(r.value);
           if (r.key === 'settings'     && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_settings', JSON.stringify(r.value));
           if (r.key === 'maintenance'  && r.value !== undefined && r.value !== null) localStorage.setItem('biei_maintenance', JSON.stringify(r.value));
         });
@@ -1228,27 +1240,27 @@ OUT〜11:00</textarea>
       page: 'トップページ（index.html）', icon: '🏠',
       groups: [
         { label: 'イントロ画像', fields: [
-          { key: 'intro_img',   label: 'イントロ写真',         defaultSrc: 'images/IMG_9937_Original.jpeg' }
+          { key: 'intro_img',   label: 'イントロ写真',         defaultSrc: '../images/IMG_9937_Original.jpeg' }
         ]},
         { label: 'バナー背景', fields: [
-          { key: 'banner1_bg',  label: 'バナー1 背景',         defaultSrc: 'images/IMG_1461_Original.jpeg' },
-          { key: 'banner2_bg',  label: 'バナー2 背景',         defaultSrc: 'images/sample_stars4.jpg' }
+          { key: 'banner1_bg',  label: 'バナー1 背景',         defaultSrc: '../images/IMG_1461_Original.jpeg' },
+          { key: 'banner2_bg',  label: 'バナー2 背景',         defaultSrc: '../images/sample_stars4.jpg' }
         ]},
         { label: '体験セクション', fields: [
-          { key: 'exp1_img',    label: '体験1 画像',           defaultSrc: 'images/sample_stars2.jpg' },
-          { key: 'exp2_img',    label: '体験2 画像',           defaultSrc: 'images/sample_seen.jpg' },
-          { key: 'exp3_img',    label: '体験3 画像',           defaultSrc: 'images/sample_stars.jpg' }
+          { key: 'exp1_img',    label: '体験1 画像',           defaultSrc: '../images/sample_stars2.jpg' },
+          { key: 'exp2_img',    label: '体験2 画像',           defaultSrc: '../images/sample_seen.jpg' },
+          { key: 'exp3_img',    label: '体験3 画像',           defaultSrc: '../images/sample_stars.jpg' }
         ]},
         { label: '特徴セクション', fields: [
-          { key: 'feat1_img',   label: '特徴1 画像',           defaultSrc: 'images/sample_house.jpg' },
-          { key: 'feat2_img',   label: '特徴2 画像',           defaultSrc: 'images/sample_coffe.jpg' },
-          { key: 'feat3_img',   label: '特徴3 画像',           defaultSrc: 'images/sample_stars.jpg' }
+          { key: 'feat1_img',   label: '特徴1 画像',           defaultSrc: '../images/sample_house.jpg' },
+          { key: 'feat2_img',   label: '特徴2 画像',           defaultSrc: '../images/sample_coffe.jpg' },
+          { key: 'feat3_img',   label: '特徴3 画像',           defaultSrc: '../images/sample_stars.jpg' }
         ]},
         { label: 'ロケーションセクション', fields: [
-          { key: 'loc1_img',    label: 'ロケーション1 画像',   defaultSrc: 'images/IMG_2594_Original.jpeg' },
-          { key: 'loc2_img',    label: 'ロケーション2 画像',   defaultSrc: 'images/IMG_1461_Original.jpeg' },
-          { key: 'loc3_img',    label: 'ロケーション3 画像',   defaultSrc: 'images/sample_okashi.jpg' },
-          { key: 'loc4_img',    label: 'ロケーション4 画像',   defaultSrc: 'images/sample_stars3.jpg' }
+          { key: 'loc1_img',    label: 'ロケーション1 画像',   defaultSrc: '../images/IMG_2594_Original.jpeg' },
+          { key: 'loc2_img',    label: 'ロケーション2 画像',   defaultSrc: '../images/IMG_1461_Original.jpeg' },
+          { key: 'loc3_img',    label: 'ロケーション3 画像',   defaultSrc: '../images/sample_okashi.jpg' },
+          { key: 'loc4_img',    label: 'ロケーション4 画像',   defaultSrc: '../images/sample_stars3.jpg' }
         ]}
       ]
     },
@@ -1256,7 +1268,7 @@ OUT〜11:00</textarea>
       page: '宿について（about.html）', icon: '📖',
       groups: [
         { label: 'ヒーロー背景', fields: [
-          { key: 'about_hero_bg', label: 'ヒーロー背景',       defaultSrc: 'images/sample_house.jpg' }
+          { key: 'about_hero_bg', label: 'ヒーロー背景',       defaultSrc: '../images/sample_house.jpg' }
         ]}
       ]
     },
@@ -1264,8 +1276,8 @@ OUT〜11:00</textarea>
       page: 'お部屋（rooms.html）', icon: '🛏',
       groups: [
         { label: 'ヒーロー・メイン', fields: [
-          { key: 'rooms_hero_bg',  label: 'ヒーロー背景',      defaultSrc: 'images/sample_bedroom2.jpg' },
-          { key: 'rooms_main_img', label: 'メインビジュアル',  defaultSrc: 'images/sample_livingroom.jpg' }
+          { key: 'rooms_hero_bg',  label: 'ヒーロー背景',      defaultSrc: '../images/sample_bedroom2.jpg' },
+          { key: 'rooms_main_img', label: 'メインビジュアル',  defaultSrc: '../images/sample_livingroom.jpg' }
         ]}
       ]
     },
@@ -1273,16 +1285,16 @@ OUT〜11:00</textarea>
       page: '部屋詳細（room-detail.html）', icon: '🏡',
       groups: [
         { label: '2LDKギャラリー', fields: [
-          { key: 'detail2_img1', label: '2LDK メイン',         defaultSrc: 'images/sample_room1.jpg' },
-          { key: 'detail2_img2', label: '2LDK ベッドルーム',   defaultSrc: 'images/sample_bedroom.jpg' },
-          { key: 'detail2_img3', label: '2LDK バスルーム',     defaultSrc: 'images/sample_bathroom.jpg' },
-          { key: 'detail2_img4', label: '2LDK リビング',       defaultSrc: 'images/sample_livingroom.jpg' },
-          { key: 'detail2_img5', label: '2LDK 第2寝室',        defaultSrc: 'images/sample_bedroom2.jpg' }
+          { key: 'detail2_img1', label: '2LDK メイン',         defaultSrc: '../images/sample_room1.jpg' },
+          { key: 'detail2_img2', label: '2LDK ベッドルーム',   defaultSrc: '../images/sample_bedroom.jpg' },
+          { key: 'detail2_img3', label: '2LDK バスルーム',     defaultSrc: '../images/sample_bathroom.jpg' },
+          { key: 'detail2_img4', label: '2LDK リビング',       defaultSrc: '../images/sample_livingroom.jpg' },
+          { key: 'detail2_img5', label: '2LDK 第2寝室',        defaultSrc: '../images/sample_bedroom2.jpg' }
         ]},
         { label: '1LDKギャラリー', fields: [
-          { key: 'detail1_img1', label: '1LDK ベッドルーム',   defaultSrc: 'images/sample_bedroom2.jpg' },
-          { key: 'detail1_img2', label: '1LDK リビング',       defaultSrc: 'images/sample_livingroom.jpg' },
-          { key: 'detail1_img3', label: '1LDK バスルーム',     defaultSrc: 'images/sample_bathroom.jpg' }
+          { key: 'detail1_img1', label: '1LDK ベッドルーム',   defaultSrc: '../images/sample_bedroom2.jpg' },
+          { key: 'detail1_img2', label: '1LDK リビング',       defaultSrc: '../images/sample_livingroom.jpg' },
+          { key: 'detail1_img3', label: '1LDK バスルーム',     defaultSrc: '../images/sample_bathroom.jpg' }
         ]}
       ]
     },
@@ -1290,10 +1302,10 @@ OUT〜11:00</textarea>
       page: 'キッチン（kitchen.html）', icon: '🍽',
       groups: [
         { label: 'ヒーロー・ギャラリー', fields: [
-          { key: 'kitchen_hero_bg', label: 'ヒーロー背景',     defaultSrc: 'images/sample_kitchen.jpg' },
-          { key: 'kitchen_img1',    label: 'キッチン画像1',    defaultSrc: 'images/sample_kitchen.jpg' },
-          { key: 'kitchen_img2',    label: 'キッチン画像2',    defaultSrc: 'images/sample_coffe.jpg' },
-          { key: 'kitchen_img3',    label: 'キッチン画像3',    defaultSrc: 'images/sample_okashi.jpg' }
+          { key: 'kitchen_hero_bg', label: 'ヒーロー背景',     defaultSrc: '../images/sample_kitchen.jpg' },
+          { key: 'kitchen_img1',    label: 'キッチン画像1',    defaultSrc: '../images/sample_kitchen.jpg' },
+          { key: 'kitchen_img2',    label: 'キッチン画像2',    defaultSrc: '../images/sample_coffe.jpg' },
+          { key: 'kitchen_img3',    label: 'キッチン画像3',    defaultSrc: '../images/sample_okashi.jpg' }
         ]}
       ]
     },
@@ -1301,7 +1313,7 @@ OUT〜11:00</textarea>
       page: 'よくある質問（faq.html）', icon: '❓',
       groups: [
         { label: 'ヒーロー背景', fields: [
-          { key: 'faq_hero_bg',  label: 'ヒーロー背景',        defaultSrc: 'images/sample_stars5.jpg' }
+          { key: 'faq_hero_bg',  label: 'ヒーロー背景',        defaultSrc: '../images/sample_stars5.jpg' }
         ]}
       ]
     },
@@ -1309,7 +1321,7 @@ OUT〜11:00</textarea>
       page: 'アクセス（access.html）', icon: '📍',
       groups: [
         { label: 'ヒーロー背景', fields: [
-          { key: 'access_hero_bg', label: 'ヒーロー背景',      defaultSrc: 'images/sample_house2.jpg' }
+          { key: 'access_hero_bg', label: 'ヒーロー背景',      defaultSrc: '../images/sample_house2.jpg' }
         ]}
       ]
     },
@@ -1317,7 +1329,7 @@ OUT〜11:00</textarea>
       page: 'ご予約（reserve.html）', icon: '📅',
       groups: [
         { label: 'ヒーロー背景', fields: [
-          { key: 'reserve_hero_bg', label: 'ヒーロー背景',     defaultSrc: 'images/contact.jpg' }
+          { key: 'reserve_hero_bg', label: 'ヒーロー背景',     defaultSrc: '../images/contact.jpg' }
         ]}
       ]
     },
@@ -1325,11 +1337,11 @@ OUT〜11:00</textarea>
       page: '体験（experience.html）', icon: '✨',
       groups: [
         { label: 'ヒーロー・ギャラリー', fields: [
-          { key: 'experience_hero_bg', label: 'ヒーロー背景',  defaultSrc: 'images/sample_stars.jpg' },
-          { key: 'exp_img1',           label: '体験画像1',     defaultSrc: 'images/sample_stars.jpg' },
-          { key: 'exp_img2',           label: '体験画像2',     defaultSrc: 'images/sample_bbq.jpg' },
-          { key: 'exp_img3',           label: '体験画像3',     defaultSrc: 'images/sample_seen.jpg' },
-          { key: 'exp_img4',           label: '体験画像4',     defaultSrc: 'images/IMG_1461_Original.jpeg' }
+          { key: 'experience_hero_bg', label: 'ヒーロー背景',  defaultSrc: '../images/sample_stars.jpg' },
+          { key: 'exp_img1',           label: '体験画像1',     defaultSrc: '../images/sample_stars.jpg' },
+          { key: 'exp_img2',           label: '体験画像2',     defaultSrc: '../images/sample_bbq.jpg' },
+          { key: 'exp_img3',           label: '体験画像3',     defaultSrc: '../images/sample_seen.jpg' },
+          { key: 'exp_img4',           label: '体験画像4',     defaultSrc: '../images/IMG_1461_Original.jpeg' }
         ]}
       ]
     },
@@ -1337,10 +1349,10 @@ OUT〜11:00</textarea>
       page: 'お食事（food.html）', icon: '🍴',
       groups: [
         { label: 'ヒーロー・ギャラリー', fields: [
-          { key: 'food_hero_bg', label: 'ヒーロー背景',        defaultSrc: 'images/sample_kitchen.jpg' },
-          { key: 'food_img1',    label: 'お食事画像1',         defaultSrc: 'images/sample_kitchen.jpg' },
-          { key: 'food_img2',    label: 'お食事画像2',         defaultSrc: 'images/sample_coffe.jpg' },
-          { key: 'food_img3',    label: 'お食事画像3',         defaultSrc: 'images/sample_okashi.jpg' }
+          { key: 'food_hero_bg', label: 'ヒーロー背景',        defaultSrc: '../images/sample_kitchen.jpg' },
+          { key: 'food_img1',    label: 'お食事画像1',         defaultSrc: '../images/sample_kitchen.jpg' },
+          { key: 'food_img2',    label: 'お食事画像2',         defaultSrc: '../images/sample_coffe.jpg' },
+          { key: 'food_img3',    label: 'お食事画像3',         defaultSrc: '../images/sample_okashi.jpg' }
         ]}
       ]
     },
@@ -1348,17 +1360,17 @@ OUT〜11:00</textarea>
       page: 'プラン（plan.html）', icon: '📋',
       groups: [
         { label: 'ヒーロー・プラン画像', fields: [
-          { key: 'plan_hero_bg', label: 'ヒーロー背景',        defaultSrc: 'images/sample_plan_hero.jpg' },
-          { key: 'plan1_img',    label: 'プラン1 画像',        defaultSrc: 'images/sample_stars2.jpg' },
-          { key: 'plan3_img',    label: 'プラン3 画像',        defaultSrc: 'images/sample_kitchen.jpg' },
-          { key: 'plan4_img',    label: 'プラン4 画像',        defaultSrc: 'images/sample_family.jpg' }
+          { key: 'plan_hero_bg', label: 'ヒーロー背景',        defaultSrc: '../images/sample_plan_hero.jpg' },
+          { key: 'plan1_img',    label: 'プラン1 画像',        defaultSrc: '../images/sample_stars2.jpg' },
+          { key: 'plan3_img',    label: 'プラン3 画像',        defaultSrc: '../images/sample_kitchen.jpg' },
+          { key: 'plan4_img',    label: 'プラン4 画像',        defaultSrc: '../images/sample_family.jpg' }
         ]}
       ]
     }
   ];
 
   function renderAllImagesAdmin() {
-    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const cmsData = _getCmsContent();
     const wrap = document.getElementById('allImagesAdmin');
     wrap.innerHTML = '';
 
@@ -1381,7 +1393,7 @@ OUT〜11:00</textarea>
         saveBtn.disabled = true;
         saveBtn.textContent = '保存中...';
         try {
-          const cms = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+          const cms = _getCmsContent();
           let newCount = 0;
           // 新規選択画像を反映
           section.groups.forEach(grp => {
@@ -1391,8 +1403,8 @@ OUT〜11:00</textarea>
               });
             });
           });
-          localStorage.setItem('biei_cms_content', JSON.stringify(cms));
-          localStorage.setItem('biei_last_save', new Date().toISOString());
+          _setCmsContent(cms);
+          try { localStorage.setItem('biei_last_save', new Date().toISOString()); } catch(_) {}
           const ok = await sbSave('cms_content', cms);
           showToast(ok
             ? (newCount > 0 ? `✓ ${newCount}枚の新画像を保存しました（${section.page}）` : `✓ Supabaseに同期しました（${section.page}）`)
@@ -1509,13 +1521,13 @@ OUT〜11:00</textarea>
      ヒーロー画像管理
   ======================== */
   const HERO_SLIDE_FIELDS = [
-    { key: 'hero_slide1', label: 'スライド 1（最初に表示）', defaultSrc: 'images/sample_house.jpg',         alt: '星の光の宿BIEI 外観' },
-    { key: 'hero_slide2', label: 'スライド 2',               defaultSrc: 'images/IMG_0804_Original.jpeg',  alt: '夏の美瑛 緑の丘と大きな雲' },
-    { key: 'hero_slide3', label: 'スライド 3',               defaultSrc: 'images/IMG_9547_Original.jpeg',  alt: '秋の美瑛 なだらかな畑と十勝岳連峰' }
+    { key: 'hero_slide1', label: 'スライド 1（最初に表示）', defaultSrc: '../images/sample_house.jpg',         alt: '星の光の宿BIEI 外観' },
+    { key: 'hero_slide2', label: 'スライド 2',               defaultSrc: '../images/IMG_0804_Original.jpeg',  alt: '夏の美瑛 緑の丘と大きな雲' },
+    { key: 'hero_slide3', label: 'スライド 3',               defaultSrc: '../images/IMG_9547_Original.jpeg',  alt: '秋の美瑛 なだらかな畑と十勝岳連峰' }
   ];
 
   function renderHeroImagesAdmin() {
-    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const cmsData = _getCmsContent();
     const wrap = document.getElementById('heroImagesAdmin');
 
     wrap.innerHTML = `
@@ -1577,7 +1589,7 @@ OUT〜11:00</textarea>
   }
 
   document.getElementById('saveHeroImagesBtn')?.addEventListener('click', async () => {
-    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const cmsData = _getCmsContent();
     const wrap = document.getElementById('heroImagesAdmin');
     let saved = 0;
 
@@ -1593,7 +1605,7 @@ OUT〜11:00</textarea>
       return;
     }
 
-    localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
+    _setCmsContent(cmsData);
     localStorage.setItem('biei_last_save', new Date().toISOString());
     const ok = await sbSave('cms_content', cmsData);
     showToast(ok
@@ -1610,25 +1622,25 @@ OUT〜11:00</textarea>
     {
       roomLabel: '1LDKタイプ',
       fields: [
-        { key: 'room1_bedroom', label: 'メイン画像（寝室）',   defaultSrc: 'images/sample_bedroom2.jpg' },
-        { key: 'room1_living',  label: 'サブ画像①（リビング）', defaultSrc: 'images/sample_livingroom.jpg' },
-        { key: 'room1_bath',    label: 'サブ画像②（バスルーム）', defaultSrc: 'images/sample_bathroom.jpg' },
-        { key: 'room1_thumb',   label: 'ナビサムネイル',        defaultSrc: 'images/sample_bedroom2.jpg' }
+        { key: 'room1_bedroom', label: 'メイン画像（寝室）',   defaultSrc: '../images/sample_bedroom2.jpg' },
+        { key: 'room1_living',  label: 'サブ画像①（リビング）', defaultSrc: '../images/sample_livingroom.jpg' },
+        { key: 'room1_bath',    label: 'サブ画像②（バスルーム）', defaultSrc: '../images/sample_bathroom.jpg' },
+        { key: 'room1_thumb',   label: 'ナビサムネイル',        defaultSrc: '../images/sample_bedroom2.jpg' }
       ]
     },
     {
       roomLabel: '2LDKタイプ',
       fields: [
-        { key: 'room2_main',    label: 'メイン画像',           defaultSrc: 'images/sample_bedroom2.jpg' },
-        { key: 'room2_living',  label: 'サブ画像①（リビング）', defaultSrc: 'images/sample_room1.jpg' },
-        { key: 'room2_bath',    label: 'サブ画像②（バスルーム）', defaultSrc: 'images/sample_bathroom.jpg' },
-        { key: 'room2_thumb',   label: 'ナビサムネイル',        defaultSrc: 'images/sample_bedroom2.jpg' }
+        { key: 'room2_main',    label: 'メイン画像',           defaultSrc: '../images/sample_bedroom2.jpg' },
+        { key: 'room2_living',  label: 'サブ画像①（リビング）', defaultSrc: '../images/sample_room1.jpg' },
+        { key: 'room2_bath',    label: 'サブ画像②（バスルーム）', defaultSrc: '../images/sample_bathroom.jpg' },
+        { key: 'room2_thumb',   label: 'ナビサムネイル',        defaultSrc: '../images/sample_bedroom2.jpg' }
       ]
     }
   ];
 
   function renderRoomImagesAdmin() {
-    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const cmsData = _getCmsContent();
     const wrap = document.getElementById('roomImagesAdmin');
 
     wrap.innerHTML = ROOM_IMG_FIELDS.map(room => `
@@ -1673,7 +1685,7 @@ OUT〜11:00</textarea>
   }
 
   document.getElementById('saveRoomImagesBtn')?.addEventListener('click', async () => {
-    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const cmsData = _getCmsContent();
     const wrap = document.getElementById('roomImagesAdmin');
     let saved = 0;
 
@@ -1684,7 +1696,7 @@ OUT〜11:00</textarea>
       }
     });
 
-    localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
+    _setCmsContent(cmsData);
     localStorage.setItem('biei_last_save', new Date().toISOString());
     await sbSave('cms_content', cmsData);
     showToast(saved > 0 ? `${saved}枚の画像を保存しました ✓` : '変更がありません（画像を選択してください）');
@@ -1741,13 +1753,13 @@ OUT〜11:00</textarea>
     localStorage.setItem(AMENITY_KEY, JSON.stringify(sections));
 
     /* rooms.htmlのCMSキーにも反映 */
-    const cmsData = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+    const cmsData = _getCmsContent();
     sections.forEach((s, i) => {
       const idx = i + 1;
       cmsData[`amenity${idx}_title`] = s.title;
       cmsData[`amenity${idx}_items`] = s.items.split('\n').filter(l => l.trim()).map(l => `<li>${l}</li>`).join('');
     });
-    localStorage.setItem('biei_cms_content', JSON.stringify(cmsData));
+    _setCmsContent(cmsData);
     localStorage.setItem('biei_last_save', new Date().toISOString());
     await sbSave('amenity', sections);
     await sbSave('cms_content', cmsData);
@@ -1924,7 +1936,7 @@ OUT〜11:00</textarea>
   document.getElementById('exportJsonBtn').addEventListener('click', () => {
     try {
       // biei_cms_content（テキスト・画像フィールド）
-      const cmsContent  = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+      const cmsContent  = _getCmsContent();
       // 各専用ストレージ
       const settings    = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
       const faq         = JSON.parse(localStorage.getItem(FAQ_KEY)      || 'null') || DEFAULT_FAQ;
@@ -1934,7 +1946,7 @@ OUT〜11:00</textarea>
       const policy      = JSON.parse(localStorage.getItem(POLICY_KEY)   || 'null') || DEFAULT_POLICY;
       const nearby      = JSON.parse(localStorage.getItem(NEARBY_KEY)   || 'null') || DEFAULT_NEARBY;
       const amenity     = JSON.parse(localStorage.getItem(AMENITY_KEY)  || 'null') || DEFAULT_AMENITY;
-      const transport   = JSON.parse(localStorage.getItem('biei_cms_content') || '{}');
+      const transport   = _getCmsContent();
 
       // 全データを1つのオブジェクトにまとめる
       const exportData = Object.assign({}, cmsContent, {
