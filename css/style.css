@@ -1413,9 +1413,14 @@ footer {
    ヒーロースライドは .hero-slider の visibility で制御。
    ============================================================ */
 /* CMS画像: 適用前に非表示 → .cms-ready でフェードイン
-   ※ opacity:0はinline <style>の!importantに委ねる。ここでは!importantを使わない */
+   visibility:hidden → visible でフラッシュ防止（opacityの!important競合を回避） */
+img[data-bg-field]:not(.hero-slide img),
+img[data-editable] {
+  visibility: hidden;
+}
 img[data-bg-field].cms-ready,
 img[data-editable].cms-ready {
+  visibility: visible;
   opacity: 1 !important;
   transition: opacity 0.4s ease !important;
 }
