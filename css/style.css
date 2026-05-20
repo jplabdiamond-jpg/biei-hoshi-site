@@ -1420,7 +1420,7 @@ img[data-editable] {
 }
 img[data-bg-field].cms-ready,
 img[data-editable].cms-ready {
-  visibility: visible;
+  visibility: visible !important;
   opacity: 1 !important;
   transition: opacity 0.4s ease !important;
 }
