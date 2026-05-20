@@ -1431,12 +1431,14 @@ OUT〜11:00</textarea>
         try {
           let newCount = 0;
           const savePromises = [];
+          const newImages = {}; // 保存する画像をローカルにも記録
           // 画像は1枚ずつ個別キー img_{fieldkey} でSupabaseに保存（cms_contentの肥大化を防ぐ）
           section.groups.forEach(grp => {
             grp.fields.forEach(f => {
               secDiv.querySelectorAll(`.all-img-file-input[data-key="${f.key}"]`).forEach(input => {
                 if (input.dataset.dataurl) {
                   newCount++;
+                  newImages[f.key] = input.dataset.dataurl;
                   savePromises.push(sbSave('img_' + f.key, input.dataset.dataurl));
                 }
               });
@@ -1449,6 +1451,12 @@ OUT〜11:00</textarea>
           try { localStorage.setItem('biei_last_save', new Date().toISOString()); } catch(_) {}
           const results = await Promise.all(savePromises);
           const ok = results.every(r => r);
+          // 保存成功した画像をcms_contentキャッシュにも反映（再描画で古い画像に戻らないよう）
+          if (ok) {
+            const cms = _getCmsContent();
+            Object.assign(cms, newImages);
+            _setCmsContent(cms);
+          }
           showToast(ok
             ? `✓ ${newCount}枚の画像を保存しました（${section.page}）`
             : `一部の画像保存に失敗しました`);
