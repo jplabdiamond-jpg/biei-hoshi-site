@@ -111,13 +111,18 @@ async function cmsApply() {
   // 画像src差し替え + cms-ready付与ヘルパー
   // base64やキャッシュ済み画像は onload が発火しない場合があるため complete チェックも行う
   function _setImgSrc(img, src) {
-    img.onload = () => img.classList.add('cms-ready');
-    img.onerror = () => img.classList.add('cms-ready'); // エラー時も表示
+    const markReady = () => img.classList.add('cms-ready');
+    img.onload  = markReady;
+    img.onerror = markReady; // エラー時も表示
     img.src = src;
     // src変更後すでに complete なら onload が発火しないので即付与
-    if (img.complete && img.naturalWidth > 0) {
-      img.classList.add('cms-ready');
+    if (img.complete) {
+      markReady();
+      return;
     }
+    // loading="lazy" や visibility:hidden 環境でonloadが遅延するケースへの保険
+    // 300ms後にも未適用なら強制表示（画像自体はブラウザが引き続きロード）
+    setTimeout(() => { if (!img.classList.contains('cms-ready')) markReady(); }, 300);
   }
 
   // data-editable 画像: CMSデータで差し替え→ロード完了後に .cms-ready でフェードイン
