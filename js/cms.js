@@ -99,8 +99,14 @@ async function cmsApply() {
 
   // --- テキスト・画像フィールド (data-editable / data-bg-field) ---
   // cms_contentと個別キー img_{fieldkey} をマージ（大容量画像の分割保存対応）
+  //
+  // 【重要・バグ再発防止】
+  // 画像は「個別キー img_{field}（最新・正）」と「cms_content 内の同フィールド（旧・base64が残存）」の
+  // 2箇所に存在しうる。必ず cms_content を土台にしてから img_ で上書きする2パス方式とし、
+  // img_ を常に優先させること。順序を入れ替えると古い画像が復活する（既知の不具合）。
   const cmsContent = hasSb ? Object.assign({}, sb.cms_content || {}) : cmsLoad();
   if (hasSb) {
+    // パス2: 個別画像キーで必ず上書き（img_ が常に勝つ＝最新画像）
     Object.keys(sb).forEach(k => {
       if (k.startsWith('img_') && sb[k]) {
         cmsContent[k.slice(4)] = sb[k]; // "img_room1_bedroom" → "room1_bedroom"

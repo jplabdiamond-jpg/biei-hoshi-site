@@ -743,6 +743,29 @@ OUT〜11:00</textarea>
     }
   }
 
+  // 画像保存後のクリーンアップ（バグ再発防止の要）
+  // 画像は個別キー img_{field} に保存するが、過去データでは cms_content 内にも
+  // 同フィールドの“古いコピー(base64)”が残存している。これが残っていると
+  // 読み込み経路のマージ順次第で古い画像が復活する原因になる。
+  // 保存後に該当フィールドを cms_content から除去し、二重ソースを解消する。
+  // fields: 今回保存した画像フィールド名の配列
+  async function cleanupCmsContentImages(fields) {
+    try {
+      const cms = Object.assign({}, _getCmsContent());
+      let changed = false;
+      fields.forEach(f => {
+        if (Object.prototype.hasOwnProperty.call(cms, f)) { delete cms[f]; changed = true; }
+      });
+      if (changed) {
+        _setCmsContent(cms);
+        await sbSave('cms_content', cms); // 残骸除去を永続化（1回だけ＝レース無し）
+        console.log('[cleanup] removed stale cms_content images:', fields);
+      }
+    } catch (e) {
+      console.warn('[cleanupCmsContentImages] skipped:', e);
+    }
+  }
+
   // cms_contentはlocalStorageのquota(5MB)を超えるためメモリキャッシュで管理
   var _cmsContentCache = {};
 
@@ -845,6 +868,40 @@ OUT〜11:00</textarea>
       });
       if (res.ok) {
         const rows = await res.json();
+
+        // ─────────────────────────────────────────────
+        // 【重要・バグ再発防止】2パス・マージ方式
+        // 旧実装は rows.forEach 内で cms_content の代入と img_ のマージを
+        // 1パスで行っていたため、Supabaseの返却順次第で
+        //   1) img_xxx をマージ → 2) cms_content で丸ごと上書き
+        // という順序になると、最新の img_ 画像が古い cms_content(base64)で
+        // 上書きされ「古い画像が出る」不具合が発生していた。
+        // → cms_content を土台に確定させてから img_ を必ず後で上書きする
+        //   2パス方式に変更し、返却順に依存しないようにする。
+        // ─────────────────────────────────────────────
+
+        // パス1: cms_content / transport を土台として確定
+        const mergedCms = {};
+        rows.forEach(r => {
+          if (r.key === 'cms_content' && r.value && Object.keys(r.value).length) {
+            Object.assign(mergedCms, r.value);
+          }
+        });
+        rows.forEach(r => {
+          if (r.key === 'transport' && r.value && Object.keys(r.value).length) {
+            Object.assign(mergedCms, r.value);
+          }
+        });
+
+        // パス2: 個別画像キー img_{field} を必ず最後に上書き（img_ が常に勝つ＝最新）
+        rows.forEach(r => {
+          if (r.key && r.key.startsWith('img_') && r.value) {
+            mergedCms[r.key.slice(4)] = r.value; // "img_room1_bedroom" → "room1_bedroom"
+          }
+        });
+        _setCmsContent(mergedCms);
+
+        // その他（配列・設定系）はパス順非依存なのでまとめて反映
         rows.forEach(r => {
           if (r.key === 'faq'          && Array.isArray(r.value) && r.value.length) localStorage.setItem(FAQ_KEY, JSON.stringify(r.value));
           if (r.key === 'booking_btns' && Array.isArray(r.value) && r.value.length) localStorage.setItem(BOOKING_BTNS_KEY, JSON.stringify(r.value));
@@ -853,19 +910,6 @@ OUT〜11:00</textarea>
           if (r.key === 'policy'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_policy_sections', JSON.stringify(r.value));
           if (r.key === 'amenity'      && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_amenity_sections', JSON.stringify(r.value));
           if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
-          if (r.key === 'cms_content'  && r.value && Object.keys(r.value).length)   _setCmsContent(r.value);
-          // transport キーをcmsContentにマージ
-          if (r.key === 'transport' && r.value && Object.keys(r.value).length) {
-            const cms = _getCmsContent();
-            Object.assign(cms, r.value);
-            _setCmsContent(cms);
-          }
-          // 個別画像キー img_{fieldkey} をcmsContentにマージ
-          if (r.key && r.key.startsWith('img_') && r.value) {
-            const cms = _getCmsContent();
-            cms[r.key.slice(4)] = r.value; // "img_room1_bedroom" → "room1_bedroom"
-            _setCmsContent(cms);
-          }
           if (r.key === 'settings'     && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_settings', JSON.stringify(r.value));
           if (r.key === 'maintenance'  && r.value !== undefined && r.value !== null) localStorage.setItem('biei_maintenance', JSON.stringify(r.value));
         });
@@ -1463,6 +1507,8 @@ OUT〜11:00</textarea>
             const cms = _getCmsContent();
             Object.assign(cms, newImages);
             _setCmsContent(cms);
+            // 二重ソース解消：cms_content側の古いコピーを除去
+            await cleanupCmsContentImages(Object.keys(newImages));
           }
           showToast(ok
             ? `✓ ${newCount}枚の画像を保存しました（${section.page}）`
@@ -1661,6 +1707,7 @@ OUT〜11:00</textarea>
       const cms = _getCmsContent();
       Object.assign(cms, newImages);
       _setCmsContent(cms);
+      await cleanupCmsContentImages(Object.keys(newImages));
     }
     showToast(ok
       ? `✓ ${promises.length}枚のヒーロー画像を保存しました\n全デバイスに即時反映されます`
@@ -1758,6 +1805,7 @@ OUT〜11:00</textarea>
       const cms = _getCmsContent();
       Object.assign(cms, newImages);
       _setCmsContent(cms);
+      await cleanupCmsContentImages(Object.keys(newImages));
     }
     showToast(ok ? `${promises.length}枚の画像を保存しました ✓` : '一部の保存に失敗しました');
     updateStats();
