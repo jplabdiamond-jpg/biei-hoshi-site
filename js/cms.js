@@ -128,9 +128,13 @@ async function cmsApply() {
     // 【バグ再発防止】これが無いと、管理画面の「交通案内管理」で保存しても
     // 公開ページ(access.html)がHTMLの初期値のままになる（反映されない）。
     // ダッシュボードの initAllPanels と同じ順序（cms_content → transport → img_）に揃える。
-    if (sb.transport && typeof sb.transport === 'object') {
-      Object.assign(cmsContent, sb.transport);
-    }
+    // 同様に、専用キーに保存される見出し系オブジェクトはここでマージする。
+    // 追加する場合は必ずこの配列に入れること（img_ より前・cms_content より後）。
+    ['transport', 'kitchen_nearby'].forEach(k => {
+      if (sb[k] && typeof sb[k] === 'object' && !Array.isArray(sb[k])) {
+        Object.assign(cmsContent, sb[k]);
+      }
+    });
     // パス2: 個別画像キーで必ず上書き（img_ が常に勝つ＝最新画像）
     Object.keys(sb).forEach(k => {
       if (k.startsWith('img_') && sb[k]) {
@@ -285,6 +289,11 @@ async function cmsApply() {
     : _getLocalOrDefault('biei_nearby_facilities', _defaultNearby());
   renderNearbyIfPresent(nearby);
 
+  const kitchenSpots = hasSb && Array.isArray(sb.kitchen_spots) && sb.kitchen_spots.length
+    ? sb.kitchen_spots
+    : _getLocalOrDefault('biei_kitchen_spots', _defaultKitchenSpots());
+  renderKitchenSpotsIfPresent(kitchenSpots);
+
   const amenity = hasSb && Array.isArray(sb.amenity) && sb.amenity.length
     ? sb.amenity
     : _getLocalOrDefault('biei_amenity_sections', _defaultAmenity());
@@ -427,6 +436,28 @@ function renderNearbyIfPresent(items) {
         <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">${item.desc}</p>
       </div>
     </div>`).join('');
+}
+
+/* キッチンページ「近くのグルメ＆ショッピング」カード
+   ※ 未設定時はHTMLの初期3件をそのまま残す（空表示にしない） */
+function renderKitchenSpotsIfPresent(items) {
+  const wrap = document.getElementById('kitchenSpotsWrap');
+  if (!wrap) return;
+  if (!Array.isArray(items) || !items.length) return;
+  wrap.innerHTML = items.map(it => `
+    <div style="background:var(--color-bg-warm);padding:32px 28px;">
+      <p style="font-family:var(--font-en);font-size:11px;letter-spacing:.25em;color:var(--color-accent);margin-bottom:14px;">${it.label || ''}</p>
+      <h4 style="font-family:var(--font-jp);font-size:16px;font-weight:400;letter-spacing:.1em;margin-bottom:12px;">${it.name || ''}</h4>
+      <p style="font-size:13px;color:var(--color-text-mid);line-height:2;">${it.desc || ''}</p>
+    </div>`).join('');
+}
+
+function _defaultKitchenSpots() {
+  return [
+    { label: 'SHOPPING',    name: '美瑛選果',              desc: '美瑛産の野菜・果物・加工品が揃う人気スポット。新鮮な食材を調達して自炊をお楽しみください。（車で約5分）' },
+    { label: 'CAFE',        name: '美瑛のカフェ＆レストラン', desc: '美瑛の食材を使ったカフェやレストランが点在。地元の味を気軽に楽しめます。スタッフがおすすめをご案内します。' },
+    { label: 'SUPERMARKET', name: '近隣スーパー',           desc: '日用品や食材の買い出しに便利なスーパーマーケットが近隣にあります。長期滞在の方にも安心の環境です。' }
+  ];
 }
 
 function renderAmenityIfPresent(sections) {
@@ -775,6 +806,29 @@ function initAdminBar() {
 
     cmsSave(data);
     const ok = await sbSet('cms_content', data);
+
+    // ─────────────────────────────────────────────
+    // 【二重ソース防止】cmsApply は cms_content の後に専用キー
+    // (transport / kitchen_nearby) をマージして上書きする。
+    // そのため、ページ上のEDIT PAGEで編集したフィールドが専用キー管理下の場合、
+    // cms_content だけ更新しても古い専用キーの値に戻ってしまう。
+    // → 該当フィールドは専用キー側にも同じ値を書き戻して整合させる。
+    // 新しい専用キーを追加したら必ずこのマップにも追加すること。
+    // ─────────────────────────────────────────────
+    const SPECIAL_KEY_MAP = {
+      transport:       f => f.indexOf('access_') === 0,
+      kitchen_nearby:  f => f.indexOf('kitchen_nearby') === 0
+    };
+    for (const sk of Object.keys(SPECIAL_KEY_MAP)) {
+      const cur = (all[sk] && typeof all[sk] === 'object' && !Array.isArray(all[sk])) ? all[sk] : {};
+      const next = Object.assign({}, cur);
+      let changed = false;
+      Object.keys(data).forEach(f => {
+        if (SPECIAL_KEY_MAP[sk](f) && next[f] !== data[f]) { next[f] = data[f]; changed = true; }
+      });
+      if (changed) await sbSet(sk, next);
+    }
+
     showToast(ok
       ? 'テキストを保存しました ✓ 全デバイスに反映されました'
       : '⚠ 保存に失敗しました（サーバー未反映）\n通信を確認して再度お試しください');

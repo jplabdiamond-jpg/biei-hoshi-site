@@ -276,6 +276,9 @@
     <button class="nav-item" data-panel="nearby">
       <span class="nav-item-icon">📍</span>近隣施設管理
     </button>
+    <button class="nav-item" data-panel="kitchen-spots">
+      <span class="nav-item-icon">🍴</span>グルメ＆ショッピング
+    </button>
     <button class="nav-item" data-panel="policy">
       <span class="nav-item-icon">📜</span>規約管理
     </button>
@@ -604,6 +607,27 @@
       </div>
     </div>
 
+    <!-- KITCHEN SPOTS PANEL -->
+    <div class="panel" id="panel-kitchen-spots">
+      <p class="section-title">グルメ＆ショッピング管理（キッチン＆アメニティページ）</p>
+      <p style="font-size:13px;color:var(--light);line-height:2;margin-bottom:24px;">キッチン＆アメニティページ下部「近くのグルメ＆ショッピング」の見出し・説明文・カードを編集できます。</p>
+      <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:20px;">
+        <div class="form-group">
+          <label class="form-label">セクション見出し</label>
+          <input class="form-input" id="kitchenNearbyTitle" type="text" placeholder="近くのグルメ＆ショッピング">
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">リード文</label>
+          <textarea class="form-textarea" id="kitchenNearbyLead" placeholder="美瑛周辺には魅力的な飲食店や食材店が揃っています。"></textarea>
+        </div>
+      </div>
+      <div id="kitchenSpotsAdminList" style="margin-bottom:16px;"></div>
+      <button class="btn-add" id="addKitchenSpotBtn">＋ カードを追加</button>
+      <div style="margin-top:8px;">
+        <button class="btn-save" id="saveKitchenSpotsBtn">グルメ＆ショッピングを保存</button>
+      </div>
+    </div>
+
     <!-- POLICY PANEL -->
     <div class="panel" id="panel-policy">
       <p class="section-title">宿泊規約管理（規約ページ）</p>
@@ -871,7 +895,7 @@ OUT〜11:00</textarea>
   const panels = document.querySelectorAll('.panel');
   const navItems = document.querySelectorAll('[data-panel]');
   const panelTitle = document.getElementById('panelTitle');
-  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'hero-images':'ヒーロー画像管理', 'all-images':'全ページ画像管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', maintenance:'メンテナンスモード', settings:'Settings', password:'Password' };
+  const titles = { dashboard:'Dashboard', pages:'Pages', news:'お知らせ管理', 'hero-images':'ヒーロー画像管理', 'all-images':'全ページ画像管理', 'room-images':'部屋画像管理', amenity:'アメニティ管理', nearby:'近隣施設管理', 'kitchen-spots':'グルメ＆ショッピング管理', policy:'規約管理', transport:'交通案内管理', 'reserve-notes':'予約前確認事項', faq:'Q&A 管理', booking:'予約ボタン管理', maintenance:'メンテナンスモード', settings:'Settings', password:'Password' };
 
   navItems.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -893,6 +917,7 @@ OUT〜11:00</textarea>
         if (id === 'room-images')   renderRoomImagesAdmin();
         if (id === 'amenity')       renderAmenityAdmin();
         if (id === 'nearby')        renderNearbyAdmin();
+        if (id === 'kitchen-spots') renderKitchenSpotsAdmin();
         if (id === 'policy')        renderPolicyAdmin();
         if (id === 'maintenance')  loadMaintenancePanel();
       } catch(e) {
@@ -963,6 +988,7 @@ OUT〜11:00</textarea>
           if (r.key === 'policy'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_policy_sections', JSON.stringify(r.value));
           if (r.key === 'amenity'      && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_amenity_sections', JSON.stringify(r.value));
           if (r.key === 'nearby'       && Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_nearby_facilities', JSON.stringify(r.value));
+          if (r.key === 'kitchen_spots'&& Array.isArray(r.value) && r.value.length) localStorage.setItem('biei_kitchen_spots', JSON.stringify(r.value));
           if (r.key === 'settings'     && r.value && Object.keys(r.value).length)   localStorage.setItem('biei_settings', JSON.stringify(r.value));
           if (r.key === 'maintenance'  && r.value !== undefined && r.value !== null) localStorage.setItem('biei_maintenance', JSON.stringify(r.value));
         });
@@ -978,6 +1004,7 @@ OUT〜11:00</textarea>
     renderPolicyAdmin();
     renderAmenityAdmin();
     renderNearbyAdmin();
+    renderKitchenSpotsAdmin();
     loadTransportAdmin();
     loadSettings();
     loadMaintenancePanel();
@@ -2012,6 +2039,126 @@ OUT〜11:00</textarea>
   });
 
   /* ========================
+     グルメ＆ショッピング管理（キッチンページ）
+     ・カード配列 → 専用キー kitchen_spots（単一ソース）
+     ・見出し/リード文 → 専用キー kitchen_nearby（交通案内と同じ方式）
+       ※ cms_content を丸ごと上書きしないこと（他ページのデータ消失事故を防ぐ）
+  ======================== */
+  const KITCHEN_SPOTS_KEY = 'biei_kitchen_spots';
+  const DEFAULT_KITCHEN_SPOTS = [
+    { label: 'SHOPPING',    name: '美瑛選果',               desc: '美瑛産の野菜・果物・加工品が揃う人気スポット。新鮮な食材を調達して自炊をお楽しみください。（車で約5分）' },
+    { label: 'CAFE',        name: '美瑛のカフェ＆レストラン', desc: '美瑛の食材を使ったカフェやレストランが点在。地元の味を気軽に楽しめます。スタッフがおすすめをご案内します。' },
+    { label: 'SUPERMARKET', name: '近隣スーパー',            desc: '日用品や食材の買い出しに便利なスーパーマーケットが近隣にあります。長期滞在の方にも安心の環境です。' }
+  ];
+  const KITCHEN_NEARBY_DEFAULT_TITLE = '近くのグルメ＆ショッピング';
+  const KITCHEN_NEARBY_DEFAULT_LEAD  = '美瑛周辺には魅力的な飲食店や食材店が揃っています。';
+
+  function getKitchenSpots() {
+    try {
+      const stored = localStorage.getItem(KITCHEN_SPOTS_KEY);
+      const arr = stored ? JSON.parse(stored) : null;
+      return Array.isArray(arr) && arr.length ? arr : DEFAULT_KITCHEN_SPOTS;
+    } catch { return DEFAULT_KITCHEN_SPOTS; }
+  }
+
+  function renderKitchenSpotsAdmin() {
+    const list = document.getElementById('kitchenSpotsAdminList');
+    if (!list) return;
+
+    // 見出し・リード文
+    const cms = _getCmsContent();
+    const titleEl = document.getElementById('kitchenNearbyTitle');
+    const leadEl  = document.getElementById('kitchenNearbyLead');
+    if (titleEl) titleEl.value = cms['kitchen_nearby_title'] || KITCHEN_NEARBY_DEFAULT_TITLE;
+    if (leadEl)  leadEl.value  = cms['kitchen_nearby_lead']  || KITCHEN_NEARBY_DEFAULT_LEAD;
+
+    const items = getKitchenSpots();
+    if (!items.length) {
+      list.innerHTML = '<p style="font-size:13px;color:var(--light);margin-bottom:12px;">カードが登録されていません。「＋ カードを追加」で追加してください。</p>';
+      return;
+    }
+    list.innerHTML = items.map((item, i) => `
+      <div style="background:var(--white);border:1px solid var(--border);padding:20px;margin-bottom:12px;" data-kspot-idx="${i}">
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label class="form-label">英字ラベル</label>
+            <input class="form-input kspot-label-input" type="text" value="${escHtml(item.label || '')}" placeholder="SHOPPING">
+          </div>
+          <div>
+            <label class="form-label">タイトル</label>
+            <input class="form-input kspot-name-input" type="text" value="${escHtml(item.name || '')}" placeholder="美瑛選果">
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">説明文</label>
+          <textarea class="form-textarea kspot-desc-input" placeholder="説明文">${escHtml(item.desc || '')}</textarea>
+        </div>
+        <div style="margin-top:12px;"><button class="btn-sm danger kspot-del-btn">削除</button></div>
+      </div>
+    `).join('');
+
+    list.querySelectorAll('.kspot-del-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!confirm('このカードを削除しますか？')) return;
+        const items = collectKitchenSpots();
+        const idx = parseInt(btn.closest('[data-kspot-idx]').dataset.kspotIdx);
+        items.splice(idx, 1);
+        localStorage.setItem(KITCHEN_SPOTS_KEY, JSON.stringify(items));
+        renderKitchenSpotsAdmin();
+        showToast('削除しました');
+      });
+    });
+  }
+
+  function collectKitchenSpots() {
+    const rows = document.querySelectorAll('#kitchenSpotsAdminList [data-kspot-idx]');
+    return Array.from(rows).map(row => ({
+      label: row.querySelector('.kspot-label-input').value.trim(),
+      name:  row.querySelector('.kspot-name-input').value.trim(),
+      desc:  row.querySelector('.kspot-desc-input').value.trim()
+    }));
+  }
+
+  document.getElementById('addKitchenSpotBtn')?.addEventListener('click', () => {
+    const items = collectKitchenSpots();
+    items.push({ label: '', name: '', desc: '' });
+    localStorage.setItem(KITCHEN_SPOTS_KEY, JSON.stringify(items));
+    renderKitchenSpotsAdmin();
+    document.getElementById('kitchenSpotsAdminList').lastElementChild?.scrollIntoView({ behavior:'smooth' });
+  });
+
+  document.getElementById('saveKitchenSpotsBtn')?.addEventListener('click', async () => {
+    try {
+      const items = collectKitchenSpots().filter(i => i.name || i.label || i.desc);
+      if (!items.length) { showToast('⚠ カードが1件もありません'); return; }
+
+      // 見出し・リード文（cms_content全置換はせず専用キーへ）
+      const titleEl = document.getElementById('kitchenNearbyTitle');
+      const leadEl  = document.getElementById('kitchenNearbyLead');
+      const headData = {
+        kitchen_nearby_title: (titleEl?.value || '').trim() || KITCHEN_NEARBY_DEFAULT_TITLE,
+        kitchen_nearby_lead:  (leadEl?.value  || '').trim() || KITCHEN_NEARBY_DEFAULT_LEAD
+      };
+      const cms = _getCmsContent();
+      Object.assign(cms, headData);
+      _setCmsContent(cms);
+
+      localStorage.setItem(KITCHEN_SPOTS_KEY, JSON.stringify(items));
+      localStorage.setItem('biei_last_save', new Date().toISOString());
+
+      const okHead  = await sbSave('kitchen_nearby', headData);
+      const okItems = await sbSave('kitchen_spots', items);
+      showToast((okHead !== false && okItems !== false)
+        ? 'グルメ＆ショッピングを保存しました'
+        : '⚠ 保存に失敗しました（サーバー未反映）\n通信を確認して再度お試しください');
+      renderKitchenSpotsAdmin();
+    } catch (e) {
+      console.error('[kitchen-spots] save error:', e);
+      showToast('⚠ 保存中にエラーが発生しました');
+    }
+  });
+
+  /* ========================
      規約管理
   ======================== */
   const POLICY_KEY = 'biei_policy_sections';
@@ -2105,6 +2252,7 @@ OUT〜11:00</textarea>
       const policy      = JSON.parse(localStorage.getItem(POLICY_KEY)   || 'null') || DEFAULT_POLICY;
       const nearby      = JSON.parse(localStorage.getItem(NEARBY_KEY)   || 'null') || DEFAULT_NEARBY;
       const amenity     = JSON.parse(localStorage.getItem(AMENITY_KEY)  || 'null') || DEFAULT_AMENITY;
+      const kitchenSpots = JSON.parse(localStorage.getItem(KITCHEN_SPOTS_KEY) || 'null') || DEFAULT_KITCHEN_SPOTS;
       const transport   = _getCmsContent();
 
       // 全データを1つのオブジェクトにまとめる
@@ -2117,6 +2265,7 @@ OUT〜11:00</textarea>
         _policy:       policy,
         _nearby:       nearby,
         _amenity:      amenity,
+        _kitchenSpots: kitchenSpots,
         _exportedAt:   new Date().toISOString(),
         _version:      2
       });
