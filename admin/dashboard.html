@@ -687,11 +687,11 @@ OUT〜11:00</textarea>
 
 <div class="toast" id="toast"></div>
 
-<script src="../js/cms.js?v=9"></script>
+<script src="../js/cms.js?v=19"></script>
 <script>
   /* ── Supabase直接保存（cms.jsへの依存なし・確実動作） ── */
-  const _SB_URL  = 'https://yevhirgmfjdvnargaitj.supabase.co';
-  const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlldmhpcmdtZmpkdm5hcmdhaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDg2NjUsImV4cCI6MjA5MzI4NDY2NX0.rksdAP956Y8I3E0y5n0PpvWddoB4-x6hLjqdr6dDIM4';
+  const _SB_URL  = 'https://mgauttkyplwoykgooyqj.supabase.co';
+  const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nYXV0dGt5cGx3b3lrZ29veXFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNzI1MTMsImV4cCI6MjA5OTg0ODUxM30.GtetXXe0CmtoY6oyV81JrTqJOgv3DEGuNUHzODxxaOA';
   // 画像圧縮ユーティリティ（最大1200px, JPEG 0.78）→ Promise<dataURL>
   function compressImage(file, maxPx = 1200, quality = 0.78) {
     return new Promise((resolve, reject) => {
@@ -719,8 +719,39 @@ OUT〜11:00</textarea>
     });
   }
 
+  // dataURL画像をStorage(cms-images)にアップロードし公開URLを返す（egress対策）
+  async function sbUploadImage(dataUrl, name) {
+    const blob = await (await fetch(dataUrl)).blob();
+    const path = `${name}_${Date.now()}.jpg`;
+    const res = await fetch(`${_SB_URL}/storage/v1/object/cms-images/${path}`, {
+      method: 'POST',
+      headers: {
+        'apikey': _SB_ANON,
+        'Authorization': `Bearer ${_SB_ANON}`,
+        'Content-Type': blob.type || 'image/jpeg',
+        'x-upsert': 'true'
+      },
+      body: blob
+    });
+    if (!res.ok) throw new Error('storage upload ' + res.status);
+    return `${_SB_URL}/storage/v1/object/public/cms-images/${path}`;
+  }
+
+  // 直近の保存失敗理由（トーストに表示して不通原因を可視化＝再発防止）
+  var _lastSbError = '';
   async function sbSave(key, value) {
+    _lastSbError = '';
     try {
+      // 画像(img_*)がbase64の場合はStorageへアップロードしURLを保存（DB肥大化・egress防止）
+      if (key.startsWith('img_') && typeof value === 'string' && value.startsWith('data:image')) {
+        try { value = await sbUploadImage(value, key.slice(4)); }
+        catch (upErr) {
+          // Storage不通時はbase64でDB保存を試みる（従来動作は維持）。
+          // ただし不通の事実は記録し、DB保存も失敗した場合に原因表示できるようにする。
+          _lastSbError = 'Storageアップロード失敗: ' + (upErr && upErr.message ? upErr.message : upErr);
+          console.warn('[sbSave] storage upload失敗→base64フォールバック', upErr);
+        }
+      }
       const res = await fetch(`${_SB_URL}/rest/v1/biei_cms`, {
         method: 'POST',
         headers: {
@@ -732,12 +763,16 @@ OUT〜11:00</textarea>
         body: JSON.stringify({ key, value })
       });
       if (!res.ok && res.status !== 201) {
-        console.error('[sbSave] error', res.status, key);
+        let body = '';
+        try { body = await res.text(); } catch(_) {}
+        _lastSbError = `DB保存 HTTP ${res.status} ${body}`.trim();
+        console.error('[sbSave] error', res.status, key, body);
         return false;
       }
       console.log('[sbSave] ok', key);
       return true;
     } catch(e) {
+      _lastSbError = '通信例外: ' + (e && e.message ? e.message : e);
       console.error('[sbSave] exception', key, e);
       return false;
     }
@@ -751,15 +786,33 @@ OUT〜11:00</textarea>
   // fields: 今回保存した画像フィールド名の配列
   async function cleanupCmsContentImages(fields) {
     try {
-      const cms = Object.assign({}, _getCmsContent());
+      // ─────────────────────────────────────────────
+      // 【重要・表示リセット防止】
+      // 旧実装は表示用キャッシュ(_cmsContentCache)からも画像フィールドを削除していた。
+      // その結果、保存直後の再描画(renderHeroImagesAdmin等)で該当キーが無くなり
+      // defaultSrc（初期画像）にフォールバック → 「保存したのに元の画像に戻る」
+      // という誤認が発生していた。実際にはSupabaseのimg_キーには保存済み。
+      // → 永続化用オブジェクトからのみ画像を除き、表示用キャッシュは維持する。
+      // ─────────────────────────────────────────────
+      const view = _getCmsContent();                 // 表示用マージ済みビュー（保持する）
+      const persist = Object.assign({}, view);       // Supabaseのcms_contentに書く用
       let changed = false;
+
+      // 今回保存した画像フィールドを除去（二重ソース解消）
       fields.forEach(f => {
-        if (Object.prototype.hasOwnProperty.call(cms, f)) { delete cms[f]; changed = true; }
+        if (Object.prototype.hasOwnProperty.call(persist, f)) { delete persist[f]; changed = true; }
       });
+
+      // 【egress再発防止】base64が紛れ込んでいたら必ず除去してから永続化する
+      Object.keys(persist).forEach(k => {
+        if (typeof persist[k] === 'string' && persist[k].startsWith('data:image')) {
+          delete persist[k]; changed = true;
+        }
+      });
+
       if (changed) {
-        _setCmsContent(cms);
-        await sbSave('cms_content', cms); // 残骸除去を永続化（1回だけ＝レース無し）
-        console.log('[cleanup] removed stale cms_content images:', fields);
+        await sbSave('cms_content', persist); // 表示用キャッシュは触らない
+        console.log('[cleanup] cms_contentから画像を除去して永続化:', fields);
       }
     } catch (e) {
       console.warn('[cleanupCmsContentImages] skipped:', e);
@@ -1512,7 +1565,7 @@ OUT〜11:00</textarea>
           }
           showToast(ok
             ? `✓ ${newCount}枚の画像を保存しました（${section.page}）`
-            : `一部の画像保存に失敗しました`);
+            : `⚠ 一部の画像保存に失敗しました\n${_lastSbError || '通信状態を確認して再保存してください'}`);
           updateStats();
           renderAllImagesAdmin();
         } catch(e) {
@@ -1711,7 +1764,7 @@ OUT〜11:00</textarea>
     }
     showToast(ok
       ? `✓ ${promises.length}枚のヒーロー画像を保存しました\n全デバイスに即時反映されます`
-      : `保存しました（オフライン：次回同期時に反映）`);
+      : `⚠ ヒーロー画像の保存に失敗しました\n${_lastSbError || '通信状態を確認して再保存してください'}`);
     updateStats();
     renderHeroImagesAdmin();
   });
@@ -1807,7 +1860,7 @@ OUT〜11:00</textarea>
       _setCmsContent(cms);
       await cleanupCmsContentImages(Object.keys(newImages));
     }
-    showToast(ok ? `${promises.length}枚の画像を保存しました ✓` : '一部の保存に失敗しました');
+    showToast(ok ? `${promises.length}枚の画像を保存しました ✓` : `⚠ 一部の保存に失敗しました\n${_lastSbError || '通信状態を確認して再保存してください'}`);
     updateStats();
     renderRoomImagesAdmin();
   });
@@ -2090,10 +2143,32 @@ OUT〜11:00</textarea>
   ======================== */
   const MAINTENANCE_KEY = 'biei_maintenance';
 
-  function loadMaintenancePanel() {
-    const stored = localStorage.getItem(MAINTENANCE_KEY);
-    const isOn = stored !== null ? JSON.parse(stored) === true : false;
+  async function loadMaintenancePanel() {
+    // 【再発防止】公開状態はSupabaseが正。localStorageのみ参照だと
+    // 別端末やSupabase不通時に実状態(=公開ページ)と食い違い、
+    // 管理画面が誤って「公開中」を表示する不具合があったため、
+    // 必ずSupabaseの最新値を取得して同期する。
+    let isOn = null;
+    try {
+      const sbVal = await sbGet('maintenance'); // cms.jsのグローバル関数
+      if (sbVal === true || sbVal === false) {
+        isOn = sbVal;
+        localStorage.setItem(MAINTENANCE_KEY, JSON.stringify(isOn)); // ローカルも同期
+      }
+    } catch (e) {
+      console.warn('[maintenance] Supabase状態取得失敗', e);
+    }
     const toggle = document.getElementById('maintenanceToggle');
+    const text = document.getElementById('maintenanceStatusText');
+    if (isOn === null) {
+      // Supabase不通 → 状態不明。誤って「公開中」と誤認させない
+      const stored = localStorage.getItem(MAINTENANCE_KEY);
+      isOn = stored !== null ? JSON.parse(stored) === true : false;
+      if (toggle) toggle.checked = isOn;
+      updateMaintenanceBadge(isOn);
+      if (text) text.textContent = (isOn ? 'メンテナンス中' : '公開中') + ' — 同期未確認（Supabase不通）';
+      return;
+    }
     if (toggle) {
       toggle.checked = isOn;
       updateMaintenanceBadge(isOn);
@@ -2123,6 +2198,13 @@ OUT〜11:00</textarea>
     localStorage.setItem('biei_last_save', new Date().toISOString());
     const ok = await sbSave('maintenance', isOn);
     updateStats();
+    if (!ok) {
+      // 【再発防止】Supabase保存に失敗した場合は公開状態を変更できていない。
+      // 成功と誤認させると「公開したつもりが待機中のまま」になるため明示する。
+      showToast('⚠ 保存に失敗しました（Supabase未反映）\n通信状態を確認し、もう一度保存してください');
+      console.error('[maintenance] Supabase保存失敗:', isOn);
+      return;
+    }
     showToast(isOn
       ? '🔒 メンテナンスモードをONにしました\nサイトは現在非公開です'
       : '✓ メンテナンスモードをOFFにしました\nサイトを公開中です');

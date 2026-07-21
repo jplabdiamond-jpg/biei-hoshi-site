@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Claude自動デプロイ用環境変数
+.env.deploy

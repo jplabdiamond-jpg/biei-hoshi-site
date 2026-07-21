@@ -7,8 +7,8 @@
 /* ============================================================
    Supabase 設定
    ============================================================ */
-var SUPABASE_URL    = 'https://yevhirgmfjdvnargaitj.supabase.co';
-var SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlldmhpcmdtZmpkdm5hcmdhaXRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDg2NjUsImV4cCI6MjA5MzI4NDY2NX0.rksdAP956Y8I3E0y5n0PpvWddoB4-x6hLjqdr6dDIM4';
+var SUPABASE_URL    = 'https://mgauttkyplwoykgooyqj.supabase.co';
+var SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nYXV0dGt5cGx3b3lrZ29veXFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNzI1MTMsImV4cCI6MjA5OTg0ODUxM30.GtetXXe0CmtoY6oyV81JrTqJOgv3DEGuNUHzODxxaOA';
 
 var CMS_KEY           = 'biei_cms_content';
 var ADMIN_SESSION_KEY = 'biei_admin_session';
@@ -65,6 +65,24 @@ async function sbSet(key, value) {
   } catch { return false; }
 }
 
+/* dataURL画像をStorage(cms-images)にアップロードし公開URLを返す（egress対策：DBにbase64を保存しない） */
+async function sbUploadImage(dataUrl, name) {
+  const blob = await (await fetch(dataUrl)).blob();
+  const path = `${name}_${Date.now()}.jpg`;
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/cms-images/${path}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': `Bearer ${SUPABASE_ANON}`,
+      'Content-Type': blob.type || 'image/jpeg',
+      'x-upsert': 'true'
+    },
+    body: blob
+  });
+  if (!res.ok) throw new Error('storage upload ' + res.status);
+  return `${SUPABASE_URL}/storage/v1/object/public/cms-images/${path}`;
+}
+
 /* ============================================================
    localStorage フォールバック
    ============================================================ */
@@ -88,7 +106,7 @@ async function cmsApply() {
   const sb = await sbGetAll();
   const hasSb = Object.keys(sb).length > 0;
 
-  /* ── メンテナンスモードチェック ── */
+  /* ── メンテナンスモードチェック（管理者ダッシュボードのトグルで制御） ── */
   const maintenanceOn = hasSb
     ? (sb.maintenance === true)
     : (localStorage.getItem('biei_maintenance') === 'true');
@@ -106,6 +124,13 @@ async function cmsApply() {
   // img_ を常に優先させること。順序を入れ替えると古い画像が復活する（既知の不具合）。
   const cmsContent = hasSb ? Object.assign({}, sb.cms_content || {}) : cmsLoad();
   if (hasSb) {
+    // パス1.5: 交通案内は専用キー `transport` に保存されるため必ずマージする。
+    // 【バグ再発防止】これが無いと、管理画面の「交通案内管理」で保存しても
+    // 公開ページ(access.html)がHTMLの初期値のままになる（反映されない）。
+    // ダッシュボードの initAllPanels と同じ順序（cms_content → transport → img_）に揃える。
+    if (sb.transport && typeof sb.transport === 'object') {
+      Object.assign(cmsContent, sb.transport);
+    }
     // パス2: 個別画像キーで必ず上書き（img_ が常に勝つ＝最新画像）
     Object.keys(sb).forEach(k => {
       if (k.startsWith('img_') && sb[k]) {
@@ -115,23 +140,51 @@ async function cmsApply() {
   }
 
   // 画像src差し替え + cms-ready付与ヘルパー
-  // base64やキャッシュ済み画像は onload が発火しない場合があるため complete チェックも行う
+  // ─────────────────────────────────────────────
+  // 【ちらつき(旧画像が一瞬見える)防止・再発禁止】
+  // 旧実装は img.src = 新URL を直接代入し、onload / complete / 300msタイマーの
+  // いずれかで即 visibility:visible にしていた。
+  // ブラウザは「新画像がデコードされるまで古い画像(HTMLの初期src)を描画し続ける」ため、
+  // 可視化した瞬間に古い画像が必ず一瞬見えていた。
+  // → ヒーローと同じく「裏で先読み(preload)＋decode完了 → src差し替え → 可視化」
+  //    の順に統一する。順序を変えると古い画像が復活する（既知の不具合）。
+  // ※ 差し替え待ちの間は data-cms-pending を立て、_forceShowAllCmsImages に
+  //    先に可視化されないようにする。
+  // ─────────────────────────────────────────────
   function _setImgSrc(img, src) {
+    let done = false;
     const markReady = () => {
+      if (done) return;
+      done = true;
+      delete img.dataset.cmsPending;
       img.classList.add('cms-ready');
       img.style.visibility = 'visible'; // CSSキャッシュに依存せず確実に表示
     };
-    img.onload  = markReady;
-    img.onerror = markReady; // エラー時も表示
-    img.src = src;
-    // src変更後すでに complete なら onload が発火しないので即付与
-    if (img.complete) {
-      markReady();
-      return;
-    }
-    // loading="lazy" や visibility:hidden 環境でonloadが遅延するケースへの保険
-    // 300ms後にも未適用なら強制表示（画像自体はブラウザが引き続きロード）
-    setTimeout(() => { if (!img.classList.contains('cms-ready')) markReady(); }, 300);
+    // 既に同じ画像なら差し替え不要
+    if (img.src === src || img.currentSrc === src) { markReady(); return; }
+
+    img.dataset.cmsPending = '1';
+    img.removeAttribute('loading'); // lazy によるロード遅延を回避
+
+    const swap = () => {
+      if (done) return;
+      img.onload  = markReady;
+      img.onerror = markReady;
+      img.src = src; // ここではキャッシュ済みのため旧画像が見える隙が無い
+      if (img.complete && img.naturalWidth > 0) markReady();
+    };
+
+    const pre = new Image();
+    pre.onload = () => {
+      if (pre.decode) pre.decode().then(swap).catch(swap);
+      else swap();
+    };
+    pre.onerror = () => { markReady(); }; // 失敗時は初期画像のまま表示
+    pre.src = src;
+
+    // 保険: 3秒で先読みが終わらない場合は差し替えだけ行い、表示はonloadに委ねる。
+    // それでも読めない場合は最終フォールバック(5秒)が強制表示する。
+    setTimeout(() => { if (!done) swap(); }, 3000);
   }
 
   // data-editable 画像: CMSデータで差し替え→ロード完了後に .cms-ready でフェードイン
@@ -155,13 +208,27 @@ async function cmsApply() {
   });
 
   // data-bg-field 画像: 差し替え→フェードイン（ヒーロースライドは visibility 制御のため除外）
+  // ─────────────────────────────────────────────
+  // 【ちらつき(FOUC)防止】
+  // 旧実装はヒーローに el.src = 新URL を直接代入していた。
+  // 画像の差し替えは「新しい画像がデコードされるまで“古い画像”を表示し続ける」
+  // ブラウザ仕様のため、HTMLの初期画像が一瞬見えてから新画像に切り替わっていた。
+  // → 先に裏で新画像を読み込み(preload)、完了してから src を差し替えることで
+  //    初期画像が表示される瞬間そのものを無くす。
+  // ─────────────────────────────────────────────
+  const heroPreloads = [];
   document.querySelectorAll('[data-bg-field]').forEach(el => {
     const f = el.dataset.bgField;
     if (el.tagName !== 'IMG') return;
     const isHeroSlide = el.closest('.hero-slide') !== null;
     if (cmsContent[f]) {
       if (isHeroSlide) {
-        el.src = cmsContent[f]; // ヒーローはcms-ready不要
+        heroPreloads.push(new Promise(resolve => {
+          const pre = new Image();
+          pre.onload  = () => { el.src = cmsContent[f]; resolve(); };
+          pre.onerror = () => { resolve(); }; // 失敗時は初期画像のまま
+          pre.src = cmsContent[f];
+        }));
       } else {
         _setImgSrc(el, cmsContent[f]);
       }
@@ -169,6 +236,14 @@ async function cmsApply() {
       if (!isHeroSlide) { el.classList.add('cms-ready'); el.style.visibility = 'visible'; }
     }
   });
+
+  // 先読み完了を待ってから表示（最大3秒でタイムアウトし、待ち続けない）
+  if (heroPreloads.length) {
+    await Promise.race([
+      Promise.all(heroPreloads),
+      new Promise(r => setTimeout(r, 3000))
+    ]);
+  }
 
   // ヒーロースライダーを表示（全スライド画像のsrc設定完了後）
   _showHeroSlider(cmsContent);
@@ -474,7 +549,7 @@ function _showHeroSlider(cmsContent) {
 // フォールバック: Supabaseが完全タイムアウトした場合のみ5秒後に強制表示
 // ※ 800ms等の短いタイマーはSupabase完了前に古い画像を表示させるため廃止
 document.addEventListener('DOMContentLoaded', () => {
-  setTimeout(_forceShowAllCmsImages, 5000);
+  setTimeout(() => _forceShowAllCmsImages(true), 5000); // 最終保険：ヒーローも表示
 });
 
 /* ============================================================
@@ -617,13 +692,24 @@ function attachEditButton(img, type) {
     e.stopPropagation();
     openFilePicker(file => {
       readAsDataURL(file, async result => {
-        img.src = result;
-        const data = cmsLoad();
-        if (type === 'bg') data[img.dataset.bgField] = result;
-        else data[img.dataset.field] = result;
-        cmsSave(data);
-        await sbSet('cms_content', data);
-        showToast('画像を更新しました ✓');
+        img.src = result; // 即時プレビュー
+        const field = (type === 'bg') ? img.dataset.bgField : img.dataset.field;
+        let stored = result;
+        try { stored = await sbUploadImage(result, field); img.src = stored; }
+        catch (upErr) { console.warn('[cms] storage upload失敗→base64フォールバック', upErr); }
+        // ─────────────────────────────────────────────
+        // 【重要・データ消失防止】
+        // 旧実装は cmsLoad()(=localStorageのみ) を土台に cms_content を
+        // 丸ごと上書きしていた。localStorageが空の端末（別PC／キャッシュ削除／
+        // Safari のストレージ自動削除）で実行すると、他ページの保存済み内容ごと
+        // Supabaseを空で上書きし「初期画像・初期テキストに戻る」事故が起きる。
+        // 画像は個別キー img_{field} が正（単一ソース）なので、そこだけ更新する。
+        // ─────────────────────────────────────────────
+        const okImg = await sbSet('img_' + field, stored);
+        const local = cmsLoad(); local[field] = stored; cmsSave(local); // ローカルは表示キャッシュ用
+        showToast(okImg
+          ? '画像を更新しました ✓'
+          : '⚠ 画像の保存に失敗しました（サーバー未反映）\n通信を確認して再度お試しください');
       });
     });
   });
@@ -662,22 +748,36 @@ function initAdminBar() {
   });
 
   saveBtn?.addEventListener('click', async () => {
-    const data = cmsLoad();
+    // ─────────────────────────────────────────────
+    // 【重要・データ消失防止】
+    // 旧実装は cmsLoad()(=localStorageのみ) を土台に cms_content を丸ごと
+    // 置換していたため、localStorageが空の端末で1ページ保存すると
+    // 「他ページの保存済みテキストが全部消えて初期値に戻る」事故が起きた。
+    // → 必ずSupabaseの最新値を土台にしてマージする。
+    // またSupabase不通時は全置換が危険なため保存を中止する（黙って壊さない）。
+    // 画像は個別キー img_{field} が正なのでここでは触らない（二重ソース防止）。
+    // ─────────────────────────────────────────────
+    const all = await sbGetAll();
+    if (!Object.keys(all).length) {
+      showToast('⚠ サーバーに接続できないため保存を中止しました\n通信を確認して再度お試しください');
+      return;
+    }
+    const base = (all.cms_content && typeof all.cms_content === 'object' && !Array.isArray(all.cms_content))
+      ? all.cms_content : {};
+    const data = Object.assign({}, base);
+
+    // テキストのみ収集（IMGは対象外）
     document.querySelectorAll('[data-editable]').forEach(el => {
       const f = el.dataset.field;
-      if (!f) return;
-      if (el.tagName === 'IMG') data[f] = el.src;
-      else if (el.dataset.editableType === 'html') data[f] = el.innerHTML;
-      else data[f] = el.textContent;
+      if (!f || el.tagName === 'IMG') return;
+      data[f] = (el.dataset.editableType === 'html') ? el.innerHTML : el.textContent;
     });
-    document.querySelectorAll('[data-bg-field]').forEach(el => {
-      const f = el.dataset.bgField;
-      if (!f || el.tagName !== 'IMG') return;
-      data[f] = el.src;
-    });
+
     cmsSave(data);
     const ok = await sbSet('cms_content', data);
-    showToast(ok ? 'テキストを保存しました ✓ 全デバイスに反映されました' : '保存しました（オフライン：次回オンライン時に同期）');
+    showToast(ok
+      ? 'テキストを保存しました ✓ 全デバイスに反映されました'
+      : '⚠ 保存に失敗しました（サーバー未反映）\n通信を確認して再度お試しください');
   });
 
   exitBtn?.addEventListener('click', () => {
@@ -724,12 +824,25 @@ function showToast(msg) {
    DOMContentLoaded
    ============================================================ */
 // すべてのCMS画像を強制表示（cmsApply完了後・フォールバック共用）
-function _forceShowAllCmsImages() {
+// includeHero=true のときのみヒーローも強制表示する。
+// 【ちらつき防止】cmsApply直後に無条件でヒーローを表示すると、
+// 先読み・ロード待ちを打ち消して初期画像が一瞬見えるため、
+// 通常経路では false、最終フォールバック(5秒)でのみ true を渡す。
+function _forceShowAllCmsImages(includeHero) {
   document.querySelectorAll('img[data-bg-field], img[data-editable]').forEach(el => {
-    if (!el.closest('.hero-slide')) { el.classList.add('cms-ready'); el.style.visibility = 'visible'; }
+    if (el.closest('.hero-slide')) return;
+    // 【ちらつき防止】CMS画像の差し替え待ち(data-cms-pending)は先に可視化しない。
+    // 可視化すると新画像のデコード完了まで古い画像(HTML初期src)が描画される。
+    // includeHero=true は最終フォールバック(5秒)なので pending も強制解除する。
+    if (!includeHero && el.dataset.cmsPending === '1') return;
+    delete el.dataset.cmsPending;
+    el.classList.add('cms-ready');
+    el.style.visibility = 'visible';
   });
-  const slider = document.querySelector('.hero-slider');
-  if (slider) slider.classList.add('cms-hero-ready');
+  if (includeHero) {
+    const slider = document.querySelector('.hero-slider');
+    if (slider) slider.classList.add('cms-hero-ready');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -738,8 +851,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch(e) {
     console.error('[cms] cmsApply error:', e);
   } finally {
-    // cmsApply完了後（成功・失敗問わず）必ず全画像を表示
-    _forceShowAllCmsImages();
+    // cmsApply完了後（成功・失敗問わず）ヒーロー以外の画像を表示。
+    // ヒーローは _showHeroSlider が読み込み完了後に表示する（ちらつき防止）。
+    _forceShowAllCmsImages(false);
   }
   initAdminBar();
 
