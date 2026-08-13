@@ -1,2 +1,11 @@
-Deny from all
+# CMSデータJSONストアへの直アクセスを遮断（api/data.php 経由のみ許可）
+# さくらは Apache 2.4 系。mod_authz_core があれば Require、無ければ 2.2 構文。
 Options -Indexes
+
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>
