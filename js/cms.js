@@ -65,22 +65,34 @@ async function sbSet(key, value) {
   } catch { return false; }
 }
 
-/* dataURL画像をStorage(cms-images)にアップロードし公開URLを返す（egress対策：DBにbase64を保存しない） */
+/* ============================================================
+   画像アップロード（さくらPHP）
+   ------------------------------------------------------------
+   【egress恒久対策】画像はSupabase Storageではなく、さくら上の
+   api/upload.php に保存し公開URL(https://.../images/cms/xxx)を得る。
+   これによりサイト表示時の画像配信がさくら（転送量無料）になり、
+   Supabaseのegressクォータ超過（画像がサンプルに戻る不具合）を根絶する。
+   ※ 保存されるのは画像URL文字列のみで、DBのimg_キーはそのまま利用。
+   ============================================================ */
+var IMG_UPLOAD_ENDPOINT = '/api/upload.php';
+// 管理画面と共有する秘密トークン（api/upload-config.php と一致させること）
+var IMG_UPLOAD_TOKEN = '219702ce3ba5d37cd2676aae942acf87e06ce3dc636865be';
+
 async function sbUploadImage(dataUrl, name) {
-  const blob = await (await fetch(dataUrl)).blob();
-  const path = `${name}_${Date.now()}.jpg`;
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/cms-images/${path}`, {
+  const res = await fetch(IMG_UPLOAD_ENDPOINT, {
     method: 'POST',
     headers: {
-      'apikey': SUPABASE_ANON,
-      'Authorization': `Bearer ${SUPABASE_ANON}`,
-      'Content-Type': blob.type || 'image/jpeg',
-      'x-upsert': 'true'
+      'Content-Type': 'application/json',
+      'X-Upload-Token': IMG_UPLOAD_TOKEN
     },
-    body: blob
+    body: JSON.stringify({ dataUrl, name })
   });
-  if (!res.ok) throw new Error('storage upload ' + res.status);
-  return `${SUPABASE_URL}/storage/v1/object/public/cms-images/${path}`;
+  let json = null;
+  try { json = await res.json(); } catch (_) {}
+  if (!res.ok || !json || !json.success || !json.url) {
+    throw new Error('image upload ' + res.status + (json && json.error ? ' ' + json.error : ''));
+  }
+  return json.url;
 }
 
 /* ============================================================

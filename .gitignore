@@ -4,3 +4,6 @@ Thumbs.db
 
 # Claude自動デプロイ用環境変数
 .env.deploy
+
+# 画像アップローダの秘密トークン設定
+api/upload-config.php

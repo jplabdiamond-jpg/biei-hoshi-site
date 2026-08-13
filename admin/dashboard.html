@@ -744,21 +744,23 @@ OUT〜11:00</textarea>
   }
 
   // dataURL画像をStorage(cms-images)にアップロードし公開URLを返す（egress対策）
+  // 【egress恒久対策】画像はさくらPHP(api/upload.php)へ保存し公開URLを得る。
+  // 管理画面は admin/ 配下なので相対パスは ../api/upload.php。
+  // トークンは js/cms.js の IMG_UPLOAD_TOKEN および api/upload-config.php と一致させること。
+  const _IMG_UPLOAD_ENDPOINT = '../api/upload.php';
+  const _IMG_UPLOAD_TOKEN    = '219702ce3ba5d37cd2676aae942acf87e06ce3dc636865be';
   async function sbUploadImage(dataUrl, name) {
-    const blob = await (await fetch(dataUrl)).blob();
-    const path = `${name}_${Date.now()}.jpg`;
-    const res = await fetch(`${_SB_URL}/storage/v1/object/cms-images/${path}`, {
+    const res = await fetch(_IMG_UPLOAD_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'apikey': _SB_ANON,
-        'Authorization': `Bearer ${_SB_ANON}`,
-        'Content-Type': blob.type || 'image/jpeg',
-        'x-upsert': 'true'
-      },
-      body: blob
+      headers: { 'Content-Type': 'application/json', 'X-Upload-Token': _IMG_UPLOAD_TOKEN },
+      body: JSON.stringify({ dataUrl, name })
     });
-    if (!res.ok) throw new Error('storage upload ' + res.status);
-    return `${_SB_URL}/storage/v1/object/public/cms-images/${path}`;
+    let json = null;
+    try { json = await res.json(); } catch (_) {}
+    if (!res.ok || !json || !json.success || !json.url) {
+      throw new Error('image upload ' + res.status + (json && json.error ? ' ' + json.error : ''));
+    }
+    return json.url;
   }
 
   // 直近の保存失敗理由（トーストに表示して不通原因を可視化＝再発防止）
