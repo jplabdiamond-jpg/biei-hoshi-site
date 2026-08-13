@@ -20,3 +20,6 @@ define('UPLOAD_PUBLIC_BASE', 'https://hoshi-no-hikari.com/images/cms');
 
 // 許可する最大ファイルサイズ（バイト）: 8MB
 define('UPLOAD_MAX_BYTES', 8 * 1024 * 1024);
+
+// CMSデータJSONの保存先（api/data.php が使用）
+define('DATA_STORE_FILE', __DIR__ . '/../data/cms-store.json');

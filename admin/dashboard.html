@@ -329,11 +329,11 @@
     <!-- DASHBOARD PANEL -->
     <div class="panel active" id="panel-dashboard">
 
-      <!-- Supabase自動同期バナー -->
+      <!-- サーバー自動同期バナー -->
       <div class="export-banner" style="background:rgba(100,180,100,0.06);border-color:rgba(100,180,100,0.25);">
         <div class="export-banner-icon">☁️</div>
         <div class="export-banner-text">
-          <strong>保存した内容はSupabaseに自動同期されます</strong>
+          <strong>保存した内容はサーバーに自動保存されます</strong>
           各管理画面で「保存する」を押すだけで、デスクトップ・モバイル問わずすべてのデバイスに即時反映されます。
         </div>
       </div>
@@ -713,9 +713,9 @@ OUT〜11:00</textarea>
 
 <script src="../js/cms.js?v=19"></script>
 <script>
-  /* ── Supabase直接保存（cms.jsへの依存なし・確実動作） ── */
-  const _SB_URL  = 'https://mgauttkyplwoykgooyqj.supabase.co';
-  const _SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nYXV0dGt5cGx3b3lrZ29veXFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNzI1MTMsImV4cCI6MjA5OTg0ODUxM30.GtetXXe0CmtoY6oyV81JrTqJOgv3DEGuNUHzODxxaOA';
+  /* ── さくらJSONストア保存（Supabase完全撤廃・cms.js非依存で確実動作） ── */
+  const _DATA_ENDPOINT = '../api/data.php';
+  const _DATA_TOKEN    = '219702ce3ba5d37cd2676aae942acf87e06ce3dc636865be';
   // 画像圧縮ユーティリティ（最大1200px, JPEG 0.78）→ Promise<dataURL>
   function compressImage(file, maxPx = 1200, quality = 0.78) {
     return new Promise((resolve, reject) => {
@@ -778,21 +778,22 @@ OUT〜11:00</textarea>
           console.warn('[sbSave] storage upload失敗→base64フォールバック', upErr);
         }
       }
-      const res = await fetch(`${_SB_URL}/rest/v1/biei_cms`, {
+      const res = await fetch(_DATA_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'apikey': _SB_ANON,
-          'Authorization': `Bearer ${_SB_ANON}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates'
-        },
+        headers: { 'Content-Type': 'application/json', 'X-Upload-Token': _DATA_TOKEN },
         body: JSON.stringify({ key, value })
       });
-      if (!res.ok && res.status !== 201) {
+      if (!res.ok) {
         let body = '';
         try { body = await res.text(); } catch(_) {}
-        _lastSbError = `DB保存 HTTP ${res.status} ${body}`.trim();
+        _lastSbError = `保存 HTTP ${res.status} ${body}`.trim();
         console.error('[sbSave] error', res.status, key, body);
+        return false;
+      }
+      const json = await res.json().catch(() => null);
+      if (!json || !json.success) {
+        _lastSbError = '保存応答エラー: ' + (json && json.error ? json.error : 'unknown');
+        console.error('[sbSave] not success', key, json);
         return false;
       }
       console.log('[sbSave] ok', key);
@@ -939,15 +940,18 @@ OUT〜11:00</textarea>
   }
   // updateStats()はinitAllPanels()の末尾で呼ぶ（Supabaseデータ反映後）
 
-  /* 全管理パネルを初期ロード時に描画（Supabaseデータ優先） */
+  /* 全管理パネルを初期ロード時に描画（さくらJSONストア優先） */
   async function initAllPanels() {
-    // Supabaseから全データ取得してlocalStorageに反映してからパネル描画
+    // さくらJSON(api/data.php)から全データ取得してlocalStorageに反映してからパネル描画
     try {
-      const res = await fetch(`${_SB_URL}/rest/v1/biei_cms?select=key,value`, {
-        headers: { 'apikey': _SB_ANON, 'Authorization': `Bearer ${_SB_ANON}` }
+      const res = await fetch(`${_DATA_ENDPOINT}?_=${Date.now()}`, {
+        headers: { 'Accept': 'application/json' }
       });
       if (res.ok) {
-        const rows = await res.json();
+        const json = await res.json().catch(() => null);
+        // 以降の処理は Supabase時代の [{key,value},...] 形式を前提とするため変換
+        const store = (json && json.success && json.data && typeof json.data === 'object') ? json.data : {};
+        const rows = Object.keys(store).map(k => ({ key: k, value: store[k] }));
 
         // ─────────────────────────────────────────────
         // 【重要・バグ再発防止】2パス・マージ方式
@@ -2317,7 +2321,7 @@ OUT〜11:00</textarea>
       isOn = stored !== null ? JSON.parse(stored) === true : false;
       if (toggle) toggle.checked = isOn;
       updateMaintenanceBadge(isOn);
-      if (text) text.textContent = (isOn ? 'メンテナンス中' : '公開中') + ' — 同期未確認（Supabase不通）';
+      if (text) text.textContent = (isOn ? 'メンテナンス中' : '公開中') + ' — 同期未確認（サーバー不通）';
       return;
     }
     if (toggle) {
@@ -2352,7 +2356,7 @@ OUT〜11:00</textarea>
     if (!ok) {
       // 【再発防止】Supabase保存に失敗した場合は公開状態を変更できていない。
       // 成功と誤認させると「公開したつもりが待機中のまま」になるため明示する。
-      showToast('⚠ 保存に失敗しました（Supabase未反映）\n通信状態を確認し、もう一度保存してください');
+      showToast('⚠ 保存に失敗しました（サーバー未反映）\n通信状態を確認し、もう一度保存してください');
       console.error('[maintenance] Supabase保存失敗:', isOn);
       return;
     }

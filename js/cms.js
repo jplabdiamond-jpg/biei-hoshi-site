@@ -1,67 +1,56 @@
 /* ============================================================
-   星の光の宿 BIEI — CMS Shared Logic  v14
-   データ読み込み優先順:
-     1. Supabase (全デバイス共通・即時反映)
-     2. localStorage (オフライン時フォールバック)
+   星の光の宿 BIEI — CMS Shared Logic  v15（Supabase完全撤廃）
+   ------------------------------------------------------------
+   データストアはすべて さくら上の api/data.php + JSON(cms-store.json)。
+   外部SaaS(Supabase)に一切依存しないため、egress凍結等で
+   「画像がサンプルに戻る」類の障害が構造的に発生しない。
+     読込: GET  /api/data.php        → { data:{ key:value } } 全キー
+     保存: POST /api/data.php (要token) upsert
+   関数名 sbGet/sbGetAll/sbSet は後方互換のため据え置き（中身のみ差し替え）。
    ============================================================ */
-/* ============================================================
-   Supabase 設定
-   ============================================================ */
-var SUPABASE_URL    = 'https://mgauttkyplwoykgooyqj.supabase.co';
-var SUPABASE_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1nYXV0dGt5cGx3b3lrZ29veXFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNzI1MTMsImV4cCI6MjA5OTg0ODUxM30.GtetXXe0CmtoY6oyV81JrTqJOgv3DEGuNUHzODxxaOA';
+var DATA_ENDPOINT = '/api/data.php';
+// 保存(POST)用の共有トークン。api/upload-config.php と一致させること。
+// ※ GET(読込)はトークン不要（公開データ）。
+var DATA_TOKEN = '219702ce3ba5d37cd2676aae942acf87e06ce3dc636865be';
 
 var CMS_KEY           = 'biei_cms_content';
 var ADMIN_SESSION_KEY = 'biei_admin_session';
 var SETTINGS_KEY      = 'biei_settings';
 
 /* ============================================================
-   Supabase API ユーティリティ
+   さくらJSONストア API ユーティリティ
+   （旧Supabase関数と同じI/Fを維持）
    ============================================================ */
-async function sbGet(key) {
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/biei_cms?key=eq.${encodeURIComponent(key)}&select=value`,
-      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` } }
-    );
-    if (!res.ok) return null;
-    const rows = await res.json();
-    return rows.length ? rows[0].value : null;
-  } catch { return null; }
-}
-
 async function sbGetAll() {
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 4000); // 4秒タイムアウト
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/biei_cms?select=key,value`,
-      { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${SUPABASE_ANON}` }, signal: controller.signal }
-    );
+    const timer = setTimeout(() => controller.abort(), 6000); // 6秒タイムアウト
+    const res = await fetch(`${DATA_ENDPOINT}?_=${Date.now()}`, {
+      headers: { 'Accept': 'application/json' },
+      signal: controller.signal
+    });
     clearTimeout(timer);
     if (!res.ok) return {};
-    const rows = await res.json();
-    const out = {};
-    rows.forEach(r => { out[r.key] = r.value; });
-    return out;
+    const json = await res.json();
+    return (json && json.success && json.data && typeof json.data === 'object') ? json.data : {};
   } catch { return {}; }
+}
+
+async function sbGet(key) {
+  const all = await sbGetAll();
+  return (key in all) ? all[key] : null;
 }
 
 async function sbSet(key, value) {
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/biei_cms`,
-      {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON,
-          'Authorization': `Bearer ${SUPABASE_ANON}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates'
-        },
-        body: JSON.stringify({ key, value })
-      }
-    );
-    return res.ok || res.status === 201;
+    const res = await fetch(DATA_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Upload-Token': DATA_TOKEN },
+      body: JSON.stringify({ key, value })
+    });
+    if (!res.ok) return false;
+    const json = await res.json().catch(() => null);
+    return !!(json && json.success);
   } catch { return false; }
 }
 
