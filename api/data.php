@@ -48,6 +48,22 @@ require $configPath;
 $storeFile = defined('DATA_STORE_FILE') ? DATA_STORE_FILE : (__DIR__ . '/../data/cms-store.json');
 $storeDir  = dirname($storeFile);
 
+/* ------------------------------------------------------------
+   自己修復ガード: 保存ディレクトリの .htaccess を常に正しい内容に保つ。
+   さくら(Apache2.4)では "Deny from all" だけだと .json 配信を止められない
+   ため Require all denied を用いる。GUIでの .htaccess 手編集は不要。
+   ------------------------------------------------------------ */
+function ensure_dir_guard($dir) {
+  if (!is_dir($dir)) return;
+  $ht = rtrim($dir, '/') . '/.htaccess';
+  $want = "Options -Indexes\n"
+        . "<IfModule mod_authz_core.c>\n  Require all denied\n</IfModule>\n"
+        . "<IfModule !mod_authz_core.c>\n  Order allow,deny\n  Deny from all\n</IfModule>\n";
+  $cur = is_file($ht) ? @file_get_contents($ht) : '';
+  if ($cur !== $want) { @file_put_contents($ht, $want); @chmod($ht, 0644); }
+}
+ensure_dir_guard($storeDir);
+
 function load_store($file) {
   if (!is_file($file)) return [];
   $raw = @file_get_contents($file);
