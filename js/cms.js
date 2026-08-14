@@ -722,27 +722,44 @@ function attachEditButton(img, type) {
   window.addEventListener('resize', positionBtn);
   btn.addEventListener('click', e => {
     e.stopPropagation();
-    openFilePicker(file => {
-      readAsDataURL(file, async result => {
-        img.src = result; // 即時プレビュー
-        const field = (type === 'bg') ? img.dataset.bgField : img.dataset.field;
-        let stored = result;
-        try { stored = await sbUploadImage(result, field); img.src = stored; }
-        catch (upErr) { console.warn('[cms] storage upload失敗→base64フォールバック', upErr); }
-        // ─────────────────────────────────────────────
-        // 【重要・データ消失防止】
-        // 旧実装は cmsLoad()(=localStorageのみ) を土台に cms_content を
-        // 丸ごと上書きしていた。localStorageが空の端末（別PC／キャッシュ削除／
-        // Safari のストレージ自動削除）で実行すると、他ページの保存済み内容ごと
-        // Supabaseを空で上書きし「初期画像・初期テキストに戻る」事故が起きる。
-        // 画像は個別キー img_{field} が正（単一ソース）なので、そこだけ更新する。
-        // ─────────────────────────────────────────────
-        const okImg = await sbSet('img_' + field, stored);
-        const local = cmsLoad(); local[field] = stored; cmsSave(local); // ローカルは表示キャッシュ用
-        showToast(okImg
-          ? '画像を更新しました ✓'
-          : '⚠ 画像の保存に失敗しました（サーバー未反映）\n通信を確認して再度お試しください');
-      });
+    openFilePicker(async file => {
+      const field = (type === 'bg') ? img.dataset.bgField : img.dataset.field;
+      // ─────────────────────────────────────────────
+      // 【「画像保存に失敗」再発防止】
+      // 旧実装は生ファイルのdataURLをそのままアップロードしていたため、
+      // スマホ写真など大容量(5〜12MB)画像が上限(8MB)超過で失敗していた。
+      // ダッシュボードと同じく、アップ前に必ず圧縮(最大1600px/JPEG0.82)する。
+      // ─────────────────────────────────────────────
+      let dataUrl;
+      try {
+        dataUrl = await _cmsCompressImage(file);
+      } catch (e) {
+        console.error('[cms] 画像圧縮に失敗', e);
+        showToast('⚠ この画像は読み込めませんでした\n別の画像でお試しください');
+        return;
+      }
+      img.src = dataUrl; // 即時プレビュー（圧縮後）
+
+      // さくらへアップロード（失敗したら保存中止＝巨大base64をDBに入れない）
+      let stored;
+      try {
+        stored = await sbUploadImage(dataUrl, field);
+        img.src = stored;
+      } catch (upErr) {
+        console.error('[cms] 画像アップロード失敗', upErr);
+        showToast('⚠ 画像のアップロードに失敗しました\n' +
+          (String(upErr).includes('too_large')
+            ? '画像サイズが大きすぎます。別の画像でお試しください'
+            : '通信を確認して再度お試しください'));
+        return;
+      }
+
+      // 画像URLは個別キー img_{field} が正（単一ソース）。そこだけ更新する。
+      const okImg = await sbSet('img_' + field, stored);
+      const local = cmsLoad(); local[field] = stored; cmsSave(local); // ローカルは表示キャッシュ用
+      showToast(okImg
+        ? '画像を更新しました ✓'
+        : '⚠ 画像の保存に失敗しました（サーバー未反映）\n通信を確認して再度お試しください');
     });
   });
 }
@@ -861,6 +878,39 @@ function readAsDataURL(file, callback) {
   const reader = new FileReader();
   reader.onload = ev => callback(ev.target.result);
   reader.readAsDataURL(file);
+}
+/* 画像圧縮（最大1600px・JPEG段階圧縮でUPLOAD上限8MB未満に収める）→ Promise<dataURL>
+   ダッシュボードの compressImage と方針を統一。ページ内「✎編集」の
+   「画像保存に失敗」(大容量画像の上限超過)を防ぐための単一実装。 */
+function _cmsCompressImage(file, maxPx = 1600) {
+  return new Promise((resolve, reject) => {
+    if (!file || !/^image\//.test(file.type)) { reject(new Error('not an image')); return; }
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = ev => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > maxPx || h > maxPx) {
+          if (w > h) { h = Math.round(h * maxPx / w); w = maxPx; }
+          else       { w = Math.round(w * maxPx / h); h = maxPx; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        // 8MB未満になるまで品質を段階的に下げる（安全側で7MBを閾値に）
+        const LIMIT = 7 * 1024 * 1024;
+        let q = 0.82, out = canvas.toDataURL('image/jpeg', q);
+        while (out.length * 0.75 > LIMIT && q > 0.4) {
+          q -= 0.1; out = canvas.toDataURL('image/jpeg', q);
+        }
+        resolve(out);
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
 }
 function showToast(msg) {
   let t = document.querySelector('.cms-toast');
